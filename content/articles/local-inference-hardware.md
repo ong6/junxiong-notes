@@ -80,37 +80,37 @@ An 8B model can need more memory for its context than a 31B model needs for its 
 **The rule that falls out:** budget Q4 weights plus the KV cache at the context length you will actually use, plus ~20% for the OS and cache retention. For most 2026 architectures that lands between 1.5× and 2× the weight size. Do not trust the multiplier — look up your model's KV-per-token and multiply, because hybrid-attention models like Qwen3-Next are 30× cheaper per token than Gemma 4. A config that only just fits the weights cannot use the context window the model card advertises.
 
 ```d2 Three claims on memory, summed. Nearly every sizing table budgets the first box and stops there, which is how an "it fits" config loses the context window the model card advertises.
-direction: down
+direction: right
 
-w: 1 · Q4 WEIGHTS\n63 GB for a 120B MoE\n\nThe only line most\nsizing tables count. {
-  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+w: 1 · Q4 WEIGHTS\n63 GB, 120B MoE\n\nThe only line most\nsizing tables count. {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 }
 }
 
-kv: 2 · KV CACHE\nat your real context\n\nGemma 4 31B @ 128K = 105 GiB\nQwen3-Next 80B @ 1M = 24 GiB {
-  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+kv: 2 · KV CACHE\nat real context\n\nGemma 4 @128K: 105 GiB\nQwen3-Next @1M: 24 GiB {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
 }
 
-os: 3 · ~20% OS +\nprompt-cache retention\n\n40K ctx back in 5s, not 200s. {
-  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+os: 3 · OS + PROMPT CACHE\n~20% headroom\n\n40K ctx: 5s, not 200s {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
 }
 
-sum: TOTAL RESIDENT\n= 1.5–2× the weight size {
-  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
+sum: TOTAL RESIDENT\n1.5–2× weights {
+  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 21 }
 }
 
-ok: Advertised context\nis usable {
-  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+ok: Context is usable {
+  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 21 }
 }
 
 no: Cut context, or\nquantise harder {
-  style: { stroke: "#eb6834"; fill: "#fffdf9"; stroke-width: 2; font-size: 22 }
+  style: { stroke: "#eb6834"; fill: "#fffdf9"; stroke-width: 2; font-size: 21 }
 }
 
-w -> kv: plus { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 20 } }
-kv -> os: plus { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 20 } }
-os -> sum: equals { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 20 } }
-sum -> ok: fits RAM { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 20 } }
-sum -> no: over budget { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+w -> sum: plus { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 19 } }
+kv -> sum: plus { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 19 } }
+os -> sum: plus { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 19 } }
+sum -> ok: fits RAM { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 19 } }
+sum -> no: over budget { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
 ```
 
 ## Runtime choice is worth as much as hardware choice
