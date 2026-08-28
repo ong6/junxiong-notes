@@ -127,11 +127,52 @@ function vlConfig(mode) {
 	};
 }
 
+/**
+ * Wraps a long title or subtitle onto multiple lines.
+ *
+ * With autosize "fit", the title is part of the width budget: a 210-character
+ * subtitle demands ~1100px inside a 620px chart, and Vega resolves that by
+ * collapsing the plot area to zero width — the bars silently vanish while the
+ * axis and labels still draw. Wrapping keeps the budget satisfiable.
+ */
+function wrapTitle(t, max) {
+	if (typeof t !== "string" || t.length <= max) return t;
+	const lines = [];
+	let line = "";
+	for (const word of t.split(" ")) {
+		if ((line + " " + word).trim().length > max) { lines.push(line.trim()); line = word; }
+		else line += " " + word;
+	}
+	if (line.trim()) lines.push(line.trim());
+	return lines;
+}
+
 async function renderVegaLite(spec, mode) {
-	const merged = { width: 620, autosize: { type: "fit", contains: "padding" }, ...spec, config: { ...vlConfig(mode), ...(spec.config ?? {}) } };
+	const title =
+		spec.title && typeof spec.title === "object"
+			? { ...spec.title, text: wrapTitle(spec.title.text, 74), subtitle: wrapTitle(spec.title.subtitle, 86) }
+			: wrapTitle(spec.title, 74);
+	const merged = {
+		width: 620,
+		autosize: { type: "fit", contains: "padding" },
+		...spec,
+		...(title ? { title } : {}),
+		config: { ...vlConfig(mode), ...(spec.config ?? {}) },
+	};
 	const vgSpec = compile(merged).spec;
 	const view = new vega.View(vega.parse(vgSpec), { renderer: "none" });
-	return await view.toSVG();
+	const svg = await view.toSVG();
+	// A chart whose plot area collapsed still renders its axes and labels, so the
+	// failure is invisible in a build log and easy to miss in review. Catch it here.
+	const bars = svg.match(/aria-roledescription="bar"[^>]*/g) ?? [];
+	const flat = bars.filter((b) => /d="M0,0h0v[\d.]+h0Z"/.test(b));
+	if (bars.length && flat.length === bars.length) {
+		throw new Error(
+			`Every bar rendered zero-width in "${spec.title?.text ?? spec.title ?? "untitled"}" (${mode}). ` +
+				`The plot area collapsed — usually a title or subtitle too long for the width budget.`,
+		);
+	}
+	return svg;
 }
 
 /* ---------- walk ---------- */
