@@ -112,6 +112,12 @@ background yourself.**
 - If lower-is-better (perplexity), say so in the subtitle — a bar chart implies
   bigger-is-more.
 - 2–7 bars. More is a table.
+- **Watch what the colour implies.** Vega assigns hues in alphabetical order of
+  the category, which can land green on the expensive option and orange on the
+  cheap one. If a reader would read the palette as good/bad, pin it:
+  `"scale":{"domain":["read","base","write"],"range":["#1baf7a","#2a78d6","#eb6834"]}`
+- **Keep the subtitle under ~86 characters per line.** Longer is wrapped for you,
+  but a very long subtitle still eats the width the plot needs.
 - Axis labels get 300px on the y axis before truncating, set centrally. You do
   **not** need `labelLimit` in your spec. Long hardware and model names are fine;
   a full sentence is not.
