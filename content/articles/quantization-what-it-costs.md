@@ -75,8 +75,17 @@ Three numbers get used, and they do not measure the same thing.
 
 Read the bottom row across. Perplexity rises 22%, HellaSwag falls 0.6 points, MMLU falls 4.2, GSM8K falls **9.3**. Multi-step arithmetic degrades roughly fifteen times harder than sentence completion at the same bit width, and no single perplexity number tells you that. The paper also finds schemes with *identical* perplexity diverging on instruction-following, which is the flips phenomenon showing up in a different dataset.
 
-```chart
-{"title":"Same model, same bit width, very different damage","unit":" pts","note":"Accuracy points lost going F16 \u2192 Q3_K_S on Llama-3.1-8B-Instruct. Kurt, January 2026 (arxiv.org/abs/2601.14277). Slot 0 is the multi-step-reasoning task.","series":[{"label":"GSM8K (arithmetic)","value":9.3,"slot":0},{"label":"MMLU (knowledge)","value":4.2,"slot":1},{"label":"HellaSwag (completion)","value":0.6,"slot":1}]}
+```vega-lite The same bit width, the same model, three very different amounts of damage. Multi-step arithmetic degrades roughly fifteen times harder than sentence completion.
+{"title":{"text":"Same model, same bit width, very different damage","subtitle":"Accuracy points lost going F16 \u2192 Q3_K_S, Llama-3.1-8B-Instruct. Lower is better. Kurt, January 2026 (arxiv.org/abs/2601.14277)."},
+ "height":{"step":38},
+ "data":{"values":[{"task":"GSM8K (arithmetic)","v":9.3},{"task":"MMLU (knowledge)","v":4.2},{"task":"HellaSwag (completion)","v":0.6}]},
+ "encoding":{
+   "y":{"field":"task","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"accuracy points lost","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"task","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":".1f"}}}]}
 ```
 
 One honesty note on that table: Q5_K_M scores 78.54 on GSM8K against the F16 baseline's 77.63. Quantization did not make the model better at arithmetic. That is benchmark noise, and it is a useful reminder that sub-point differences in these tables mean nothing.
@@ -101,8 +110,24 @@ On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](
 | Dynamic 2-bit | 255 GB | 65.8% |
 | Dynamic 1-bit | 206 GB | 55.7% |
 
-```chart
-{"title":"DeepSeek V3.1: Aider Polyglot pass-2 by bit depth","unit":"%","note":"Unsloth dynamic GGUFs, non-reasoning mode (unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot). Slot 0 is the full-precision reference; slot 2 is the tier below the knee.","series":[{"label":"Full precision (671 GB)","value":71.6,"slot":0},{"label":"Dynamic 4-bit (387 GB)","value":69.7,"slot":1},{"label":"Dynamic 3-bit (300 GB)","value":68.4,"slot":1},{"label":"Dynamic 2-bit (255 GB)","value":65.8,"slot":1},{"label":"Dynamic 1-bit (206 GB)","value":55.7,"slot":2}]}
+```vega-lite Read down the bars: the fall is gentle to 2-bit, then it drops. The knee sits just below 2-bit, where 49 GB of savings costs 10 points.
+{"title":{"text":"DeepSeek V3.1: Aider Polyglot pass-2 by bit depth","subtitle":"Unsloth dynamic GGUFs, non-reasoning mode. Bars in bit-depth order, not rank order. Source: unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot"},
+ "height":{"step":38},
+ "data":{"values":[
+   {"build":"Full precision (671 GB)","v":71.6},
+   {"build":"Dynamic 4-bit (387 GB)","v":69.7},
+   {"build":"Dynamic 3-bit (300 GB)","v":68.4},
+   {"build":"Dynamic 2-bit (255 GB)","v":65.8},
+   {"build":"Dynamic 1-bit (206 GB)","v":55.7}]},
+ "encoding":{
+   "y":{"field":"build","type":"nominal","title":null,
+        "sort":["Full precision (671 GB)","Dynamic 4-bit (387 GB)","Dynamic 3-bit (300 GB)","Dynamic 2-bit (255 GB)","Dynamic 1-bit (206 GB)"],
+        "axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"Aider Polyglot pass-2 (%)","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"build","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":".1f"}}}]}
 ```
 
 Going 4-bit → 2-bit costs 3.9 points and saves 132 GB. Going 2-bit → 1-bit costs 10.1 points and saves 49 GB. The curve has a knee and it sits just below 2-bit. Unsloth's own [Dynamic 3.0 documentation](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs) says the same thing more bluntly: below their `UD-Q2_K_XL` tier, models degrade badly on tool-calling and agentic use, loop, and return empty responses.
@@ -136,18 +161,44 @@ The serving stack decides this more than quality does.
 
 vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing: AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
 
-```mermaid Which format to download, decided by runtime and hardware rather than by quality.
-flowchart TD
-  A[Which serving stack?] --> B[llama.cpp / Ollama / LM Studio]
-  A --> C[vLLM / TGI]
-  A --> D[MLX on Apple Silicon]
-  B --> B1[GGUF UD-Q4_K_XL or Q4_K_M]
-  B1 --> B2[Q5_K_M if memory allows]
-  C --> E{GPU generation?}
-  E -->|Turing| E1[GPTQ]
-  E -->|Ampere| E2[AWQ or W4A16]
-  E -->|Ada / Hopper| E3[FP8 W8A8 for throughput]
-  D --> D1[MLX 4-bit or 6-bit build]
+```d2 Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. Source: vLLM quantization compatibility matrix.
+direction: down
+
+q1: WHICH RUNTIME? {
+  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+}
+
+gguf: GGUF\n\nUD-Q4_K_XL\nor Q4_K_M {
+  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
+}
+
+mlx: MLX\n\n4-bit or 6-bit {
+  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
+}
+
+q2: WHICH GPU\nGENERATION? {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+q1 -> gguf: llama.cpp\nOllama { style: { stroke: "#6b6459"; font-size: 20 } }
+q1 -> q2: vLLM / TGI { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+q1 -> mlx: Apple Silicon { style: { stroke: "#6b6459"; font-size: 20 } }
+
+turing: Turing\n\nGPTQ only {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+ampere: Ampere\n\nAWQ / W4A16 {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+hopper: Ada+\n\nFP8 W8A8 {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+q2 -> turing { style: { stroke: "#eb6834"; stroke-width: 2 } }
+q2 -> ampere { style: { stroke: "#eb6834"; stroke-width: 2 } }
+q2 -> hopper { style: { stroke: "#eb6834"; stroke-width: 2 } }
 ```
 
 MLX quantizes with group sizes of 64 for 4/6-bit and 32 for 2/3-bit, and the community convention is to keep embeddings and the final projection at higher width than the body — the same sensitivity principle as dynamic GGUF, applied by hand. Apple Silicon's practical constraint is that MLX and GGUF are separate ecosystems, so the model you want may only exist in one of them on any given day.

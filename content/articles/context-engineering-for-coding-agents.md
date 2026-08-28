@@ -72,14 +72,43 @@ The clearest evidence is **NoLiMa** ([arXiv:2502.05167](https://arxiv.org/abs/25
 
 The paper's summary line: "Out of the 13 models, 11 exhibit performance at 32K lengths that is half or less of their base scores." Reasoning does not buy you out of it either. On the hard subset, o1 scores 99.9 at base and 31.1 at 32K.
 
-```chart
-{"title":"NoLiMa score at 32K context","note":"NoLiMa Table 3 (arXiv:2502.05167). Base scores for these five models run 87.6-99.3; every bar here is the same metric at 32K.","series":[{"label":"GPT-4o (base 99.3)","value":69.7,"slot":0},{"label":"Gemini 1.5 Pro (base 92.6)","value":48.2,"slot":0},{"label":"Llama 3.3 70B (base 97.3)","value":42.7,"slot":0},{"label":"Claude 3.5 Sonnet (base 87.6)","value":29.8,"slot":0},{"label":"Command R+ (base 90.9)","value":7.4,"slot":0}]}
+```vega-lite Every one of these models starts between 87.6 and 99.3 on the same metric. At 32K, four of the five have lost more than half of it.
+{"title":{"text":"NoLiMa score at 32K context","subtitle":"NoLiMa Table 3 (arXiv:2502.05167). Same metric as each model's base score, which runs 87.6-99.3 across these five."},
+ "height":{"step":38},
+ "data":{"values":[
+   {"model":"GPT-4o (base 99.3)","v":69.7},
+   {"model":"Gemini 1.5 Pro (base 92.6)","v":48.2},
+   {"model":"Llama 3.3 70B (base 97.3)","v":42.7},
+   {"model":"Claude 3.5 Sonnet (base 87.6)","v":29.8},
+   {"model":"Command R+ (base 90.9)","v":7.4}]},
+ "encoding":{
+   "y":{"field":"model","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"score at 32K context","scale":{"domain":[0,100]},"axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"value":"#2a78d6"}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":",.3~f"}}}]}
 ```
 
 **Lost in the Middle** ([arXiv:2307.03172](https://arxiv.org/abs/2307.03172), Liu et al., TACL) is older and more specific: accuracy is highest when the relevant passage sits at the start or the end of the input and sags in between. Their GPT-3.5-Turbo row across 20 documents runs 75.8 at the first position, 53.8 in the middle, 63.2 at the last. The number I keep coming back to is the control: 56.1 with no documents at all. Handing the model twenty documents with the answer buried in the middle scored worse than handing it nothing.
 
-```chart
-{"title":"GPT-3.5-Turbo accuracy by answer position, 20 documents","unit":"%","note":"Lost in the Middle (arXiv:2307.03172, Liu et al., TACL). Slot 1 is the closed-book control: no documents supplied at all.","series":[{"label":"Answer at first position","value":75.8,"slot":0},{"label":"Answer at last position","value":63.2,"slot":0},{"label":"No documents at all","value":56.1,"slot":1},{"label":"Answer in the middle","value":53.8,"slot":0}]}
+```vega-lite Ranked, the control lands above the middle position: twenty documents with the answer buried in them scored worse than supplying no documents at all.
+{"title":{"text":"GPT-3.5-Turbo accuracy by answer position, 20 documents","subtitle":"Lost in the Middle (arXiv:2307.03172, Liu et al., TACL). The orange bar is the closed-book control, with no documents supplied."},
+ "height":{"step":38},
+ "data":{"values":[
+   {"case":"Answer at first position","v":75.8,"kind":"20 documents supplied"},
+   {"case":"Answer at last position","v":63.2,"kind":"20 documents supplied"},
+   {"case":"No documents at all","v":56.1,"kind":"Closed-book control"},
+   {"case":"Answer in the middle","v":53.8,"kind":"20 documents supplied"}]},
+ "encoding":{
+   "y":{"field":"case","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"accuracy (%)","scale":{"domain":[0,80]},"axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},
+    "encoding":{"color":{"field":"kind","type":"nominal","title":null,
+      "scale":{"domain":["20 documents supplied","Closed-book control"],"range":["#2a78d6","#eb6834"]}}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":",.3~f"}}}]}
 ```
 
 Chroma's [context rot report](https://www.trychroma.com/research/context-rot) (18 models) adds the finding that matters most operationally: "models do not use their context uniformly; instead, their performance grows increasingly unreliable as input length grows." You do not get a gentle slope you can budget against. The same report found that shuffling the haystack to destroy its logical ordering *improved* scores, which should unsettle anyone who thinks of a long context as a well-organised briefing document. It also splits the failure by family — Claude models "tend to abstain when uncertain," while GPT models show "the highest rates of hallucination, often generating confident but incorrect responses." One of those failures is easy to notice. The other is not.
@@ -94,18 +123,42 @@ When a harness runs out of room it summarises the history to reclaim space. Two 
 
 First, detail is discarded and you do not choose which. The summary keeps what the summariser thought mattered. Anthropic's own warning is that ["overly aggressive compaction can result in the loss of subtle but critical context whose importance only becomes apparent later"](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents). In practice that means the constraint you gave at turn 3 about never touching the migration files. Their advice follows from it: put durable rules in the instruction file, because conversation history is not storage.
 
-```mermaid How a context window fills over one session
-flowchart TB
-  A[System prompt, instruction files, tool schemas<br/>fixed, cacheable] --> B[Your prompt]
-  B --> C[File reads]
-  C --> D[Command and test output]
-  D --> E[Edits and hook output]
-  E --> F{Room left?}
-  F -->|yes| C
-  F -->|no| G[Compaction: history summarised]
-  G --> H[Detail discarded, chosen for you]
-  G --> I[Conversation cache prefix invalidated]
-  H --> C
+```d2 The blue block is written once and read from cache on every turn. The orange loop grows underneath it until compaction fires, which throws away detail you did not choose and takes the cached prefix with it.
+direction: down
+
+prefix: FIXED PREFIX\ntool schemas · system prompt\ninstruction file\n\nWritten once. Read from cache. {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+turn: Your prompt {
+  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+}
+
+grow: THE LOOP THAT GROWS\nfile reads · test output\nedits · hook output\n\nRe-sent in full every turn. {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+full: Window full {
+  style: { fill: transparent; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+compact: COMPACTION\nhistory summarised {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+lost: Detail discarded —\nchosen for you, not by you {
+  style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+prefix -> turn: every turn { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+turn -> grow { style: { stroke: "#6b6459"; font-size: 20 } }
+grow -> grow: each tool call { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+grow -> full { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+full -> compact { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+compact -> lost { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+compact -> prefix: cache prefix dies {
+  style: { stroke: "#eb6834"; stroke-width: 2; stroke-dash: 4; font-size: 20 }
+}
 ```
 
 Second, the prompt cache. Caching is a strict prefix match, so compaction [invalidates the conversation layer by design](https://code.claude.com/docs/en/prompt-caching#compacting-the-conversation) — the new, shorter history shares no prefix with the old one. One correction to the folk wisdom here: while the cache is still warm, the summarisation call itself reads the old prefix from cache and is cheaper than the context size suggests. It is when you resume a cold session that compaction reprocesses the whole history at full price. The docs are explicit that `/clear` costs nothing by comparison. I go through the prefix-stability mechanics, and how they differ across harnesses, in [prompt caching across harnesses](/prompt-caching-across-harnesses).

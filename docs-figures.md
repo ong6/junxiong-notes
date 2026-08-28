@@ -112,6 +112,12 @@ background yourself.**
 - If lower-is-better (perplexity), say so in the subtitle — a bar chart implies
   bigger-is-more.
 - 2–7 bars. More is a table.
+- Axis labels get 300px on the y axis before truncating, set centrally. You do
+  **not** need `labelLimit` in your spec. Long hardware and model names are fine;
+  a full sentence is not.
+- A layered chart with an explicit `"sort":[...]` array logs a
+  `Domains that should be unioned has conflicting sort properties` warning. It is
+  cosmetic and the rendered order is correct — ignore it.
 
 ---
 

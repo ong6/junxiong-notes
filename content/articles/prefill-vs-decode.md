@@ -56,7 +56,7 @@ That's it. That's the ceiling. Nothing about FLOPs appears in it.
 
 Take Llama-2-7B at `Q4_0`, which is [3.83 GB on disk](https://huggingface.co/TheBloke/Llama-2-7B-GGUF). Apple states 400GB/s for [M1 Max](https://www.apple.com/newsroom/2021/10/introducing-m1-pro-and-m1-max-the-most-powerful-chips-apple-has-ever-built/) and M2 Max, and 800GB/s for [M1 Ultra](https://www.apple.com/newsroom/2022/03/apple-unveils-m1-ultra-the-worlds-most-powerful-chip-for-a-personal-computer/) and [M2 Ultra](https://www.apple.com/newsroom/2023/06/apple-introduces-m2-ultra/). The measured `tg128` figures come from the long-running [llama.cpp Apple Silicon benchmark thread](https://github.com/ggml-org/llama.cpp/discussions/4167).
 
-| Chip | Bandwidth (Apple) | Ceiling, my arithmetic | Measured tg128 | Fraction of ceiling |
+| Chip | Bandwidth (Apple) | Ceiling, my arithmetic | Measured (llama.cpp) | Fraction of ceiling |
 |---|---|---|---|---|
 | M1 Max | 400 GB/s | 104 tok/s | 61.19 | 59% |
 | M2 Max | 400 GB/s | 104 tok/s | 65.95 | 63% |
@@ -67,8 +67,23 @@ The ceiling column is mine: `400e9 / 3.83e9 = 104.4`. Check it yourself.
 
 Two things fall out. Real decode lands at roughly 40–60% of the bandwidth ceiling, so the napkin number is an upper bound you should discount, not a prediction. And the Ultra parts, which are two Max dies fused together at twice the paper bandwidth, return only about **40% more decode throughput** than the Max they're built from (1.37x on M1, 1.43x on M2). If you were buying an Ultra for single-stream generation on the strength of the 800GB/s number, that is the number you should be looking at instead.
 
-```chart
-{"title":"Napkin ceiling vs measured decode, Llama-2-7B Q4_0","unit":"tok/s","note":"Ceilings are bandwidth \u00f7 3.83 GB file size (my arithmetic); measured tg128 from the llama.cpp Apple Silicon benchmark thread.","series":[{"label":"Max ceiling (400 GB/s)","value":104,"slot":2},{"label":"M1 Max measured","value":61.19,"slot":0,"display":"61.2"},{"label":"M2 Max measured","value":65.95,"slot":0,"display":"66.0"},{"label":"Ultra ceiling (800 GB/s)","value":209,"slot":2},{"label":"M1 Ultra measured","value":83.73,"slot":1,"display":"83.7"},{"label":"M2 Ultra measured","value":94.27,"slot":1,"display":"94.3"}]}
+```vega-lite Measured decode lands at 40–60% of the arithmetic ceiling, and doubling paper bandwidth (Max to Ultra) buys about 40% more real throughput.
+{"title":{"text":"Napkin ceiling vs measured decode, Llama-2-7B Q4_0","subtitle":"Ceilings are my arithmetic (bandwidth ÷ 3.83 GB file size); measured tg128 from the llama.cpp Apple Silicon benchmark thread."},
+ "height":{"step":38},
+ "data":{"values":[
+   {"label":"Ceiling, 400 GB/s","v":104,"kind":"Ceiling (arithmetic)"},
+   {"label":"M1 Max measured","v":61.19,"kind":"Measured (llama.cpp)"},
+   {"label":"M2 Max measured","v":65.95,"kind":"Measured (llama.cpp)"},
+   {"label":"Ceiling, 800 GB/s","v":209,"kind":"Ceiling (arithmetic)"},
+   {"label":"M1 Ultra measured","v":83.73,"kind":"Measured (llama.cpp)"},
+   {"label":"M2 Ultra measured","v":94.27,"kind":"Measured (llama.cpp)"}]},
+ "encoding":{
+   "y":{"field":"label","type":"nominal","title":null,"sort":["Ceiling, 400 GB/s","M1 Max measured","M2 Max measured","Ceiling, 800 GB/s","M1 Ultra measured","M2 Ultra measured"],"axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"tokens / sec","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"kind","type":"nominal","title":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":",.4~f"}}}]}
 ```
 
 The same arithmetic explains why [quantization](/quantization-what-it-costs) buys speed and not just VRAM headroom: cutting a model from FP16 to 4-bit cuts bytes-read-per-token by roughly 4×, which moves the decode ceiling by roughly 4×. Decode is bound by the exact quantity quantization shrinks.
@@ -79,8 +94,17 @@ NVIDIA's DGX Spark is the cleanest illustration currently shipping. NVIDIA [clai
 
 Measured on `gpt-oss-120b` MXFP4 in the [llama.cpp DGX Spark thread](https://github.com/ggml-org/llama.cpp/discussions/16578): **1,956 tok/s prompt processing, 60.57 tok/s generation**. A 32× gap between the two phases on one box, from one set of weights. The petaFLOP shows up in the first number and is entirely absent from the second.
 
-```chart
-{"title":"Same box, same weights: prefill vs decode","unit":"tok/s","note":"DGX Spark, gpt-oss-120b MXFP4, llama.cpp DGX Spark thread. pp2048 against tg32.","series":[{"label":"Prefill (pp2048)","value":1956,"slot":0},{"label":"Decode (tg32)","value":60.57,"slot":1,"display":"60.6"}]}
+```vega-lite Prefill and decode differ by ~32x on the same box, from one set of weights. Source: llama.cpp DGX Spark thread.
+{"title":{"text":"Same box, same weights: prefill vs decode","subtitle":"DGX Spark, gpt-oss-120b MXFP4, llama.cpp DGX Spark thread. pp2048 against tg32."},
+ "height":{"step":38},
+ "data":{"values":[{"phase":"Prefill (pp2048)","v":1956},{"phase":"Decode (tg32)","v":60.57}]},
+ "encoding":{
+   "y":{"field":"phase","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "x":{"field":"v","type":"quantitative","title":"tokens / sec","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"phase","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":",.4~f"}}}]}
 ```
 
 Apple Silicon has the mirror-image problem. High bandwidth, modest matmul throughput, so a Mac Studio punches above its FLOPs on single-stream decode and falls behind badly on long prompts. Tom's Hardware measured exactly this shape, titling their Mac Studio piece ["M4 Max beats GB10 and Strix Halo in decode throughput, but memory bandwidth isn't everything"](https://www.tomshardware.com/desktops/exploring-apple-silicons-local-ai-performance-with-the-mac-studio-and-m4-max-m4-max-beats-gb10-and-strix-halo-in-decode-throughput-but-memory-bandwidth-isnt-everything). My read: if you paste 40k-token files into a local coding agent, prefill is the wall you'll hit, and it's the wall Apple hardware is worst at. More on the machine-by-machine tradeoffs in [local inference hardware](/local-inference-hardware).

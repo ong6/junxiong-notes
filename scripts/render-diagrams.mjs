@@ -100,16 +100,26 @@ function vlConfig(mode) {
 			tickColor: FAINT[mode], gridColor: FAINT[mode], gridOpacity: 0.55,
 			labelFontSize: 12, titleFontSize: 12, titleFontWeight: 500, labelFont: SANS,
 			titleFont: SANS, titlePadding: 10,
+			// 0 disables truncation. An elided label ("Claude 3.5 Sonnet (base 87…")
+			// is worse than a narrower plot, and autosize gives the labels their room.
+			labelLimit: 0,
 		},
 		legend: {
 			labelColor: ink, titleColor: muted, labelFontSize: 12, titleFontSize: 12,
 			labelFont: SANS, titleFont: SANS, symbolType: "square", symbolSize: 90,
+			labelLimit: 0,
 		},
 		title: {
 			color: ink, fontSize: 14, fontWeight: 600, font: SANS,
 			anchor: "start", offset: 12, subtitleColor: muted, subtitleFontSize: 12,
 			subtitleFont: SANS,
 		},
+		// A channel-level axis config beats the shared `axis` block, so labelLimit
+		// has to be repeated here or long y-labels truncate mid-word regardless.
+		// A channel-level axis config beats the shared `axis` block, so this has to
+		// be repeated here or long y-labels truncate regardless of the above.
+		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 12.5, labelColor: ink },
+		axisX: { labelLimit: 0 },
 		text: { color: ink, font: SANS, fontSize: 12 },
 		bar: { cornerRadiusEnd: 3 },
 		point: { size: 70, filled: true },
