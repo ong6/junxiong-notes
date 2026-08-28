@@ -62,9 +62,9 @@ The ceiling column is mine: `400e9 / 3.83e9 = 104.4`. Check it yourself.
 
 Two things fall out. Real decode lands at roughly 40–60% of the bandwidth ceiling, so the napkin number is an upper bound you should discount, not a prediction. And the Ultra parts, which are two Max dies fused together at twice the paper bandwidth, return only about **40% more decode throughput** than the Max they're built from (1.37x on M1, 1.43x on M2). If you were buying an Ultra for single-stream generation on the strength of the 800GB/s number, that is the number you should be looking at instead.
 
-```vega-lite Measured decode lands at 40–60% of the arithmetic ceiling, and doubling paper bandwidth (Max to Ultra) buys about 40% more real throughput.
-{"title":{"text":"Napkin ceiling vs measured decode, Llama-2-7B Q4_0","subtitle":"Ceilings are my arithmetic (bandwidth ÷ 3.83 GB file size); measured tg128 from the llama.cpp Apple Silicon benchmark thread."},
- "height":{"step":38},
+```vega-lite Measured decode lands at 40–60% of the arithmetic ceiling, and doubling paper bandwidth (Max to Ultra) buys about 40% more real throughput. | Source: measured tg128 from the llama.cpp Apple Silicon benchmark thread (ggml-org/llama.cpp discussion 4167); bandwidth figures from Apple's M1/M2 Max and Ultra newsroom releases. Ceilings are my own arithmetic.
+{"title":{"text":"Napkin ceiling vs measured decode, Llama-2-7B Q4_0","subtitle":"tokens/sec at tg128. Ceiling = memory bandwidth ÷ the 3.83 GB model file size."},
+ "height":{"step":46},
  "data":{"values":[
    {"label":"Ceiling, 400 GB/s","v":104,"kind":"Ceiling (arithmetic)"},
    {"label":"M1 Max measured","v":61.19,"kind":"Measured (llama.cpp)"},
@@ -73,11 +73,11 @@ Two things fall out. Real decode lands at roughly 40–60% of the bandwidth ceil
    {"label":"M1 Ultra measured","v":83.73,"kind":"Measured (llama.cpp)"},
    {"label":"M2 Ultra measured","v":94.27,"kind":"Measured (llama.cpp)"}]},
  "encoding":{
-   "y":{"field":"label","type":"nominal","title":null,"sort":["Ceiling, 400 GB/s","M1 Max measured","M2 Max measured","Ceiling, 800 GB/s","M1 Ultra measured","M2 Ultra measured"],"axis":{"labelFontSize":13}},
+   "y":{"field":"label","type":"nominal","title":null,"sort":["Ceiling, 400 GB/s","M1 Max measured","M2 Max measured","Ceiling, 800 GB/s","M1 Ultra measured","M2 Ultra measured"]},
    "x":{"field":"v","type":"quantitative","title":"tokens / sec","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"kind","type":"nominal","title":null}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"kind","type":"nominal","title":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
     "encoding":{"text":{"field":"v","type":"quantitative","format":",.4~f"}}}]}
 ```
 
@@ -89,16 +89,16 @@ NVIDIA's DGX Spark is the cleanest illustration currently shipping. NVIDIA [clai
 
 Measured on `gpt-oss-120b` MXFP4 in the [llama.cpp DGX Spark thread](https://github.com/ggml-org/llama.cpp/discussions/16578): **1,956 tok/s prompt processing, 60.57 tok/s generation**. A 32× gap between the two phases on one box, from one set of weights. The petaFLOP shows up in the first number and is entirely absent from the second.
 
-```vega-lite Prefill and decode differ by ~32x on the same box, from one set of weights. Source: llama.cpp DGX Spark thread.
-{"title":{"text":"Same box, same weights: prefill vs decode","subtitle":"DGX Spark, gpt-oss-120b MXFP4, llama.cpp DGX Spark thread. pp2048 against tg32."},
- "height":{"step":38},
+```vega-lite Prefill and decode differ by ~32x on the same box, from one set of weights. The petaFLOP shows up in the first bar and is entirely absent from the second. | Source: llama.cpp DGX Spark benchmark thread (ggml-org/llama.cpp discussion 16578), gpt-oss-120b MXFP4.
+{"title":{"text":"Same box, same weights: prefill vs decode","subtitle":"DGX Spark (GB10), gpt-oss-120b MXFP4, llama.cpp. pp2048 against tg32, tokens/sec."},
+ "height":{"step":46},
  "data":{"values":[{"phase":"Prefill (pp2048)","v":1956},{"phase":"Decode (tg32)","v":60.57}]},
  "encoding":{
-   "y":{"field":"phase","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "y":{"field":"phase","type":"nominal","sort":"-x","title":null},
    "x":{"field":"v","type":"quantitative","title":"tokens / sec","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"phase","type":"nominal","legend":null}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"phase","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
     "encoding":{"text":{"field":"v","type":"quantitative","format":",.4~f"}}}]}
 ```
 

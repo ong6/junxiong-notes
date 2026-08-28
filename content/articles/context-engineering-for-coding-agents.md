@@ -72,29 +72,38 @@ The clearest evidence is **NoLiMa** ([arXiv:2502.05167](https://arxiv.org/abs/25
 
 The paper's summary line: "Out of the 13 models, 11 exhibit performance at 32K lengths that is half or less of their base scores." Reasoning does not buy you out of it either. On the hard subset, o1 scores 99.9 at base and 31.1 at 32K.
 
-```vega-lite Every one of these models starts between 87.6 and 99.3 on the same metric. At 32K, four of the five have lost more than half of it.
-{"title":{"text":"NoLiMa score at 32K context","subtitle":"NoLiMa Table 3 (arXiv:2502.05167). Same metric as each model's base score, which runs 87.6-99.3 across these five."},
- "height":{"step":38},
+```vega-lite Every model starts between 87.6 and 99.3. By 32K, four of the five have lost more than half of that. | Source: NoLiMa, arXiv:2502.05167, Table 3.
+{"title":{"text":"NoLiMa: base score vs score at 32K context","subtitle":"Same metric and 0-100 scale for both bars. Base is each model's best average over 250-, 500- and 1K-token inputs. On the separate hard subset, o1 falls 99.9 to 31.1."},
+ "height":{"step":28},
  "data":{"values":[
-   {"model":"GPT-4o (base 99.3)","v":69.7},
-   {"model":"Gemini 1.5 Pro (base 92.6)","v":48.2},
-   {"model":"Llama 3.3 70B (base 97.3)","v":42.7},
-   {"model":"Claude 3.5 Sonnet (base 87.6)","v":29.8},
-   {"model":"Command R+ (base 90.9)","v":7.4}]},
+   {"model":"GPT-4o","phase":"Base score","v":99.3},
+   {"model":"GPT-4o","phase":"Score at 32K","v":69.7},
+   {"model":"Gemini 1.5 Pro","phase":"Base score","v":92.6},
+   {"model":"Gemini 1.5 Pro","phase":"Score at 32K","v":48.2},
+   {"model":"Llama 3.3 70B","phase":"Base score","v":97.3},
+   {"model":"Llama 3.3 70B","phase":"Score at 32K","v":42.7},
+   {"model":"Claude 3.5 Sonnet","phase":"Base score","v":87.6},
+   {"model":"Claude 3.5 Sonnet","phase":"Score at 32K","v":29.8},
+   {"model":"Command R+","phase":"Base score","v":90.9},
+   {"model":"Command R+","phase":"Score at 32K","v":7.4}]},
  "encoding":{
-   "y":{"field":"model","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
-   "x":{"field":"v","type":"quantitative","title":"score at 32K context","scale":{"domain":[0,100]},"axis":{"grid":true}}},
+   "y":{"field":"model","type":"nominal","title":null,
+        "sort":["GPT-4o","Gemini 1.5 Pro","Llama 3.3 70B","Claude 3.5 Sonnet","Command R+"],
+        "axis":{"labelFontSize":13}},
+   "yOffset":{"field":"phase","type":"nominal","sort":["Base score","Score at 32K"]},
+   "x":{"field":"v","type":"quantitative","title":"NoLiMa score","scale":{"domain":[0,100]},"axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"value":"#2a78d6"}}},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"phase","type":"nominal","title":null,
+     "scale":{"domain":["Base score","Score at 32K"],"range":["#2a78d6","#eb6834"]}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{"text":{"field":"v","type":"quantitative","format":",.3~f"}}}]}
 ```
 
 **Lost in the Middle** ([arXiv:2307.03172](https://arxiv.org/abs/2307.03172), Liu et al., TACL) is older and more specific: accuracy is highest when the relevant passage sits at the start or the end of the input and sags in between. Their GPT-3.5-Turbo row across 20 documents runs 75.8 at the first position, 53.8 in the middle, 63.2 at the last. The number I keep coming back to is the control: 56.1 with no documents at all. Handing the model twenty documents with the answer buried in the middle scored worse than handing it nothing.
 
-```vega-lite Ranked, the control lands above the middle position: twenty documents with the answer buried in them scored worse than supplying no documents at all.
-{"title":{"text":"GPT-3.5-Turbo accuracy by answer position, 20 documents","subtitle":"Lost in the Middle (arXiv:2307.03172, Liu et al., TACL). The orange bar is the closed-book control, with no documents supplied."},
- "height":{"step":38},
+```vega-lite Ranked, the closed-book control lands above the middle position: twenty documents with the answer buried in them scored worse than supplying no documents at all. | Source: Lost in the Middle, arXiv:2307.03172, Liu et al., TACL.
+{"title":{"text":"GPT-3.5-Turbo accuracy by answer position, 20 documents","subtitle":"The orange bar is the closed-book control, with no documents supplied at all."},
+ "height":{"step":46},
  "data":{"values":[
    {"case":"Answer at first position","v":75.8,"kind":"20 documents supplied"},
    {"case":"Answer at last position","v":63.2,"kind":"20 documents supplied"},
@@ -104,7 +113,7 @@ The paper's summary line: "Out of the 13 models, 11 exhibit performance at 32K l
    "y":{"field":"case","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
    "x":{"field":"v","type":"quantitative","title":"accuracy (%)","scale":{"domain":[0,80]},"axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},
+   {"mark":{"type":"bar","height":30},
     "encoding":{"color":{"field":"kind","type":"nominal","title":null,
       "scale":{"domain":["20 documents supplied","Closed-book control"],"range":["#2a78d6","#eb6834"]}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},

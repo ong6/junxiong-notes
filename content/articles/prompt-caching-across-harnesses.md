@@ -67,19 +67,25 @@ All three major APIs do prefix caching. They disagree about who places the break
 
 Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching), [Gemini caching](https://ai.google.dev/gemini-api/docs/caching), [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing).
 
-```vega-lite Reads are a tenth of base input, writes a small premium over it. The whole game is moving token volume from the top two bars to the bottom one.
-{"title":{"text":"What an input token costs, as a multiple of the base rate","subtitle":"Published multipliers; the 1h and 5m write tiers are Anthropic's. Sources: Anthropic pricing; OpenAI prompt caching, GPT-5.6+. Google charges no write premium and bills hourly storage instead. Checked 2026-08-28."},
- "height":{"step":38},
+```vega-lite Every provider reads at a tenth of base input. They disagree only about what a write costs. | Sources: Anthropic pricing and prompt-caching docs; OpenAI prompt caching (GPT-5.6+); Gemini caching and pricing. Checked 2026-08-28.
+{"title":{"text":"What a cached input token costs, as a multiple of the base rate","subtitle":"Dashed line is uncached input at 1.0x. Google has no write bar: it charges no write premium and bills hourly storage instead. OpenAI models before GPT-5.6 also had no write charge."},
+ "height":{"step":28},
  "data":{"values":[
-   {"kind":"Cache write, 1h TTL","v":2,"d":"2.0x","g":"write"},
-   {"kind":"Cache write, 5m TTL","v":1.25,"d":"1.25x","g":"write"},
-   {"kind":"Uncached input","v":1,"d":"1.0x","g":"base"},
-   {"kind":"Cache read","v":0.1,"d":"0.1x","g":"read"}]},
+   {"tier":"Cache write, 1h TTL","provider":"Anthropic","v":2,"d":"2.0x"},
+   {"tier":"Cache write, short TTL","provider":"Anthropic","v":1.25,"d":"1.25x"},
+   {"tier":"Cache write, short TTL","provider":"OpenAI","v":1.25,"d":"1.25x"},
+   {"tier":"Cache read","provider":"Anthropic","v":0.1,"d":"0.1x"},
+   {"tier":"Cache read","provider":"OpenAI","v":0.1,"d":"0.1x"},
+   {"tier":"Cache read","provider":"Google","v":0.1,"d":"0.1x"}]},
  "encoding":{
-   "y":{"field":"kind","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13,"labelLimit":260}},
+   "y":{"field":"tier","type":"nominal","sort":["Cache write, 1h TTL","Cache write, short TTL","Cache read"],"title":null},
+   "yOffset":{"field":"provider","type":"nominal"},
    "x":{"field":"v","type":"quantitative","title":"multiple of base input rate","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"g","type":"nominal","legend":null,"scale":{"domain":["read","base","write"],"range":["#1baf7a","#2a78d6","#eb6834"]}}}},
+   {"data":{"values":[{"r":1}]},
+    "mark":{"type":"rule","strokeDash":[4,4],"opacity":0.75},
+    "encoding":{"x":{"field":"r","type":"quantitative"},"y":null,"yOffset":null}},
+   {"mark":{"type":"bar","height":22},"encoding":{"color":{"field":"provider","type":"nominal","legend":{"title":null,"orient":"bottom"}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{"text":{"field":"d","type":"nominal"}}}]}
 ```
@@ -114,19 +120,19 @@ The 5.6x isn't the ceiling. Because reads bill at exactly one tenth of base inpu
 
 **Now break it once.** Same session, but you switch models on turn 11. The turn-11 request has 50,000 tokens of history and none of it hits, so it writes 50,000 tokens at $6.25/MTok = **$0.31 for one turn**, against $0.037 for a healthy turn 11. That single keystroke costs 8.5x a normal turn, and the session's input bill rises from $0.88 to $1.16, up 31%.
 
-```vega-lite Caching cuts input cost 5.6x on this workload. One model switch mid-session claws back a third of the saving.
-{"title":{"text":"Input cost for the same 980,000-token modelled session","subtitle":"The model switch happens at turn 11. Arithmetic over published Claude Opus 5 rates ($5 input, $0.50 cache read, $6.25 5-minute cache write per MTok), not a measurement. Token counts are a modelled workload. Output cost excluded."},
- "height":{"step":38},
+```vega-lite Caching cuts input cost 5.6x on this workload. One model switch mid-session claws back a third of the saving. | Source: my arithmetic over Anthropic's published Claude Opus 5 rates, checked 2026-08-28.
+{"title":{"text":"Input cost for the same 980,000-token modelled session","subtitle":"$5 input, $0.50 cache read, $6.25 5-minute cache write per MTok. The model switch happens at turn 11. Modelled token counts, not a measurement. Output cost excluded."},
+ "height":{"step":46},
  "data":{"values":[
    {"case":"No caching","v":4.90,"d":"$4.90"},
    {"case":"Cached, one model switch","v":1.16,"d":"$1.16"},
    {"case":"Cached, prefix intact","v":0.88,"d":"$0.88"}]},
  "encoding":{
-   "y":{"field":"case","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13,"labelLimit":260}},
+   "y":{"field":"case","type":"nominal","sort":"-x","title":null},
    "x":{"field":"v","type":"quantitative","title":"input cost, USD","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"case","type":"nominal","legend":null}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"case","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
     "encoding":{"text":{"field":"d","type":"nominal"}}}]}
 ```
 

@@ -6,7 +6,16 @@ A malformed fence **fails the build with a line/column error**, so a broken
 figure can never ship. Run `npm run diagrams` to check your work.
 
 Text after the language word becomes the caption. Always write one — it states
-what the figure shows, and it is where the source citation goes.
+what the figure shows.
+
+**Put the citation after a `|`.** It renders as a separate, smaller credit line
+under the caption, so the source never competes with the point:
+
+````
+```vega-lite Prefill and decode differ by ~32x on the same box. | Source: llama.cpp DGX Spark benchmark thread, gpt-oss-120b MXFP4.
+````
+
+Every chart must have one. A figure whose numbers cannot be traced does not ship.
 
 ---
 
@@ -133,7 +142,12 @@ background yourself.**
   Sort with `"sort":"-x"`.
 - **One axis, always zero-based for bars.** Never two measures with different
   units on one chart. Two units → two charts.
-- **Put the source in the `subtitle`**, and the interpretation in the caption.
+- **Put the source after the `|` in the caption**, not in the subtitle. Use the
+  subtitle for what the reader needs to read the chart correctly — the machine,
+  the model, the units, "lower is better".
+- **Show the data you have.** If the article cites six comparable numbers, chart
+  six, not two. A two-bar chart of numbers the sentence already states is
+  decoration; the chart earns its place by showing a shape or a spread.
 - If lower-is-better (perplexity), say so in the subtitle — a bar chart implies
   bigger-is-more.
 - 2–7 bars. More is a table.
