@@ -24,7 +24,10 @@ const articles = files
 		const slug = f.replace(/\.md$/, "");
 		const raw = fs.readFileSync(path.join(SRC, f), "utf8");
 		const { data, content } = matter(raw);
-		return { slug, meta: data, body: content, raw };
+		const iso = (v) =>
+			v instanceof Date ? v.toISOString().slice(0, 10) : v ? String(v).slice(0, 10) : undefined;
+		const meta = { ...data, date: iso(data.date), updated: iso(data.updated) };
+		return { slug, meta, body: content, raw };
 	})
 	.filter((a) => !a.meta.draft)
 	.sort((a, b) => String(b.meta.date).localeCompare(String(a.meta.date)));
