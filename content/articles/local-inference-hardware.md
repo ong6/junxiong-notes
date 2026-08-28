@@ -24,6 +24,10 @@ Local inference hardware is decided by two numbers: how much memory you have, an
 
 The shape of that table is the whole argument. A 512GB unified-memory desktop holds a model no consumer GPU can touch, at a third of a 5090's bandwidth. A 5090 will out-generate it on anything that fits in 32GB and simply cannot run anything that doesn't — once llama.cpp starts pushing layers into system RAM, throughput [collapses rather than degrades gracefully](https://bmdpat.com/blog/llama-cpp-n-gpu-layers-explained-2026), because every offloaded layer now reads over a PCIe link instead of GDDR7.
 
+```chart
+{"title":"Memory bandwidth, the number that sets decode speed","unit":"GB/s","note":"Figures as cited in the table above: llm-tracker (Strix Halo), IntuitionLabs (DGX Spark), Apple specs (M5 Max 40-core GPU, M5 Ultra), Trusted Reviews (M3 Ultra), Spheron (RTX 5090). Blue is unified memory, which also buys capacity; the 5090 has 32GB.","series":[{"label":"RTX 5090","value":1792,"slot":1},{"label":"Apple M5 Ultra","value":1200,"slot":0},{"label":"Apple M3 Ultra","value":819,"slot":0},{"label":"Apple M5 Max (40-core)","value":614,"slot":0},{"label":"NVIDIA DGX Spark","value":273,"slot":0},{"label":"Ryzen AI Max+ 395","value":256,"slot":0}]}
+```
+
 Which axis binds you depends entirely on decode versus prefill. Generation speed tracks bandwidth; prompt processing tracks compute. See [/prefill-vs-decode](/prefill-vs-decode) for why. That split is visible in the DGX Spark numbers: on gpt-oss-120b it does ~1,723 tok/s of prompt processing but only ~38.6 tok/s of generation, against ~124 tok/s of generation from 3× RTX 3090 ([IntuitionLabs](https://intuitionlabs.ai/articles/nvidia-dgx-spark-review)). Same box, world-class at one phase, mediocre at the other.
 
 ## The "will it fit" calculation almost everyone gets wrong
@@ -60,9 +64,23 @@ An 8B model can need more memory for its context than a 31B model needs for its 
 
 **The rule that falls out:** budget Q4 weights plus the KV cache at the context length you will actually use, plus ~20% for the OS and cache retention. For most 2026 architectures that lands between 1.5× and 2× the weight size. Do not trust the multiplier — look up your model's KV-per-token and multiply, because hybrid-attention models like Qwen3-Next are 30× cheaper per token than Gemma 4. A config that only just fits the weights cannot use the context window the model card advertises.
 
+```mermaid Three claims on memory, not one. Nearly every sizing table counts only the first.
+flowchart TD
+  A[Q4 weights] --> D[Total resident memory]
+  B[KV cache at real context] --> D
+  C[~20% OS + prompt cache] --> D
+  D --> E{Fits installed memory?}
+  E -->|yes| F[Advertised context is usable]
+  E -->|no| G[Cut context or quantise harder]
+```
+
 ## Runtime choice is worth as much as hardware choice
 
 On Apple Silicon the spread between inference runtimes is larger than the spread between adjacent hardware tiers. Measured on a Mac mini M4 Pro 64GB running Qwen3-Coder-30B-A3B: **MLX ~130 tok/s, Ollama ~43 tok/s** ([yage.ai](https://yage.ai/share/mlx-apple-silicon-en-20260331.html)). On an M4 Max 128GB with Qwen3.5-35B-A3B the same writeup measures MLX 130, raw llama.cpp on the Metal backend 89.4, Ollama 43.5.
+
+```chart
+{"title":"Same machine, same model: runtime is worth a hardware tier","unit":"tok/s","note":"M4 Max 128GB, Qwen3.5-35B-A3B, decode throughput, measured by yage.ai (2026-03-31). Ollama 0.19 later swapped its Metal backend for MLX; re-benchmark before assuming the gap closed.","series":[{"label":"MLX","value":130,"slot":0},{"label":"llama.cpp (Metal)","value":89.4,"slot":1,"display":"89.4"},{"label":"Ollama","value":43.5,"slot":1,"display":"43.5"}]}
+```
 
 Picking the convenient runtime cost you 3× throughput. That is more than the entire generational jump from M4 Max to M5 Ultra on many models. Ollama shipped 0.19 on 2026-03-30 replacing its llama.cpp Metal backend with MLX ([Ollama](https://ollama.com/blog/mlx)), which should close most of that gap — verify on your own model before assuming it has.
 

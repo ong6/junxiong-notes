@@ -27,6 +27,22 @@ Then the org builds a registry. Not because registries are elegant, but because 
 | How do we turn it off? | One revocation point when a credential leaks |
 | What did it touch last Tuesday? | Audit that spans agents, not per-team logs |
 
+```mermaid The same call, hand-rolled per team and routed through a registry plus a broker.
+flowchart LR
+  subgraph hand [Hand-rolled per team]
+    A1[Agent A] -->|pasted token| S1[Internal service]
+    A2[Agent B] -->|pasted token| S1
+    A3[Agent C] -->|pasted token| S1
+  end
+  subgraph reg [Registry and broker]
+    B[Agent] -->|1 list tools| R[Tool registry]
+    R -->|2 schemas| B
+    B -->|3 call tool| K[Auth broker]
+    K -->|4 scoped token| S2[Internal service]
+    K -->|audit, revocation| L[One log, one off switch]
+  end
+```
+
 The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). Ownership lives with the team, discovery is central. An agent tool registry that works has the same split. Ownership decentralised, index centralised.
 
 MCP encodes the same split at the protocol level. A server declares a `tools` capability and answers `tools/list`; a client discovers what exists at connect time rather than at build time. Servers that declare `listChanged` push a `notifications/tools/list_changed` when the set changes, so the catalogue is live rather than a checked-in manifest ([MCP tools spec](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)).
@@ -48,6 +64,23 @@ The public app platforms model the distinction cleanly. Slack's OAuth v2 splits 
 GitHub's installation token also demonstrates the two properties an internal broker needs. It **expires after 1 hour**, and when you mint one you can pass `repositories` and `permissions` to narrow it below what the app was granted ([token generation docs](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app)). Short-lived, and downscoped at mint time rather than at grant time. Copy that.
 
 The mechanism for doing this generically is [RFC 8693 token exchange](https://www.rfc-editor.org/rfc/rfc8693.html). Grant type `urn:ietf:params:oauth:grant-type:token-exchange`, a `subject_token` for the user whose rights are being used, an optional `actor_token` for the thing doing the acting. The RFC's distinction between **impersonation** (the agent becomes indistinguishable from the user) and **delegation** (the agent keeps its own identity, expressed in an `act` claim, while carrying the user's rights) is the design decision, and delegation is the one you want. When the audit trail says "agent X acting for user Y," an incident review takes an afternoon rather than a week. `audience` and `scope` on the exchange request are how you narrow per call.
+
+```mermaid Delegation via RFC 8693 token exchange, narrowed to one audience at mint time.
+sequenceDiagram
+  actor U as User
+  participant A as Agent
+  participant B as Auth broker
+  participant S as Internal service
+  U->>A: asks for something
+  A->>B: exchange, own credential plus user subject token
+  Note over A,B: requests audience = one service, minimal scope
+  B->>B: delegation policy, downscope, short TTL
+  B-->>A: token with act claim, agent acting for user
+  A->>S: call with that token only
+  S->>S: validate audience, scope, expiry
+  S-->>A: result, permission checks unchanged
+  Note over S: audit log names the user, not the platform
+```
 
 ### The confused deputy, made worse
 

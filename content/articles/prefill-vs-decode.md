@@ -16,6 +16,19 @@ Every request to an LLM runs in two phases, and they stress completely different
 
 Same weights, same kernels, and the hardware you'd buy to make each one fast is nearly the opposite.
 
+```mermaid Prefill runs once over the whole prompt; decode loops, re-reading every weight and a KV cache that grows each pass.
+flowchart TD
+  A[Prompt: N tokens] --> B[Prefill: one pass, N-row GEMM]
+  B --> C[First token, TTFT]
+  C --> D[Decode step: 1-row matmul]
+  D --> E[Read all weights + KV cache]
+  E --> F[Emit next token]
+  F --> G[Append to KV cache]
+  G --> D
+  F --> H{Stop token?}
+  H -->|yes| I[Done]
+```
+
 ## The decode arithmetic you can do on a napkin
 
 At batch size 1, decode has to read the whole model out of memory to emit one token. So:
@@ -40,6 +53,10 @@ The ceiling column is mine: `400e9 / 3.83e9 = 104.4`. Check it yourself.
 
 Two things fall out. Real decode lands at roughly 40–60% of the bandwidth ceiling, so the napkin number is an upper bound you should discount, not a prediction. And the Ultra parts, which are two Max dies fused together at twice the paper bandwidth, return only about **40% more decode throughput** than the Max they're built from (1.37x on M1, 1.43x on M2). If you were buying an Ultra for single-stream generation on the strength of the 800GB/s number, that is the number you should be looking at instead.
 
+```chart
+{"title":"Napkin ceiling vs measured decode, Llama-2-7B Q4_0","unit":"tok/s","note":"Ceilings are bandwidth \u00f7 3.83 GB file size (my arithmetic); measured tg128 from the llama.cpp Apple Silicon benchmark thread.","series":[{"label":"Max ceiling (400 GB/s)","value":104,"slot":2},{"label":"M1 Max measured","value":61.19,"slot":0,"display":"61.2"},{"label":"M2 Max measured","value":65.95,"slot":0,"display":"66.0"},{"label":"Ultra ceiling (800 GB/s)","value":209,"slot":2},{"label":"M1 Ultra measured","value":83.73,"slot":1,"display":"83.7"},{"label":"M2 Ultra measured","value":94.27,"slot":1,"display":"94.3"}]}
+```
+
 The same arithmetic explains why [quantization](/quantization-what-it-costs) buys speed and not just VRAM headroom: cutting a model from FP16 to 4-bit cuts bytes-read-per-token by roughly 4×, which moves the decode ceiling by roughly 4×. Decode is bound by the exact quantity quantization shrinks.
 
 ## Why big-FLOPs, small-bandwidth boxes disappoint
@@ -47,6 +64,10 @@ The same arithmetic explains why [quantization](/quantization-what-it-costs) buy
 NVIDIA's DGX Spark is the cleanest illustration currently shipping. NVIDIA [claims](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) 1 petaFLOP of sparse FP4 on the GB10 superchip, with 128 GB of unified LPDDR5X at **273 GB/s**. That is datacenter-class compute bolted to laptop-class memory.
 
 Measured on `gpt-oss-120b` MXFP4 in the [llama.cpp DGX Spark thread](https://github.com/ggml-org/llama.cpp/discussions/16578): **1,956 tok/s prompt processing, 60.57 tok/s generation**. A 32× gap between the two phases on one box, from one set of weights. The petaFLOP shows up in the first number and is entirely absent from the second.
+
+```chart
+{"title":"Same box, same weights: prefill vs decode","unit":"tok/s","note":"DGX Spark, gpt-oss-120b MXFP4, llama.cpp DGX Spark thread. pp2048 against tg32.","series":[{"label":"Prefill (pp2048)","value":1956,"slot":0},{"label":"Decode (tg32)","value":60.57,"slot":1,"display":"60.6"}]}
+```
 
 Apple Silicon has the mirror-image problem. High bandwidth, modest matmul throughput, so a Mac Studio punches above its FLOPs on single-stream decode and falls behind badly on long prompts. Tom's Hardware measured exactly this shape, titling their Mac Studio piece ["M4 Max beats GB10 and Strix Halo in decode throughput, but memory bandwidth isn't everything"](https://www.tomshardware.com/desktops/exploring-apple-silicons-local-ai-performance-with-the-mac-studio-and-m4-max-m4-max-beats-gb10-and-strix-halo-in-decode-throughput-but-memory-bandwidth-isnt-everything). My read: if you paste 40k-token files into a local coding agent, prefill is the wall you'll hit, and it's the wall Apple hardware is worst at. More on the machine-by-machine tradeoffs in [local inference hardware](/local-inference-hardware).
 

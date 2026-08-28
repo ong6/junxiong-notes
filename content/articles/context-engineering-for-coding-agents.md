@@ -68,11 +68,19 @@ The clearest evidence is **NoLiMa** ([arXiv:2502.05167](https://arxiv.org/abs/25
 | Llama 3.3 70B | 128K | 97.3 | 2K | 42.7 |
 | Gemini 1.5 Pro | 2M | 92.6 | 2K | 48.2 |
 | Command R+ | 128K | 90.9 | under 1K | 7.4 |
-| Claude 3.5 Sonnet | 200K | 87.5 | 4K | 29.8 |
+| Claude 3.5 Sonnet | 200K | 87.6 | 4K | 29.8 |
 
 The paper's summary line: "Out of the 13 models, 11 exhibit performance at 32K lengths that is half or less of their base scores." Reasoning does not buy you out of it either. On the hard subset, o1 scores 99.9 at base and 31.1 at 32K.
 
+```chart
+{"title":"NoLiMa score at 32K context","note":"NoLiMa Table 3 (arXiv:2502.05167). Base scores for these five models run 87.6-99.3; every bar here is the same metric at 32K.","series":[{"label":"GPT-4o (base 99.3)","value":69.7,"slot":0},{"label":"Gemini 1.5 Pro (base 92.6)","value":48.2,"slot":0},{"label":"Llama 3.3 70B (base 97.3)","value":42.7,"slot":0},{"label":"Claude 3.5 Sonnet (base 87.6)","value":29.8,"slot":0},{"label":"Command R+ (base 90.9)","value":7.4,"slot":0}]}
+```
+
 **Lost in the Middle** ([arXiv:2307.03172](https://arxiv.org/abs/2307.03172), Liu et al., TACL) is older and more specific: accuracy is highest when the relevant passage sits at the start or the end of the input and sags in between. Their GPT-3.5-Turbo row across 20 documents runs 75.8 at the first position, 53.8 in the middle, 63.2 at the last. The number I keep coming back to is the control: 56.1 with no documents at all. Handing the model twenty documents with the answer buried in the middle scored worse than handing it nothing.
+
+```chart
+{"title":"GPT-3.5-Turbo accuracy by answer position, 20 documents","unit":"%","note":"Lost in the Middle (arXiv:2307.03172, Liu et al., TACL). Slot 1 is the closed-book control: no documents supplied at all.","series":[{"label":"Answer at first position","value":75.8,"slot":0},{"label":"Answer at last position","value":63.2,"slot":0},{"label":"No documents at all","value":56.1,"slot":1},{"label":"Answer in the middle","value":53.8,"slot":0}]}
+```
 
 Chroma's [context rot report](https://www.trychroma.com/research/context-rot) (18 models) adds the finding that matters most operationally: "models do not use their context uniformly; instead, their performance grows increasingly unreliable as input length grows." You do not get a gentle slope you can budget against. The same report found that shuffling the haystack to destroy its logical ordering *improved* scores, which should unsettle anyone who thinks of a long context as a well-organised briefing document. It also splits the failure by family — Claude models "tend to abstain when uncertain," while GPT models show "the highest rates of hallucination, often generating confident but incorrect responses." One of those failures is easy to notice. The other is not.
 
@@ -85,6 +93,20 @@ The practical consequence is blunt. A fresh session with a tight brief beats a 2
 When a harness runs out of room it summarises the history to reclaim space. Two things happen.
 
 First, detail is discarded and you do not choose which. The summary keeps what the summariser thought mattered. Anthropic's own warning is that ["overly aggressive compaction can result in the loss of subtle but critical context whose importance only becomes apparent later"](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents). In practice that means the constraint you gave at turn 3 about never touching the migration files. Their advice follows from it: put durable rules in the instruction file, because conversation history is not storage.
+
+```mermaid How a context window fills over one session
+flowchart TB
+  A[System prompt, instruction files, tool schemas<br/>fixed, cacheable] --> B[Your prompt]
+  B --> C[File reads]
+  C --> D[Command and test output]
+  D --> E[Edits and hook output]
+  E --> F{Room left?}
+  F -->|yes| C
+  F -->|no| G[Compaction: history summarised]
+  G --> H[Detail discarded, chosen for you]
+  G --> I[Conversation cache prefix invalidated]
+  H --> C
+```
 
 Second, the prompt cache. Caching is a strict prefix match, so compaction [invalidates the conversation layer by design](https://code.claude.com/docs/en/prompt-caching#compacting-the-conversation) — the new, shorter history shares no prefix with the old one. One correction to the folk wisdom here: while the cache is still warm, the summarisation call itself reads the old prefix from cache and is cheaper than the context size suggests. It is when you resume a cold session that compaction reprocesses the whole history at full price. The docs are explicit that `/clear` costs nothing by comparison. I go through the prefix-stability mechanics, and how they differ across harnesses, in [prompt caching across harnesses](/prompt-caching-across-harnesses).
 
