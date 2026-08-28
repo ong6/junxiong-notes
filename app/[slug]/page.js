@@ -8,6 +8,7 @@ import {
 	readingTime,
 } from "../../lib/articles";
 import { SITE } from "../../lib/site.mjs";
+import Mermaid from "../mermaid";
 
 export function generateStaticParams() {
 	return articleSlugs().map((slug) => ({ slug }));
@@ -111,6 +112,7 @@ export default async function Article({ params }) {
 				) : null}
 
 				<div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+			<Mermaid />
 
 				<p className="updated">
 					{meta.updated && meta.updated !== meta.date

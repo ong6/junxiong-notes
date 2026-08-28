@@ -16,6 +16,16 @@ A transformer's prefill computes key/value tensors for every input token. Prompt
 
 The consequence is that a cache hit needs an **exact prefix match**, not a similar one, and not a fuzzy one. Change byte 400 of a 200,000-token prompt and tokens 400 through 200,000 are all recomputed at full price. There is no per-file, per-section, or per-document caching underneath. Anthropic's Claude Code docs say it in one sentence: "The match is exact, so a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching" ([code.claude.com](https://code.claude.com/docs/en/prompt-caching)).
 
+```mermaid Matching runs from token 0; the first difference invalidates the rest of the request
+flowchart LR
+  A[Request tokens in order] --> B{Prefix byte-identical to a cached entry?}
+  B -->|Identical through token N| C[Tokens 1 to N read at 0.1x input]
+  B -->|Diverges at token N| D[Tokens N onward recomputed at full price]
+  C --> E[Remaining tokens computed and written to cache]
+  D --> E
+```
+
+
 That is why the ordering advice is not a style preference. Content must be laid out in descending order of stability:
 
 1. System prompt and tool definitions (change on deploy)
@@ -39,6 +49,11 @@ All three major APIs do prefix caching. They disagree about who places the break
 | TTL | 5 min default, 1 hour opt-in | 30 min default on 5.6+; `in_memory` (~5-10 min) or `24h` on earlier | Implicit is opportunistic; explicit caches have a TTL |
 
 Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching), [Gemini caching](https://ai.google.dev/gemini-api/docs/caching), [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing).
+
+```chart
+{"title":"What each kind of input token costs, as a multiple of the base input rate","unit":"x","note":"Published multipliers from the vendor table above (Anthropic pricing; OpenAI prompt caching, GPT-5.6+). Google charges no write premium but bills hourly storage instead. Checked 2026-08-28.","series":[{"label":"Cache write, 1h TTL (Anthropic)","value":2,"slot":2,"display":"2.0"},{"label":"Cache write, 5m TTL","value":1.25,"slot":2,"display":"1.25"},{"label":"Uncached input (base)","value":1,"slot":0,"display":"1.0"},{"label":"Cache read","value":0.1,"slot":1,"display":"0.1"}]}
+```
+
 
 Two differences actually change how you write code.
 
@@ -68,6 +83,11 @@ That's 5.6x on input for a session that ran identical text through the model. Ou
 The 5.6x isn't the ceiling. Because reads bill at exactly one tenth of base input, the asymptote is 10x, approached as the stable prefix grows relative to per-turn additions. A 100-turn session against a 100K-token repo context gets much closer to it than this example does. My read: for coding agents, cache read tokens routinely make up 90%+ of input volume and under 50% of input cost, and that ratio is the single best health metric you have.
 
 **Now break it once.** Same session, but you switch models on turn 11. The turn-11 request has 50,000 tokens of history and none of it hits, so it writes 50,000 tokens at $6.25/MTok = **$0.31 for one turn**, against $0.037 for a healthy turn 11. That single keystroke costs 8.5x a normal turn, and the session's input bill rises from $0.88 to $1.16, up 31%.
+
+```chart
+{"title":"Input cost for the same 980,000-token modelled session","note":"Arithmetic over published Claude Opus 5 rates ($5 input, $0.50 cache read, $6.25 5-minute cache write per MTok), not a measurement. Token counts are a modelled workload. Output cost excluded.","series":[{"label":"No caching","value":4.90,"slot":0,"display":"$4.90"},{"label":"Cached, one model switch at turn 11","value":1.16,"slot":2,"display":"$1.16"},{"label":"Cached, prefix intact","value":0.88,"slot":1,"display":"$0.88"}]}
+```
+
 
 (These are arithmetic on published prices, not measurements from my own logs. The token counts are a modelled workload.)
 

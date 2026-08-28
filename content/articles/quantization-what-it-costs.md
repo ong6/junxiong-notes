@@ -75,6 +75,10 @@ Three numbers get used, and they do not measure the same thing.
 
 Read the bottom row across. Perplexity rises 22%, HellaSwag falls 0.6 points, MMLU falls 4.2, GSM8K falls **9.3**. Multi-step arithmetic degrades roughly fifteen times harder than sentence completion at the same bit width, and no single perplexity number tells you that. The paper also finds schemes with *identical* perplexity diverging on instruction-following, which is the flips phenomenon showing up in a different dataset.
 
+```chart
+{"title":"Same model, same bit width, very different damage","unit":" pts","note":"Accuracy points lost going F16 \u2192 Q3_K_S on Llama-3.1-8B-Instruct. Kurt, January 2026 (arxiv.org/abs/2601.14277). Slot 0 is the multi-step-reasoning task.","series":[{"label":"GSM8K (arithmetic)","value":9.3,"slot":0},{"label":"MMLU (knowledge)","value":4.2,"slot":1},{"label":"HellaSwag (completion)","value":0.6,"slot":1}]}
+```
+
 One honesty note on that table: Q5_K_M scores 78.54 on GSM8K against the F16 baseline's 77.63. Quantization did not make the model better at arithmetic. That is benchmark noise, and it is a useful reminder that sub-point differences in these tables mean nothing.
 
 On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](https://developers.redhat.com/articles/2024/10/17/we-ran-over-half-million-evaluations-quantized-llms) found all schemes recovering over 99% of baseline average on OpenLLM v1, with HumanEval recovery at **99.9% for 8-bit and 98.9% for 4-bit**. Their 4-bit W4A16 results drop more on AIME and GPQA-Diamond than elsewhere, which is the same reasoning-first pattern.
@@ -96,6 +100,10 @@ On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](
 | Dynamic 3-bit | 300 GB | 68.4% |
 | Dynamic 2-bit | 255 GB | 65.8% |
 | Dynamic 1-bit | 206 GB | 55.7% |
+
+```chart
+{"title":"DeepSeek V3.1: Aider Polyglot pass-2 by bit depth","unit":"%","note":"Unsloth dynamic GGUFs, non-reasoning mode (unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot). Slot 0 is the full-precision reference; slot 2 is the tier below the knee.","series":[{"label":"Full precision (671 GB)","value":71.6,"slot":0},{"label":"Dynamic 4-bit (387 GB)","value":69.7,"slot":1},{"label":"Dynamic 3-bit (300 GB)","value":68.4,"slot":1},{"label":"Dynamic 2-bit (255 GB)","value":65.8,"slot":1},{"label":"Dynamic 1-bit (206 GB)","value":55.7,"slot":2}]}
+```
 
 Going 4-bit → 2-bit costs 3.9 points and saves 132 GB. Going 2-bit → 1-bit costs 10.1 points and saves 49 GB. The curve has a knee and it sits just below 2-bit. Unsloth's own [Dynamic 3.0 documentation](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs) says the same thing more bluntly: below their `UD-Q2_K_XL` tier, models degrade badly on tool-calling and agentic use, loop, and return empty responses.
 
@@ -127,6 +135,20 @@ The serving stack decides this more than quality does.
 | MLX on Apple Silicon | MLX 4-bit or 6-bit community builds; mixed-precision variants where published | GGUF, unless you specifically want llama.cpp |
 
 vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing: AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
+
+```mermaid Which format to download, decided by runtime and hardware rather than by quality.
+flowchart TD
+  A[Which serving stack?] --> B[llama.cpp / Ollama / LM Studio]
+  A --> C[vLLM / TGI]
+  A --> D[MLX on Apple Silicon]
+  B --> B1[GGUF UD-Q4_K_XL or Q4_K_M]
+  B1 --> B2[Q5_K_M if memory allows]
+  C --> E{GPU generation?}
+  E -->|Turing| E1[GPTQ]
+  E -->|Ampere| E2[AWQ or W4A16]
+  E -->|Ada / Hopper| E3[FP8 W8A8 for throughput]
+  D --> D1[MLX 4-bit or 6-bit build]
+```
 
 MLX quantizes with group sizes of 64 for 4/6-bit and 32 for 2/3-bit, and the community convention is to keep embeddings and the final projection at higher width than the body — the same sensitivity principle as dynamic GGUF, applied by hand. Apple Silicon's practical constraint is that MLX and GGUF are separate ecosystems, so the model you want may only exist in one of them on any given day.
 
