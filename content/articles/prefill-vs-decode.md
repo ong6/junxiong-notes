@@ -16,17 +16,31 @@ Every request to an LLM runs in two phases, and they stress completely different
 
 Same weights, same kernels, and the hardware you'd buy to make each one fast is nearly the opposite.
 
-```mermaid Prefill runs once over the whole prompt; decode loops, re-reading every weight and a KV cache that grows each pass.
-flowchart TD
-  A[Prompt: N tokens] --> B[Prefill: one pass, N-row GEMM]
-  B --> C[First token, TTFT]
-  C --> D[Decode step: 1-row matmul]
-  D --> E[Read all weights + KV cache]
-  E --> F[Emit next token]
-  F --> G[Append to KV cache]
-  G --> D
-  F --> H{Stop token?}
-  H -->|yes| I[Done]
+```d2 Prefill reads the whole prompt in one compute-bound pass. Decode then loops once per token, and every pass re-reads the entire model out of memory — which is why the two halves want different hardware.
+direction: down
+
+prompt: Prompt\nN tokens {
+  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+}
+
+prefill: PREFILL\ncompute-bound\n\nOne N-row GEMM over every token\nat once. Saturates FLOPs. {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+step: DECODE\nmemory-bandwidth-bound\n\nOne 1-row matmul. One token out. {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+mem: Read EVERY weight\n+ the whole KV cache {
+  style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+prompt -> prefill: all N tokens { style: { stroke: "#6b6459"; font-size: 20 } }
+prefill -> step: first token · TTFT { style: { stroke: "#6b6459"; stroke-width: 2; font-size: 20 } }
+step -> mem: every pass { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+mem -> step: KV cache +1 {
+  style: { stroke: "#eb6834"; stroke-width: 2; stroke-dash: 4; font-size: 20 }
+}
 ```
 
 ## The decode arithmetic you can do on a napkin

@@ -1,0 +1,166 @@
+/**
+ * Pre-renders every ```d2 and ```vega-lite fence to a committed SVG.
+ *
+ * Rendering happens once here rather than inside the markdown pipeline, so
+ * page builds stay synchronous and fast, and so an upstream layout change in
+ * D2 shows up as a reviewable diff instead of silently redrawing the site.
+ * Output is keyed by a hash of the fence body: edit the source, get a new file.
+ */
+import fs from "node:fs";
+import path from "node:path";
+import crypto from "node:crypto";
+import { D2 } from "@terrastruct/d2";
+import * as vega from "vega";
+import { compile } from "vega-lite";
+
+const ROOT = process.cwd();
+const SRC = path.join(ROOT, "content", "articles");
+const OUT = path.join(ROOT, "content", "diagrams");
+fs.mkdirSync(OUT, { recursive: true });
+
+const hash = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 16);
+
+/* ---------- palette, shared with globals.css ---------- */
+const INK = { light: "#14110d", dark: "#ece7de" };
+const MUTED = { light: "#6b6459", dark: "#9d9488" };
+const FAINT = { light: "#d9d2c5", dark: "#3a352f" };
+const SERIES = {
+	light: ["#2a78d6", "#eb6834", "#1baf7a"],
+	dark: ["#3987e5", "#d95926", "#199e70"],
+};
+const SERIES_SOFT = {
+	light: ["#e4edf9", "#fbe8de", "#e0f4ec"],
+	dark: ["#1b2b3f", "#3a2117", "#12302a"],
+};
+const SANS =
+	"ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
+
+/* ---------- D2 ---------- */
+const d2 = new D2();
+
+/**
+ * D2 paints an opaque page background and ships its own webfont. Both fight
+ * the site, so strip them and let the article's surface show through.
+ */
+function cleanD2(svg, id) {
+	let out = svg;
+	// D2 ships its own webfont as base64 and paints an opaque white page rect.
+	// Both fight the article surface, so drop them.
+	out = out.replace(/@font-face\s*{[^}]*}/g, "");
+	out = out.replace(/<rect[^>]*class="[^"]*fill-N7[^"]*"[^>]*stroke-width="0"[^>]*\/>/g, "");
+	// The inner <svg> carries a fixed width/height that pins the diagram to its
+	// layout size; removing them lets the outer viewBox scale it to the column.
+	out = out.replace(/(<svg class="[^"]*d2-svg"[^>]*?)\s+width="\d+"\s+height="\d+"/, "$1");
+	// Three rules ship unscoped and would leak into the rest of the page.
+	for (const rule of ["shape", "connection", "blend"]) {
+		out = out.replace(new RegExp(`(^|[},])\\s*\\.${rule}\\s*{`, "gm"), `$1 .fig-diagram .${rule} {`);
+	}
+	// Force the site's own type onto every label, overriding the stripped webfont.
+	const fontRule = `<style type="text/css"><![CDATA[
+.fig-diagram text, .fig-diagram .text, .fig-diagram .text-bold, .fig-diagram .text-italic {
+  font-family: ${SANS} !important;
+}
+.fig-diagram .text-bold { font-weight: 600; }
+.fig-diagram .text-italic { font-style: italic; font-weight: 400; }
+]]></style>`;
+	out = out.replace("</svg>", `${fontRule}</svg>`);
+	return out;
+}
+
+async function renderD2(src, id) {
+	const r = await d2.compile(src, { layout: "elk", themeID: 0, darkThemeID: 200 });
+	const svg = await d2.render(r.diagram, {
+		...r.renderOptions,
+		themeID: 0,
+		darkThemeID: 200,
+		noXMLTag: true,
+		pad: 8,
+		salt: id,
+	});
+	return cleanD2(svg, id);
+}
+
+/* ---------- Vega-Lite ---------- */
+/**
+ * One config for every chart so they read as a set. Colours are the validated
+ * categorical slots; the light steps fall below 3:1 on this site's surface, so
+ * charts must carry direct labels or a visible axis rather than relying on hue.
+ */
+function vlConfig(mode) {
+	const ink = INK[mode];
+	const muted = MUTED[mode];
+	return {
+		background: null,
+		font: SANS,
+		padding: 4,
+		view: { stroke: null },
+		range: { category: SERIES[mode] },
+		axis: {
+			labelColor: muted, titleColor: muted, domainColor: FAINT[mode],
+			tickColor: FAINT[mode], gridColor: FAINT[mode], gridOpacity: 0.55,
+			labelFontSize: 12, titleFontSize: 12, titleFontWeight: 500, labelFont: SANS,
+			titleFont: SANS, titlePadding: 10,
+		},
+		legend: {
+			labelColor: ink, titleColor: muted, labelFontSize: 12, titleFontSize: 12,
+			labelFont: SANS, titleFont: SANS, symbolType: "square", symbolSize: 90,
+		},
+		title: {
+			color: ink, fontSize: 14, fontWeight: 600, font: SANS,
+			anchor: "start", offset: 12, subtitleColor: muted, subtitleFontSize: 12,
+			subtitleFont: SANS,
+		},
+		text: { color: ink, font: SANS, fontSize: 12 },
+		bar: { cornerRadiusEnd: 3 },
+		point: { size: 70, filled: true },
+		line: { strokeWidth: 2 },
+	};
+}
+
+async function renderVegaLite(spec, mode) {
+	const merged = { width: 620, autosize: { type: "fit", contains: "padding" }, ...spec, config: { ...vlConfig(mode), ...(spec.config ?? {}) } };
+	const vgSpec = compile(merged).spec;
+	const view = new vega.View(vega.parse(vgSpec), { renderer: "none" });
+	return await view.toSVG();
+}
+
+/* ---------- walk ---------- */
+const FENCE = /^```(d2|vega-lite)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
+const seen = new Set();
+let rendered = 0;
+let cached = 0;
+
+for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {
+	const text = fs.readFileSync(path.join(SRC, file), "utf8");
+	for (const m of text.matchAll(FENCE)) {
+		const [, lang, , body] = m;
+		const id = hash(lang + body);
+		if (lang === "d2") {
+			seen.add(`${id}.svg`);
+			if (fs.existsSync(path.join(OUT, `${id}.svg`))) { cached++; continue; }
+			fs.writeFileSync(path.join(OUT, `${id}.svg`), await renderD2(body, id));
+			rendered++;
+		} else {
+			let spec;
+			try { spec = JSON.parse(body); }
+			catch (e) { throw new Error(`Invalid JSON in a vega-lite block in ${file}: ${e.message}`); }
+			for (const mode of ["light", "dark"]) {
+				const name = `${id}.${mode}.svg`;
+				seen.add(name);
+				if (fs.existsSync(path.join(OUT, name))) { cached++; continue; }
+				fs.writeFileSync(path.join(OUT, name), await renderVegaLite(spec, mode));
+				rendered++;
+			}
+		}
+	}
+}
+
+// Drop SVGs whose source fence is gone, so the directory never accumulates orphans.
+let pruned = 0;
+for (const f of fs.readdirSync(OUT).filter((f) => f.endsWith(".svg"))) {
+	if (!seen.has(f)) { fs.unlinkSync(path.join(OUT, f)); pruned++; }
+}
+
+console.log(`diagrams: ${rendered} rendered, ${cached} cached, ${pruned} pruned`);
+// The D2 wasm worker keeps the event loop alive; without this the build hangs.
+process.exit(0);

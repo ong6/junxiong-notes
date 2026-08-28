@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "node scripts/generate-agent-files.mjs",
-    "dev": "node scripts/generate-agent-files.mjs && next dev",
+    "prebuild": "node scripts/render-diagrams.mjs && node scripts/generate-agent-files.mjs",
+    "dev": "node scripts/render-diagrams.mjs && node scripts/generate-agent-files.mjs && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "diagrams": "node scripts/render-diagrams.mjs"
   },
   "dependencies": {
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
-    "mermaid": "^11.17.2",
     "next": "^15.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -25,5 +25,11 @@
     "remark-rehype": "^11.1.2",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@terrastruct/d2": "^0.1.33",
+    "hast-util-from-html-isomorphic": "^2.0.0",
+    "vega": "^6.4.0",
+    "vega-lite": "^6.4.3"
   }
 }
