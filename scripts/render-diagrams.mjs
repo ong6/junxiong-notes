@@ -67,16 +67,22 @@ function cleanD2(svg, id) {
 	return out;
 }
 
+/**
+ * Every figure is displayed at one width, so a narrow diagram gets upscaled more
+ * than a wide one and its labels come out visibly bigger — 23px next to 17px.
+ * Padding a narrow diagram out to the same canvas width equalises the scale
+ * factor, so type reads the same size across every figure on the site.
+ */
+const D2_CANVAS = 1080;
+
 async function renderD2(src, id) {
 	const r = await d2.compile(src, { layout: "elk", themeID: 0, darkThemeID: 200 });
-	const svg = await d2.render(r.diagram, {
-		...r.renderOptions,
-		themeID: 0,
-		darkThemeID: 200,
-		noXMLTag: true,
-		pad: 8,
-		salt: id,
-	});
+	const opts = { ...r.renderOptions, themeID: 0, darkThemeID: 200, noXMLTag: true, salt: id };
+	let svg = await d2.render(r.diagram, { ...opts, pad: 8 });
+	const w = Number(svg.match(/viewBox="0 0 (\d+)/)?.[1] ?? 0);
+	if (w && w < D2_CANVAS) {
+		svg = await d2.render(r.diagram, { ...opts, pad: Math.round((D2_CANVAS - w) / 2) + 8 });
+	}
 	return cleanD2(svg, id);
 }
 
