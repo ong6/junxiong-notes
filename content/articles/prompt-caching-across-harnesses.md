@@ -16,13 +16,50 @@ A transformer's prefill computes key/value tensors for every input token. Prompt
 
 The consequence is that a cache hit needs an **exact prefix match**, not a similar one, and not a fuzzy one. Change byte 400 of a 200,000-token prompt and tokens 400 through 200,000 are all recomputed at full price. There is no per-file, per-section, or per-document caching underneath. Anthropic's Claude Code docs say it in one sentence: "The match is exact, so a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching" ([code.claude.com](https://code.claude.com/docs/en/prompt-caching)).
 
-```mermaid Matching runs from token 0; the first difference invalidates the rest of the request
-flowchart LR
-  A[Request tokens in order] --> B{Prefix byte-identical to a cached entry?}
-  B -->|Identical through token N| C[Tokens 1 to N read at 0.1x input]
-  B -->|Diverges at token N| D[Tokens N onward recomputed at full price]
-  C --> E[Remaining tokens computed and written to cache]
-  D --> E
+```d2 The API matches from token 0. An exact prefix hit is read at 0.1x; an edit anywhere forces everything below it to be recomputed at full price.
+direction: down
+
+hit: CACHE HIT\nprefix byte-identical {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+h1: 1 · System + tools {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+h2: 2 · Project context {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+h3: 3 · Conversation {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+h4: 4 · New turn {
+  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+}
+
+miss: CACHE MISS\none byte edited in layer 2 {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+m1: 1 · System + tools {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+m2: 2 · Project context {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+m3: 3 · Conversation {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+m4: 4 · New turn {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+hit -> h1: match from 0 { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+h1 -> h2: 0.1x { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+h2 -> h3: 0.1x { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+h3 -> h4: write { style: { stroke: "#6b6459"; font-size: 20 } }
+
+miss -> m1: match from 0 { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+m1 -> m2: 0.1x { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+m2 -> m3: full price { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+m3 -> m4: full price { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
 ```
 
 
@@ -50,8 +87,21 @@ All three major APIs do prefix caching. They disagree about who places the break
 
 Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching), [Gemini caching](https://ai.google.dev/gemini-api/docs/caching), [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing).
 
-```chart
-{"title":"What each kind of input token costs, as a multiple of the base input rate","unit":"x","note":"Published multipliers from the vendor table above (Anthropic pricing; OpenAI prompt caching, GPT-5.6+). Google charges no write premium but bills hourly storage instead. Checked 2026-08-28.","series":[{"label":"Cache write, 1h TTL (Anthropic)","value":2,"slot":2,"display":"2.0"},{"label":"Cache write, 5m TTL","value":1.25,"slot":2,"display":"1.25"},{"label":"Uncached input (base)","value":1,"slot":0,"display":"1.0"},{"label":"Cache read","value":0.1,"slot":1,"display":"0.1"}]}
+```vega-lite Reads are a tenth of base input, writes a small premium over it. The whole game is moving token volume from the top two bars to the bottom one.
+{"title":{"text":"What an input token costs, as a multiple of the base rate","subtitle":"Published multipliers; the 1h and 5m write tiers are Anthropic's. Sources: Anthropic pricing; OpenAI prompt caching, GPT-5.6+. Google charges no write premium and bills hourly storage instead. Checked 2026-08-28."},
+ "height":{"step":38},
+ "data":{"values":[
+   {"kind":"Cache write, 1h TTL","v":2,"d":"2.0x","g":"write"},
+   {"kind":"Cache write, 5m TTL","v":1.25,"d":"1.25x","g":"write"},
+   {"kind":"Uncached input","v":1,"d":"1.0x","g":"base"},
+   {"kind":"Cache read","v":0.1,"d":"0.1x","g":"read"}]},
+ "encoding":{
+   "y":{"field":"kind","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13,"labelLimit":260}},
+   "x":{"field":"v","type":"quantitative","title":"multiple of base input rate","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"g","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"d","type":"nominal"}}}]}
 ```
 
 
@@ -84,8 +134,20 @@ The 5.6x isn't the ceiling. Because reads bill at exactly one tenth of base inpu
 
 **Now break it once.** Same session, but you switch models on turn 11. The turn-11 request has 50,000 tokens of history and none of it hits, so it writes 50,000 tokens at $6.25/MTok = **$0.31 for one turn**, against $0.037 for a healthy turn 11. That single keystroke costs 8.5x a normal turn, and the session's input bill rises from $0.88 to $1.16, up 31%.
 
-```chart
-{"title":"Input cost for the same 980,000-token modelled session","note":"Arithmetic over published Claude Opus 5 rates ($5 input, $0.50 cache read, $6.25 5-minute cache write per MTok), not a measurement. Token counts are a modelled workload. Output cost excluded.","series":[{"label":"No caching","value":4.90,"slot":0,"display":"$4.90"},{"label":"Cached, one model switch at turn 11","value":1.16,"slot":2,"display":"$1.16"},{"label":"Cached, prefix intact","value":0.88,"slot":1,"display":"$0.88"}]}
+```vega-lite Caching cuts input cost 5.6x on this workload. One model switch mid-session claws back a third of the saving.
+{"title":{"text":"Input cost for the same 980,000-token modelled session","subtitle":"The model switch happens at turn 11. Arithmetic over published Claude Opus 5 rates ($5 input, $0.50 cache read, $6.25 5-minute cache write per MTok), not a measurement. Token counts are a modelled workload. Output cost excluded."},
+ "height":{"step":38},
+ "data":{"values":[
+   {"case":"No caching","v":4.90,"d":"$4.90"},
+   {"case":"Cached, one model switch","v":1.16,"d":"$1.16"},
+   {"case":"Cached, prefix intact","v":0.88,"d":"$0.88"}]},
+ "encoding":{
+   "y":{"field":"case","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13,"labelLimit":260}},
+   "x":{"field":"v","type":"quantitative","title":"input cost, USD","axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"case","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+    "encoding":{"text":{"field":"d","type":"nominal"}}}]}
 ```
 
 

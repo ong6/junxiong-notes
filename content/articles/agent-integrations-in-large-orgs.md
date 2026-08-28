@@ -27,20 +27,71 @@ Then the org builds a registry. Not because registries are elegant, but because 
 | How do we turn it off? | One revocation point when a credential leaks |
 | What did it touch last Tuesday? | Audit that spans agents, not per-team logs |
 
-```mermaid The same call, hand-rolled per team and routed through a registry plus a broker.
-flowchart LR
-  subgraph hand [Hand-rolled per team]
-    A1[Agent A] -->|pasted token| S1[Internal service]
-    A2[Agent B] -->|pasted token| S1
-    A3[Agent C] -->|pasted token| S1
-  end
-  subgraph reg [Registry and broker]
-    B[Agent] -->|1 list tools| R[Tool registry]
-    R -->|2 schemas| B
-    B -->|3 call tool| K[Auth broker]
-    K -->|4 scoped token| S2[Internal service]
-    K -->|audit, revocation| L[One log, one off switch]
-  end
+```d2 What changes is the number of paths. Above, each agent carries its own credential and reaches the service directly, so there is no place to look and nothing single to switch off. Below, the broker is the only route, which is what makes one audit log and one revocation point possible.
+direction: down
+
+a1: Agent A\nown token {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+a2: Agent B\nown token {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+a3: Agent C\nown token {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+svc1: Internal service {
+  style: { fill: transparent; stroke: "#6b6459"; stroke-width: 1; font-size: 22 }
+}
+
+pain: Three credentials, three logs.\nA leak means hunting every copy. {
+  style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+}
+
+a1 -> svc1 { style: { stroke: "#eb6834"; stroke-width: 2 } }
+a2 -> svc1: pasted credential { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+a3 -> svc1 { style: { stroke: "#eb6834"; stroke-width: 2 } }
+svc1 -> pain { style: { stroke: "#eb6834"; stroke-width: 2 } }
+
+reg: TOOL REGISTRY\none catalogue, live {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+pain -> reg: the change {
+  style: { stroke: "#6b6459"; stroke-width: 2; stroke-dash: 4; font-size: 20 }
+}
+
+b1: Agent A\nno token {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+b2: Agent B\nno token {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+b3: Agent C\nno token {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+}
+
+reg -> b1 { style: { stroke: "#2a78d6"; stroke-width: 2 } }
+reg -> b2: schemas { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
+reg -> b3 { style: { stroke: "#2a78d6"; stroke-width: 2 } }
+
+broker: AUTH BROKER\nthe only path { 
+  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
+}
+
+b1 -> broker { style: { stroke: "#1baf7a"; stroke-width: 2 } }
+b2 -> broker: call tool { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 20 } }
+b3 -> broker { style: { stroke: "#1baf7a"; stroke-width: 2 } }
+
+svc2: Internal service {
+  style: { fill: transparent; stroke: "#6b6459"; stroke-width: 1; font-size: 22 }
+}
+audit: One audit log.\nOne switch to revoke. {
+  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
+}
+
+broker -> svc2: scoped token { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 20 } }
+broker -> audit: every call { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 20 } }
 ```
 
 The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). Ownership lives with the team, discovery is central. An agent tool registry that works has the same split. Ownership decentralised, index centralised.
@@ -65,21 +116,21 @@ GitHub's installation token also demonstrates the two properties an internal bro
 
 The mechanism for doing this generically is [RFC 8693 token exchange](https://www.rfc-editor.org/rfc/rfc8693.html). Grant type `urn:ietf:params:oauth:grant-type:token-exchange`, a `subject_token` for the user whose rights are being used, an optional `actor_token` for the thing doing the acting. The RFC's distinction between **impersonation** (the agent becomes indistinguishable from the user) and **delegation** (the agent keeps its own identity, expressed in an `act` claim, while carrying the user's rights) is the design decision, and delegation is the one you want. When the audit trail says "agent X acting for user Y," an incident review takes an afternoon rather than a week. `audience` and `scope` on the exchange request are how you narrow per call.
 
-```mermaid Delegation via RFC 8693 token exchange, narrowed to one audience at mint time.
-sequenceDiagram
-  actor U as User
-  participant A as Agent
-  participant B as Auth broker
-  participant S as Internal service
-  U->>A: asks for something
-  A->>B: exchange, own credential plus user subject token
-  Note over A,B: requests audience = one service, minimal scope
-  B->>B: delegation policy, downscope, short TTL
-  B-->>A: token with act claim, agent acting for user
-  A->>S: call with that token only
-  S->>S: validate audience, scope, expiry
-  S-->>A: result, permission checks unchanged
-  Note over S: audit log names the user, not the platform
+```d2 Delegation via RFC 8693. The agent presents two things and receives one: a short-lived token whose audience is a single service, carrying an act claim that keeps the agent's own identity alongside the user's rights. The service accepts it only because the audience names the service.
+shape: sequence_diagram
+direction: down
+
+agent: Agent { style: { font-size: 22 } }
+broker: Auth broker { style: { font-size: 22 } }
+svc: Service { style: { font-size: 22 } }
+
+agent -> agent: a user asks\nfor something { style: { font-size: 20 } }
+agent -> broker: own cred +\nuser subject token { style: { font-size: 20 } }
+broker -> broker: downscope\naud = 1 service\nTTL: minutes { style: { font-size: 20 } }
+broker -> agent: token, act claim\nagent for user { style: { font-size: 20 } }
+agent -> svc: that token only { style: { font-size: 20 } }
+svc -> svc: aud is me?\nscope? expiry? { style: { font-size: 20 } }
+svc -> agent: result\nchecks unchanged { style: { font-size: 20 } }
 ```
 
 ### The confused deputy, made worse
