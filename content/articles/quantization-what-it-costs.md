@@ -75,17 +75,24 @@ Three numbers get used, and they do not measure the same thing.
 
 Read the bottom row across. Perplexity rises 22%, HellaSwag falls 0.6 points, MMLU falls 4.2, GSM8K falls **9.3**. Multi-step arithmetic degrades roughly fifteen times harder than sentence completion at the same bit width, and no single perplexity number tells you that. The paper also finds schemes with *identical* perplexity diverging on instruction-following, which is the flips phenomenon showing up in a different dataset.
 
-```vega-lite The same bit width, the same model, three very different amounts of damage. Multi-step arithmetic degrades roughly fifteen times harder than sentence completion.
-{"title":{"text":"Same model, same bit width, very different damage","subtitle":"Accuracy points lost going F16 \u2192 Q3_K_S, Llama-3.1-8B-Instruct. Lower is better. Kurt, January 2026 (arxiv.org/abs/2601.14277)."},
- "height":{"step":38},
- "data":{"values":[{"task":"GSM8K (arithmetic)","v":9.3},{"task":"MMLU (knowledge)","v":4.2},{"task":"HellaSwag (completion)","v":0.6}]},
+```vega-lite Four-bit costs almost nothing on any of the three tasks. One tier lower, arithmetic falls roughly fifteen times harder than sentence completion. | Source: Kurt, January 2026, unified llama.cpp evaluation of Llama-3.1-8B-Instruct (arxiv.org/abs/2601.14277). Deltas are my arithmetic against that paper's F16 row.
+{"title":{"text":"Same model, same bit width, very different damage","subtitle":"Accuracy points lost against F16, Llama-3.1-8B-Instruct. Lower is better."},
+ "height":{"step":46},
+ "data":{"values":[
+   {"label":"GSM8K (arithmetic) · Q3_K_S","v":9.3,"quant":"Q3_K_S"},
+   {"label":"GSM8K (arithmetic) · Q4_K_M","v":0.22,"quant":"Q4_K_M"},
+   {"label":"MMLU (knowledge) · Q3_K_S","v":4.2,"quant":"Q3_K_S"},
+   {"label":"MMLU (knowledge) · Q4_K_M","v":1.07,"quant":"Q4_K_M"},
+   {"label":"HellaSwag (completion) · Q3_K_S","v":0.6,"quant":"Q3_K_S"},
+   {"label":"HellaSwag (completion) · Q4_K_M","v":0.16,"quant":"Q4_K_M"}]},
  "encoding":{
-   "y":{"field":"task","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "y":{"field":"label","type":"nominal","title":null,
+        "sort":["GSM8K (arithmetic) · Q3_K_S","GSM8K (arithmetic) · Q4_K_M","MMLU (knowledge) · Q3_K_S","MMLU (knowledge) · Q4_K_M","HellaSwag (completion) · Q3_K_S","HellaSwag (completion) · Q4_K_M"]},
    "x":{"field":"v","type":"quantitative","title":"accuracy points lost","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"task","type":"nominal","legend":null}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
-    "encoding":{"text":{"field":"v","type":"quantitative","format":".1f"}}}]}
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"quant","type":"nominal","title":null,"scale":{"domain":["Q4_K_M","Q3_K_S"],"range":["#2a78d6","#eb6834"]}}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
+    "encoding":{"text":{"field":"v","type":"quantitative","format":".2~f"}}}]}
 ```
 
 One honesty note on that table: Q5_K_M scores 78.54 on GSM8K against the F16 baseline's 77.63. Quantization did not make the model better at arithmetic. That is benchmark noise, and it is a useful reminder that sub-point differences in these tables mean nothing.
@@ -110,9 +117,9 @@ On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](
 | Dynamic 2-bit | 255 GB | 65.8% |
 | Dynamic 1-bit | 206 GB | 55.7% |
 
-```vega-lite Read down the bars: the fall is gentle to 2-bit, then it drops. The knee sits just below 2-bit, where 49 GB of savings costs 10 points.
-{"title":{"text":"DeepSeek V3.1: Aider Polyglot pass-2 by bit depth","subtitle":"Unsloth dynamic GGUFs, non-reasoning mode. Bars in bit-depth order, not rank order. Source: unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot"},
- "height":{"step":38},
+```vega-lite Read down the bars: the fall is gentle to 2-bit, then it drops. The knee sits just below 2-bit, where 49 GB of savings costs 10 points. | Source: Unsloth, Aider Polyglot runs on DeepSeek V3.1 dynamic GGUFs (unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot).
+{"title":{"text":"DeepSeek V3.1: Aider Polyglot pass-2 by bit depth","subtitle":"Unsloth dynamic GGUFs, non-reasoning mode. Bars in bit-depth order, not rank order."},
+ "height":{"step":46},
  "data":{"values":[
    {"build":"Full precision (671 GB)","v":71.6},
    {"build":"Dynamic 4-bit (387 GB)","v":69.7},
@@ -121,12 +128,11 @@ On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](
    {"build":"Dynamic 1-bit (206 GB)","v":55.7}]},
  "encoding":{
    "y":{"field":"build","type":"nominal","title":null,
-        "sort":["Full precision (671 GB)","Dynamic 4-bit (387 GB)","Dynamic 3-bit (300 GB)","Dynamic 2-bit (255 GB)","Dynamic 1-bit (206 GB)"],
-        "axis":{"labelFontSize":13}},
+        "sort":["Full precision (671 GB)","Dynamic 4-bit (387 GB)","Dynamic 3-bit (300 GB)","Dynamic 2-bit (255 GB)","Dynamic 1-bit (206 GB)"]},
    "x":{"field":"v","type":"quantitative","title":"Aider Polyglot pass-2 (%)","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"build","type":"nominal","legend":null}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"build","type":"nominal","legend":null}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
     "encoding":{"text":{"field":"v","type":"quantitative","format":".1f"}}}]}
 ```
 

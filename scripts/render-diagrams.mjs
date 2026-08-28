@@ -92,36 +92,40 @@ function vlConfig(mode) {
 	return {
 		background: null,
 		font: SANS,
-		padding: 4,
+		padding: 6,
 		view: { stroke: null },
 		range: { category: SERIES[mode] },
 		axis: {
 			labelColor: muted, titleColor: muted, domainColor: FAINT[mode],
 			tickColor: FAINT[mode], gridColor: FAINT[mode], gridOpacity: 0.55,
-			labelFontSize: 13, titleFontSize: 13, titleFontWeight: 500, labelFont: SANS,
-			titleFont: SANS, titlePadding: 10,
+			labelFontSize: 14, titleFontSize: 14, titleFontWeight: 500, labelFont: SANS,
+			titleFont: SANS, titlePadding: 16,
 			// 0 disables truncation. An elided label ("Claude 3.5 Sonnet (base 87…")
 			// is worse than a narrower plot, and autosize gives the labels their room.
 			labelLimit: 0,
 		},
 		legend: {
-			labelColor: ink, titleColor: muted, labelFontSize: 13, titleFontSize: 13,
-			labelFont: SANS, titleFont: SANS, symbolType: "square", symbolSize: 90,
+			labelColor: ink, titleColor: muted, labelFontSize: 13.5, titleFontSize: 13,
+			labelFont: SANS, titleFont: SANS, symbolType: "square", symbolSize: 100,
 			labelLimit: 0,
+			// Anchored bottom-left: the default top-right corner sits inside the plot
+			// and covered the longest bar's value label on every grouped chart.
+			orient: "bottom", direction: "horizontal", columns: 0,
+			offset: 14, labelOffset: 6, symbolStrokeWidth: 0, titlePadding: 0,
 		},
 		title: {
-			color: ink, fontSize: 16, fontWeight: 600, font: SANS,
-			anchor: "start", offset: 14, subtitleColor: muted, subtitleFontSize: 12.5,
+			color: ink, fontSize: 17, fontWeight: 600, font: SANS,
+			anchor: "start", offset: 18, subtitleColor: muted, subtitleFontSize: 13, subtitleLineHeight: 18,
 			subtitleFont: SANS,
 		},
 		// A channel-level axis config beats the shared `axis` block, so labelLimit
 		// has to be repeated here or long y-labels truncate mid-word regardless.
 		// A channel-level axis config beats the shared `axis` block, so this has to
 		// be repeated here or long y-labels truncate regardless of the above.
-		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 13.5, labelColor: ink },
+		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 14, labelColor: ink, labelPadding: 10 },
 		axisX: { labelLimit: 0 },
-		text: { color: ink, font: SANS, fontSize: 13.5 },
-		bar: { cornerRadiusEnd: 3 },
+		text: { color: ink, font: SANS, fontSize: 14 },
+		bar: { cornerRadiusEnd: 3, height: 30 },
 		point: { size: 70, filled: true },
 		line: { strokeWidth: 2 },
 	};

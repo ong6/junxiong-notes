@@ -24,22 +24,23 @@ Local inference hardware is decided by two numbers: how much memory you have, an
 
 The shape of that table is the whole argument. A 512GB unified-memory desktop holds a model no consumer GPU can touch, at a third of a 5090's bandwidth. A 5090 will out-generate it on anything that fits in 32GB and simply cannot run anything that doesn't — once llama.cpp starts pushing layers into system RAM, throughput [collapses rather than degrades gracefully](https://bmdpat.com/blog/llama-cpp-n-gpu-layers-explained-2026), because every offloaded layer now reads over a PCIe link instead of GDDR7.
 
-```vega-lite Bandwidth spans 7x across the consumer range, and the fastest box is the one with the least capacity. Sources: llm-tracker (Strix Halo), IntuitionLabs (DGX Spark), Apple specs (M5 Max 40-core GPU, M5 Ultra), Trusted Reviews (M3 Ultra), Spheron (RTX 5090).
-{"title":{"text":"Memory bandwidth, the number that sets decode speed","subtitle":"Unified memory also buys capacity; the 5090's 1,792 GB/s only reaches 32GB."},
- "height":{"step":38},
+```vega-lite Bandwidth spans 7x across the consumer range, and the fastest box is the one with the least capacity. | Sources: llm-tracker (Strix Halo); IntuitionLabs (DGX Spark); Apple specs (M5 Max 40-core GPU, M5 Ultra); Trusted Reviews (M3 Ultra); Spheron (RTX 4090, RTX 5090).
+{"title":{"text":"Memory bandwidth, the number that sets decode speed","subtitle":"Consumer parts only \u2014 the H100 and B200 in the table sit an order of magnitude above. Unified memory also buys capacity; the 5090's 1,792 GB/s only reaches 32GB."},
+ "height":{"step":46},
  "data":{"values":[
    {"hw":"RTX 5090","v":1792,"kind":"Discrete VRAM"},
    {"hw":"Apple M5 Ultra","v":1200,"kind":"Unified memory"},
+   {"hw":"RTX 4090","v":1008,"kind":"Discrete VRAM"},
    {"hw":"Apple M3 Ultra","v":819,"kind":"Unified memory"},
    {"hw":"Apple M5 Max (40-core)","v":614,"kind":"Unified memory"},
    {"hw":"NVIDIA DGX Spark","v":273,"kind":"Unified memory"},
    {"hw":"Ryzen AI Max+ 395","v":256,"kind":"Unified memory"}]},
  "encoding":{
-   "y":{"field":"hw","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "y":{"field":"hw","type":"nominal","sort":"-x","title":null},
    "x":{"field":"v","type":"quantitative","title":"GB/s","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"kind","type":"nominal","legend":{"title":null,"orient":"bottom"}}}},
-   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"kind","type":"nominal","legend":{"title":null,"orient":"bottom"}}}},
+   {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600},
     "encoding":{"text":{"field":"v","type":"quantitative","format":",.0f"}}}]}
 ```
 
@@ -117,18 +118,21 @@ sum -> no: over budget { style: { stroke: "#eb6834"; stroke-width: 2; font-size:
 
 On Apple Silicon the spread between inference runtimes is larger than the spread between adjacent hardware tiers. Measured on a Mac mini M4 Pro 64GB running Qwen3-Coder-30B-A3B: **MLX ~130 tok/s, Ollama ~43 tok/s** ([yage.ai](https://yage.ai/share/mlx-apple-silicon-en-20260331.html)). On an M4 Max 128GB with Qwen3.5-35B-A3B the same writeup measures MLX 130, raw llama.cpp on the Metal backend 89.4, Ollama 43.5.
 
-```vega-lite One machine, one model, 3x apart — the entire difference is which runtime you installed. Source: yage.ai, 2026-03-31.
-{"title":{"text":"Same machine, same model: runtime is worth a hardware tier","subtitle":"One M4 Max 128GB, Qwen3.5-35B-A3B, decode throughput. Ollama 0.19 later swapped Metal for MLX \u2014 re-benchmark."},
- "height":{"step":38},
+```vega-lite Two Macs, five measurements: the runtime you install moves throughput further than the machine you bought. | Source: yage.ai, MLX on Apple Silicon, 2026-03-31.
+{"title":{"text":"Runtime choice moves decode throughput more than the machine does","subtitle":"Decode tok/s. M4 Max 128GB runs Qwen3.5-35B-A3B; M4 Pro 64GB runs Qwen3-Coder-30B-A3B. llama.cpp was not measured on the M4 Pro. Ollama 0.19 later swapped Metal for MLX \u2014 re-benchmark."},
+ "height":{"step":28},
  "data":{"values":[
-   {"runtime":"MLX","v":130},
-   {"runtime":"llama.cpp (Metal)","v":89.4},
-   {"runtime":"Ollama","v":43.5}]},
+   {"runtime":"MLX","machine":"M4 Max 128GB","v":130},
+   {"runtime":"MLX","machine":"M4 Pro 64GB","v":130},
+   {"runtime":"llama.cpp (Metal)","machine":"M4 Max 128GB","v":89.4},
+   {"runtime":"Ollama","machine":"M4 Max 128GB","v":43.5},
+   {"runtime":"Ollama","machine":"M4 Pro 64GB","v":43}]},
  "encoding":{
-   "y":{"field":"runtime","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13}},
+   "y":{"field":"runtime","type":"nominal","sort":["MLX","llama.cpp (Metal)","Ollama"],"title":null},
+   "yOffset":{"field":"machine","type":"nominal"},
    "x":{"field":"v","type":"quantitative","title":"tokens / sec (decode)","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"runtime","type":"nominal","legend":null}}},
+   {"mark":{"type":"bar","height":22},"encoding":{"color":{"field":"machine","type":"nominal","legend":{"title":null,"orient":"bottom"}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{"text":{"field":"v","type":"quantitative","format":",.4~f"}}}]}
 ```

@@ -140,6 +140,14 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 .fig .fig-svg { overflow-x: auto; }
 .fig svg { max-width: 100%; height: auto; display: block; }
 .fig-diagram svg { margin: 0 auto; }
+.fig figcaption .fig-source {
+	display: block;
+	margin-top: .45rem;
+	font-size: .78rem;
+	color: var(--muted);
+	opacity: .85;
+	letter-spacing: .01em;
+}
 .fig figcaption {
 	font-family: var(--sans); font-size: .84rem; color: var(--muted);
 	line-height: 1.55; margin-top: .8rem; text-align: center;
