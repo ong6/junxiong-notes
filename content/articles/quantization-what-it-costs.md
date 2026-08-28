@@ -167,7 +167,7 @@ The serving stack decides this more than quality does.
 
 vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing: AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
 
-```d2 Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. Source: vLLM quantization compatibility matrix.
+```d2 Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. | Source: vLLM quantization compatibility matrix.
 direction: down
 
 q1: WHICH RUNTIME? {
