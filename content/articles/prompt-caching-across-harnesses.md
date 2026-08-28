@@ -99,7 +99,7 @@ Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pr
    "y":{"field":"kind","type":"nominal","sort":"-x","title":null,"axis":{"labelFontSize":13,"labelLimit":260}},
    "x":{"field":"v","type":"quantitative","title":"multiple of base input rate","axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"g","type":"nominal","legend":null}}},
+   {"mark":{"type":"bar","height":24},"encoding":{"color":{"field":"g","type":"nominal","legend":null,"scale":{"domain":["read","base","write"],"range":["#1baf7a","#2a78d6","#eb6834"]}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{"text":{"field":"d","type":"nominal"}}}]}
 ```
