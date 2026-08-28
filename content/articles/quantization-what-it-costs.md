@@ -174,11 +174,11 @@ q1: WHICH RUNTIME? {
   style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
 }
 
-gguf: GGUF\n\nUD-Q4_K_XL\nor Q4_K_M {
+gguf: GGUF\n\nUD-Q4_K_XL or Q4_K_M\nDynamic bits per layer {
   style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
 }
 
-mlx: MLX\n\n4-bit or 6-bit {
+mlx: MLX\n\n4-bit or 6-bit\nUnified memory, Apple only {
   style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
 }
 
@@ -190,15 +190,15 @@ q1 -> gguf: llama.cpp\nOllama { style: { stroke: "#6b6459"; font-size: 20 } }
 q1 -> q2: vLLM / TGI { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
 q1 -> mlx: Apple Silicon { style: { stroke: "#6b6459"; font-size: 20 } }
 
-turing: Turing\n\nGPTQ only {
+turing: Turing\n\nGPTQ only\nNo AWQ kernels {
   style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
 }
 
-ampere: Ampere\n\nAWQ / W4A16 {
+ampere: Ampere\n\nAWQ / W4A16\nThe common default {
   style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
 }
 
-hopper: Ada+\n\nFP8 W8A8 {
+hopper: Ada+\n\nFP8 W8A8\nNative FP8 tensor cores {
   style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
 }
 

@@ -157,7 +157,7 @@ async function renderVegaLite(spec, mode) {
 			? { ...spec.title, text: wrapTitle(spec.title.text, 88), subtitle: wrapTitle(spec.title.subtitle, 118) }
 			: wrapTitle(spec.title, 88);
 	const merged = {
-		width: 860,
+		width: 900,
 		autosize: { type: "fit", contains: "padding" },
 		...spec,
 		...(title ? { title } : {}),
