@@ -128,7 +128,15 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 }
 
 /* ---------- figures: diagrams and charts ---------- */
-.fig { margin: 2.2rem 0; }
+/* Figures break out wider than the 44rem text measure. Prose wants a short line;
+   a diagram wants room, and scaling one down to the paragraph width is what made
+   the labels unreadable. */
+.fig {
+	margin: 2.4rem 0;
+	width: min(60rem, calc(100vw - 2.5rem));
+	margin-left: 50%;
+	transform: translateX(-50%);
+}
 .fig .fig-svg { overflow-x: auto; }
 .fig svg { max-width: 100%; height: auto; display: block; }
 .fig-diagram svg { margin: 0 auto; }

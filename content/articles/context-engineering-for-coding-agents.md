@@ -123,41 +123,31 @@ When a harness runs out of room it summarises the history to reclaim space. Two 
 
 First, detail is discarded and you do not choose which. The summary keeps what the summariser thought mattered. Anthropic's own warning is that ["overly aggressive compaction can result in the loss of subtle but critical context whose importance only becomes apparent later"](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents). In practice that means the constraint you gave at turn 3 about never touching the migration files. Their advice follows from it: put durable rules in the instruction file, because conversation history is not storage.
 
-```d2 The blue block is written once and read from cache on every turn. The orange loop grows underneath it until compaction fires, which throws away detail you did not choose and takes the cached prefix with it.
-direction: down
+```d2 The blue block is written once and read from cache on every turn. The orange loop grows with every tool call until compaction fires, which throws away detail you did not choose and takes the cached prefix with it.
+direction: right
 
-prefix: FIXED PREFIX\ntool schemas · system prompt\ninstruction file\n\nWritten once. Read from cache. {
-  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
+prefix: FIXED PREFIX\ntool schemas, system\nprompt, instructions\n\nRead from cache. {
+  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 }
 }
 
-turn: Your prompt {
-  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
+grow: THE LOOP\nfile reads, edits,\ntest + hook output\n\nRe-sent every turn. {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
 }
 
-grow: THE LOOP THAT GROWS\nfile reads · test output\nedits · hook output\n\nRe-sent in full every turn. {
-  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+compact: COMPACTION\nwhen window fills {
+  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
 }
 
-full: Window full {
-  style: { fill: transparent; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
+lost: Detail discarded,\nchosen for you {
+  style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
 }
 
-compact: COMPACTION\nhistory summarised {
-  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
-}
-
-lost: Detail discarded —\nchosen for you, not by you {
-  style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
-}
-
-prefix -> turn: every turn { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 20 } }
-turn -> grow { style: { stroke: "#6b6459"; font-size: 20 } }
-grow -> grow: each tool call { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
-grow -> full { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
-full -> compact { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
-compact -> lost { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
+prefix -> grow { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 19 } }
+grow -> grow: each tool call { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
+grow -> compact { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
+compact -> lost { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
 compact -> prefix: cache prefix dies {
-  style: { stroke: "#eb6834"; stroke-width: 2; stroke-dash: 4; font-size: 20 }
+  style: { stroke: "#eb6834"; stroke-width: 2; stroke-dash: 4; font-size: 19 }
 }
 ```
 

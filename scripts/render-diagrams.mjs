@@ -98,29 +98,29 @@ function vlConfig(mode) {
 		axis: {
 			labelColor: muted, titleColor: muted, domainColor: FAINT[mode],
 			tickColor: FAINT[mode], gridColor: FAINT[mode], gridOpacity: 0.55,
-			labelFontSize: 12, titleFontSize: 12, titleFontWeight: 500, labelFont: SANS,
+			labelFontSize: 13, titleFontSize: 13, titleFontWeight: 500, labelFont: SANS,
 			titleFont: SANS, titlePadding: 10,
 			// 0 disables truncation. An elided label ("Claude 3.5 Sonnet (base 87…")
 			// is worse than a narrower plot, and autosize gives the labels their room.
 			labelLimit: 0,
 		},
 		legend: {
-			labelColor: ink, titleColor: muted, labelFontSize: 12, titleFontSize: 12,
+			labelColor: ink, titleColor: muted, labelFontSize: 13, titleFontSize: 13,
 			labelFont: SANS, titleFont: SANS, symbolType: "square", symbolSize: 90,
 			labelLimit: 0,
 		},
 		title: {
-			color: ink, fontSize: 14, fontWeight: 600, font: SANS,
-			anchor: "start", offset: 12, subtitleColor: muted, subtitleFontSize: 12,
+			color: ink, fontSize: 16, fontWeight: 600, font: SANS,
+			anchor: "start", offset: 14, subtitleColor: muted, subtitleFontSize: 12.5,
 			subtitleFont: SANS,
 		},
 		// A channel-level axis config beats the shared `axis` block, so labelLimit
 		// has to be repeated here or long y-labels truncate mid-word regardless.
 		// A channel-level axis config beats the shared `axis` block, so this has to
 		// be repeated here or long y-labels truncate regardless of the above.
-		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 12.5, labelColor: ink },
+		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 13.5, labelColor: ink },
 		axisX: { labelLimit: 0 },
-		text: { color: ink, font: SANS, fontSize: 12 },
+		text: { color: ink, font: SANS, fontSize: 13.5 },
 		bar: { cornerRadiusEnd: 3 },
 		point: { size: 70, filled: true },
 		line: { strokeWidth: 2 },
@@ -150,10 +150,10 @@ function wrapTitle(t, max) {
 async function renderVegaLite(spec, mode) {
 	const title =
 		spec.title && typeof spec.title === "object"
-			? { ...spec.title, text: wrapTitle(spec.title.text, 74), subtitle: wrapTitle(spec.title.subtitle, 86) }
-			: wrapTitle(spec.title, 74);
+			? { ...spec.title, text: wrapTitle(spec.title.text, 88), subtitle: wrapTitle(spec.title.subtitle, 118) }
+			: wrapTitle(spec.title, 88);
 	const merged = {
-		width: 620,
+		width: 860,
 		autosize: { type: "fit", contains: "padding" },
 		...spec,
 		...(title ? { title } : {}),

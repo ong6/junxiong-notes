@@ -39,22 +39,47 @@ prefill -> step: first token · TTFT { style: { stroke: "#6b6459"; stroke-width:
 ```
 ````
 
-### Rules learned the hard way — follow them exactly
+### Sizing — the rule that matters most
 
-- **`direction: down` by default.** The article column is ~700px. A wide
-  left-to-right diagram renders at 1500px and scales down to 45%, making the
-  text unreadable. Aim for a rendered `viewBox` **width under ~620**. Check it:
-  `npm run diagrams && grep -o 'viewBox="0 0 [^"]*"' content/diagrams/*.svg`
-- **`font-size: 22` on every node, `20` on every edge label.** Smaller
-  disappears once the SVG is scaled to the column.
+Figures break out of the text column into a **960px slot**. A diagram wider than
+that is scaled down, and scaling is what makes labels unreadable.
+
+**Target: 900–1150 wide, under 800 tall.** At 1150 the text still lands at ~17px;
+at 400 wide and 1300 tall you get a thin ribbon that scrolls forever. Both are
+failures, and the second is the more common one.
+
+Check every diagram before you hand it back:
+
+```
+npm run diagrams
+grep -o 'viewBox="0 0 [0-9]* [0-9]*"' content/diagrams/*.svg
+```
+
+**How to hit the target:**
+
+- **`direction: right` is the default.** Vertical stacking is what produces
+  1300px-tall ribbons.
+- **Collapse loops into a self-edge.** `decode -> decode: every pass re-reads…`
+  removes a whole node and a rank. This single change took one diagram from
+  399x1016 to 1030x254.
+- **Node labels: at most 4 short lines.** In a horizontal layout the longest
+  line sets the node width, and three verbose nodes hit 1900px.
+- **Too wide?** Shorten labels, or drop a node. Do not switch to vertical — you
+  will trade a readable wide diagram for an unreadable tall one.
+- **Two-panel comparison?** Stack the panels with `direction: down` at the top
+  level and give each container `direction: right`.
+
+### Other rules learned the hard way
+
+- **`font-size: 21` on nodes, `19` on edge labels.** Smaller disappears once the
+  SVG is scaled.
 - **Never use `|md` blocks.** They collapse multiline text to one line and drop
-  the node's box. Use `\n` inside a plain label instead.
-- **Avoid nested containers.** Nesting makes edges route through parent boxes
-  and produces overlapping labels. Prefer flat nodes with clear edges.
-- **Keep edge labels to 1–3 words.** Two labels on parallel edges collide;
-  `every pass` and `KV cache +1` work, longer ones overlap.
-- **Never set a `font-family`,** and never add `sketch: true`. The site themes
-  the diagram and forces its own type.
+  the node's box. Use `\n` in a plain label.
+- **Avoid deep nesting.** One level of container for a labelled panel is fine;
+  nesting beyond that routes edges through parent boxes.
+- **Keep edge labels to 1–3 words** unless the edge is the point. Parallel edges
+  with long labels collide.
+- **Never set a `font-family`,** and never add `sketch: true`.
 
 ### Palette — use these hexes only
 
