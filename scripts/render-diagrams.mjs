@@ -70,20 +70,32 @@ function cleanD2(svg, id) {
 /**
  * Every figure is displayed at one width, so a narrow diagram gets upscaled more
  * than a wide one and its labels come out visibly bigger — 23px next to 17px.
- * Padding a narrow diagram out to the same canvas width equalises the scale
- * factor, so type reads the same size across every figure on the site.
+ * Widening the viewBox horizontally (and only horizontally) equalises the scale
+ * factor without adding the dead vertical space a uniform pad would.
  */
 const D2_CANVAS = 1080;
 
+function normaliseWidth(svg) {
+	const m = svg.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/);
+	if (!m) return svg;
+	const w = Number(m[1]);
+	if (w >= D2_CANVAS) return svg;
+	const dx = (D2_CANVAS - w) / 2;
+	// Shift the origin left by half the gap so the drawing stays centred.
+	return svg.replace(m[0], `viewBox="${-dx} 0 ${D2_CANVAS} ${m[2]}"`);
+}
+
 async function renderD2(src, id) {
 	const r = await d2.compile(src, { layout: "elk", themeID: 0, darkThemeID: 200 });
-	const opts = { ...r.renderOptions, themeID: 0, darkThemeID: 200, noXMLTag: true, salt: id };
-	let svg = await d2.render(r.diagram, { ...opts, pad: 8 });
-	const w = Number(svg.match(/viewBox="0 0 (\d+)/)?.[1] ?? 0);
-	if (w && w < D2_CANVAS) {
-		svg = await d2.render(r.diagram, { ...opts, pad: Math.round((D2_CANVAS - w) / 2) + 8 });
-	}
-	return cleanD2(svg, id);
+	const svg = await d2.render(r.diagram, {
+		...r.renderOptions,
+		themeID: 0,
+		darkThemeID: 200,
+		noXMLTag: true,
+		pad: 8,
+		salt: id,
+	});
+	return normaliseWidth(cleanD2(svg, id));
 }
 
 /* ---------- Vega-Lite ---------- */
