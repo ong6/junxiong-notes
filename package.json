@@ -27,7 +27,10 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
     "@terrastruct/d2": "^0.1.33",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.4",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3"
