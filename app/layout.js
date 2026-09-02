@@ -1,5 +1,5 @@
+import Link from "next/link";
 import "./globals.css";
-import "highlight.js/styles/github.css";
 import { SITE } from "../lib/site.mjs";
 
 export const metadata = {
@@ -8,7 +8,6 @@ export const metadata = {
 	description: SITE.description,
 	authors: [{ name: SITE.author, url: SITE.authorUrl }],
 	alternates: {
-		canonical: "/",
 		types: { "application/rss+xml": `${SITE.url}/feed.xml` },
 	},
 	openGraph: {
@@ -42,7 +41,6 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<head>
-				<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
 				<script
 					type="application/ld+json"
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -52,12 +50,12 @@ export default function RootLayout({ children }) {
 				<div className="wrap">
 					<header className="masthead">
 						<h1>
-							<a href="/">{SITE.title}</a>
+							<Link href="/">{SITE.title}</Link>
 						</h1>
 						<p>{SITE.tagline}</p>
 						<nav>
-							<a href="/">Articles</a>
-							<a href="/about">About</a>
+							<Link href="/">Articles</Link>
+							<Link href="/about">About</Link>
 							<a href="/feed.xml">RSS</a>
 							<a href="/llms.txt">llms.txt</a>
 							<a href={SITE.authorUrl}>junxiong.dev</a>

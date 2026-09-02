@@ -3,6 +3,11 @@ import { SITE } from "../../lib/site.mjs";
 
 export const dynamic = "force-static";
 
+const rfc822 = (d) => {
+	const t = Date.parse(`${d}T00:00:00Z`);
+	return Number.isNaN(t) ? "" : new Date(t).toUTCString();
+};
+
 const esc = (s = "") =>
 	String(s)
 		.replace(/&/g, "&amp;")
@@ -20,8 +25,7 @@ export function GET() {
 			<link>${SITE.url}/${p.slug}</link>
 			<guid isPermaLink="true">${SITE.url}/${p.slug}</guid>
 			<description>${esc(p.description)}</description>
-			<pubDate>${new Date(`${p.date}T00:00:00Z`).toUTCString()}</pubDate>
-${(p.tags ?? []).map((t) => `			<category>${esc(t)}</category>`).join("\n")}
+${rfc822(p.date) ? `			<pubDate>${rfc822(p.date)}</pubDate>\n` : ""}${(p.tags ?? []).map((t) => `			<category>${esc(t)}</category>`).join("\n")}
 		</item>`,
 		)
 		.join("\n");
@@ -34,7 +38,7 @@ ${(p.tags ?? []).map((t) => `			<category>${esc(t)}</category>`).join("\n")}
 		<description>${esc(SITE.description)}</description>
 		<language>en</language>
 		<atom:link href="${SITE.url}/feed.xml" rel="self" type="application/rss+xml" />
-${updated ? `		<lastBuildDate>${new Date(`${updated}T00:00:00Z`).toUTCString()}</lastBuildDate>` : ""}
+${rfc822(updated) ? `		<lastBuildDate>${rfc822(updated)}</lastBuildDate>` : ""}
 ${items}
 	</channel>
 </rss>
