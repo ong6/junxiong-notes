@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { notFound } from "next/navigation";
 import { articleSlugs, readArticle } from "../../lib/articles";
 import { SITE } from "../../lib/site.mjs";
 
@@ -17,6 +18,7 @@ export function generateStaticParams() {
  */
 export default async function Image({ params }) {
 	const { slug } = await params;
+	if (!articleSlugs().includes(slug)) notFound();
 	const { meta } = readArticle(slug);
 	const title = meta.title ?? SITE.title;
 	// Long titles need to step down or they overflow the card.

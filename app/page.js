@@ -2,11 +2,12 @@ import { allArticles } from "../lib/articles";
 import { SITE } from "../lib/site.mjs";
 
 export const metadata = {
-	title: SITE.title,
+	title: { absolute: SITE.title },
 	alternates: { canonical: "/" },
 };
 
 function fmt(d) {
+	if (!d || Number.isNaN(Date.parse(`${d}T00:00:00Z`))) return "";
 	return new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", {
 		day: "numeric",
 		month: "short",

@@ -203,7 +203,8 @@ const seen = new Set();
 let rendered = 0;
 let cached = 0;
 
-for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {
+const files = fs.existsSync(SRC) ? fs.readdirSync(SRC) : [];
+for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {
 	const text = fs.readFileSync(path.join(SRC, file), "utf8");
 	for (const m of text.matchAll(FENCE)) {
 		const [, lang, , body] = m;

@@ -42,6 +42,7 @@ export async function generateMetadata({ params }) {
 }
 
 function fmt(d) {
+	if (!d || Number.isNaN(Date.parse(`${d}T00:00:00Z`))) return "";
 	return new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", {
 		day: "numeric",
 		month: "long",
@@ -113,9 +114,11 @@ export default async function Article({ params }) {
 				<div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
 
 				<p className="updated">
-					{meta.updated && meta.updated !== meta.date
-						? `Published ${fmt(meta.date)}, last revised ${fmt(meta.updated)}.`
-						: `Published ${fmt(meta.date)}.`}{" "}
+					{!fmt(meta.date)
+						? ""
+						: meta.updated && meta.updated !== meta.date
+							? `Published ${fmt(meta.date)}, last revised ${fmt(meta.updated)}.`
+							: `Published ${fmt(meta.date)}.`}{" "}
 					Revised in place rather than reposted — the date above is the one that matters.
 				</p>
 			</article>
