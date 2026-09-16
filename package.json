@@ -33,7 +33,7 @@
     "eslint-config-next": "^15.5.4",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "tsx": "^4.23.13",
-    "uipack": "github:ong6/uipack#90b2eb7",
+    "uipack": "github:ong6/uipack#268b31d",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3"
   }
