@@ -167,44 +167,8 @@ The serving stack decides this more than quality does.
 
 vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing: AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
 
-```d2 Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. | Source: vLLM quantization compatibility matrix.
-direction: down
-
-q1: WHICH RUNTIME? {
-  style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 22 }
-}
-
-gguf: GGUF\n\nUD-Q4_K_XL or Q4_K_M\nDynamic bits per layer {
-  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
-}
-
-mlx: MLX\n\n4-bit or 6-bit\nUnified memory, Apple only {
-  style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 22 }
-}
-
-q2: WHICH GPU\nGENERATION? {
-  style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 22 }
-}
-
-q1 -> gguf: llama.cpp\nOllama { style: { stroke: "#6b6459"; font-size: 20 } }
-q1 -> q2: vLLM / TGI { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 20 } }
-q1 -> mlx: Apple Silicon { style: { stroke: "#6b6459"; font-size: 20 } }
-
-turing: Turing\n\nGPTQ only\nNo AWQ kernels {
-  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
-}
-
-ampere: Ampere\n\nAWQ / W4A16\nThe common default {
-  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
-}
-
-hopper: Ada+\n\nFP8 W8A8\nNative FP8 tensor cores {
-  style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 22 }
-}
-
-q2 -> turing { style: { stroke: "#eb6834"; stroke-width: 2 } }
-q2 -> ampere { style: { stroke: "#eb6834"; stroke-width: 2 } }
-q2 -> hopper { style: { stroke: "#eb6834"; stroke-width: 2 } }
+```uipack Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. | Source: vLLM quantization compatibility matrix.
+quant-decision
 ```
 
 MLX quantizes with group sizes of 64 for 4/6-bit and 32 for 2/3-bit, and the community convention is to keep embeddings and the final projection at higher width than the body — the same sensitivity principle as dynamic GGUF, applied by hand. Apple Silicon's practical constraint is that MLX and GGUF are separate ecosystems, so the model you want may only exist in one of them on any given day.

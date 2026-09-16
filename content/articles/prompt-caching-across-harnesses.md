@@ -16,30 +16,8 @@ A transformer's prefill computes key/value tensors for every input token. Prompt
 
 The consequence is that a cache hit needs an **exact prefix match**, not a similar one, and not a fuzzy one. Change byte 400 of a 200,000-token prompt and tokens 400 through 200,000 are all recomputed at full price. There is no per-file, per-section, or per-document caching underneath. Anthropic's Claude Code docs say it in one sentence: "The match is exact, so a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching" ([code.claude.com](https://code.claude.com/docs/en/prompt-caching)).
 
-```d2 The API matches from token 0. An exact prefix hit is read at 0.1x; an edit anywhere forces everything below it to be recomputed at full price.
-direction: right
-
-hit: CACHE HIT · prefix byte-identical {
-  style: { fill: transparent; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 }
-  h1: 1 · System\n0.1x { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  h2: 2 · Context\n0.1x { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  h3: 3 · History\n0.1x { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  h4: 4 · New turn\nwrite { style: { stroke: "#6b6459"; fill: transparent; stroke-width: 1; font-size: 21 } }
-  h1 -> h2 { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 19 } }
-  h2 -> h3 { style: { stroke: "#2a78d6"; stroke-width: 2; font-size: 19 } }
-  h3 -> h4 { style: { stroke: "#6b6459"; font-size: 19 } }
-}
-
-miss: CACHE MISS · one byte edited in layer 2 {
-  style: { fill: transparent; stroke: "#eb6834"; stroke-width: 2; font-size: 21 }
-  m1: 1 · System\n0.1x { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  m2: 2 · Context\nfull price { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  m3: 3 · History\nfull price { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  m4: 4 · New turn\nfull price { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  m1 -> m2 { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
-  m2 -> m3 { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
-  m3 -> m4 { style: { stroke: "#eb6834"; stroke-width: 2; font-size: 19 } }
-}
+```uipack The API matches from token 0. An exact prefix hit is read at 0.1x; an edit anywhere forces everything below it to be recomputed at full price.
+cache-hit-miss
 ```
 
 

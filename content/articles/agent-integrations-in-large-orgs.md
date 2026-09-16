@@ -27,38 +27,8 @@ Then the org builds a registry. Not because registries are elegant, but because 
 | How do we turn it off? | One revocation point when a credential leaks |
 | What did it touch last Tuesday? | Audit that spans agents, not per-team logs |
 
-```d2 What changes is the number of paths. Above, each agent carries its own credential and reaches the service directly, so there is nowhere to look and nothing single to switch off. Below, the broker is the only route, which is what makes one audit log and one revocation point possible.
-direction: down
-
-before: WITHOUT A BROKER {
-  style: { fill: transparent; stroke: "#eb6834"; stroke-width: 2; font-size: 24 }
-  direction: right
-  a1: Agent A\nown token { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  a2: Agent B\nown token { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  a3: Agent C\nown token { style: { fill: "#fbe8de"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  svc: Internal service { style: { fill: transparent; stroke: "#6b6459"; stroke-width: 1; font-size: 21 } }
-  out: 3 credentials, 3 logs.\nA leak means hunting\nevery copy. { style: { fill: "#fffdf9"; stroke: "#eb6834"; stroke-width: 2; font-size: 21 } }
-  a1 -> svc { style: { stroke: "#eb6834"; stroke-width: 2 } }
-  a2 -> svc { style: { stroke: "#eb6834"; stroke-width: 2 } }
-  a3 -> svc { style: { stroke: "#eb6834"; stroke-width: 2 } }
-  svc -> out { style: { stroke: "#eb6834"; stroke-width: 2 } }
-}
-
-after: WITH A BROKER {
-  style: { fill: transparent; stroke: "#1baf7a"; stroke-width: 2; font-size: 24 }
-  direction: right
-  b1: Agent A\nno token { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  b2: Agent B\nno token { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  b3: Agent C\nno token { style: { fill: "#e4edf9"; stroke: "#2a78d6"; stroke-width: 2; font-size: 21 } }
-  broker: AUTH BROKER\nthe only path { style: { fill: "#e0f4ec"; stroke: "#1baf7a"; stroke-width: 2; font-size: 21 } }
-  svc: Internal service { style: { fill: transparent; stroke: "#6b6459"; stroke-width: 1; font-size: 21 } }
-  out: 1 audit log.\n1 switch to revoke. { style: { fill: "#fffdf9"; stroke: "#1baf7a"; stroke-width: 2; font-size: 21 } }
-  b1 -> broker { style: { stroke: "#2a78d6"; stroke-width: 2 } }
-  b2 -> broker { style: { stroke: "#2a78d6"; stroke-width: 2 } }
-  b3 -> broker { style: { stroke: "#2a78d6"; stroke-width: 2 } }
-  broker -> svc: scoped token { style: { stroke: "#1baf7a"; stroke-width: 2; font-size: 19 } }
-  svc -> out { style: { stroke: "#1baf7a"; stroke-width: 2 } }
-}
+```uipack What changes is the number of paths. Above, each agent carries its own credential and reaches the service directly, so there is nowhere to look and nothing single to switch off. Below, the broker is the only route, which is what makes one audit log and one revocation point possible.
+broker-paths
 ```
 
 The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). Ownership lives with the team, discovery is central. An agent tool registry that works has the same split. Ownership decentralised, index centralised.
@@ -83,18 +53,8 @@ GitHub's installation token also demonstrates the two properties an internal bro
 
 The mechanism for doing this generically is [RFC 8693 token exchange](https://www.rfc-editor.org/rfc/rfc8693.html). Grant type `urn:ietf:params:oauth:grant-type:token-exchange`, a `subject_token` for the user whose rights are being used, an optional `actor_token` for the thing doing the acting. The RFC's distinction between **impersonation** (the agent becomes indistinguishable from the user) and **delegation** (the agent keeps its own identity, expressed in an `act` claim, while carrying the user's rights) is the design decision, and delegation is the one you want. When the audit trail says "agent X acting for user Y," an incident review takes an afternoon rather than a week. `audience` and `scope` on the exchange request are how you narrow per call.
 
-```d2 Delegation via RFC 8693. The agent presents two things and receives one: a short-lived token whose audience is a single service, carrying an act claim that keeps the agent's own identity alongside the user's rights. The service accepts it only because the audience names the service.
-shape: sequence_diagram
-
-agent: Agent { style: { font-size: 21 } }
-broker: Auth broker { style: { font-size: 21 } }
-svc: Internal service { style: { font-size: 21 } }
-
-agent -> broker: own credential + user's subject token { style: { font-size: 19 } }
-broker -> broker: downscope: audience = this one service\nTTL in minutes { style: { font-size: 19 } }
-broker -> agent: short-lived token\nact claim: agent for user { style: { font-size: 19 } }
-agent -> svc: that token, nothing else { style: { font-size: 19 } }
-svc -> svc: audience is me? scope? not expired? { style: { font-size: 19 } }
+```uipack Delegation via RFC 8693. The agent presents two things and receives one: a short-lived token whose audience is a single service, carrying an act claim that keeps the agent's own identity alongside the user's rights. The service accepts it only because the audience names the service.
+token-exchange
 ```
 
 ### The confused deputy, made worse
