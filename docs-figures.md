@@ -19,7 +19,40 @@ Every chart must have one. A figure whose numbers cannot be traced does not ship
 
 ---
 
-## 1. ```d2 — structural diagrams
+## 1. ```uipack — structural diagrams
+
+Structural diagrams are drawn with [`ong6/uipack`](https://github.com/ong6/uipack), the same
+parts as junxiong.dev: nodes, groups, lanes, orthogonal connectors and packets that move along
+them. The fence body names a module under `content/figures/`; the caption rule above still
+applies.
+
+````
+```uipack The API matches from token 0. An exact prefix hit is read at 0.1x; an edit forces a recompute.
+cache-hit-miss
+```
+````
+
+`content/figures/cache-hit-miss.tsx` exports a figure with `define({ alt, viewBox, children })`
+from `./_shared`, drawn with uipack parts on an 8px grid. `npm run diagrams` renders it through
+`uipack/static` into `content/diagrams/<hash>.{light,dark}.svg` with the site palette from
+`_shared.tsx` inlined, motion on, no frame and no painted canvas, so the article surface shows
+through and the figcaption stays the caption. Start each file with the pragma line
+`/* @jsxRuntime automatic @jsxImportSource react */` (the package is CommonJS, tsx needs it).
+
+Rules that carry over from the D2 days, now enforced by the render script: **viewBox 900–1150
+wide and under 800 tall**, or the build fails. Labels 14px, subs 11px mono, so nothing shrinks
+below the chart type once the figure scales into the 960px slot. Colour means something: `kind`
+on a connector and its packet is `request` (blue), `change` (orange), `response` (green); `accent`
+on a node is the green emphasis; `dashed` is a loss or a note. Never two arrowheads on one line;
+a return is a `Packet reverse`. One `Defs id` per figure, unique across the page. Write the `alt`
+as the sentence a screen reader gets; it is the whole figure in words.
+
+Motion: every packet is SMIL, so the figure animates inline with no JavaScript. Keep two to four
+packets per flow; a figure that moves everywhere says nothing.
+
+## 1b. ```d2 — legacy structural diagrams
+
+Still rendered if a fence exists; no article uses one any more. Prefer `uipack`.
 
 D2, laid out with ELK. **Draw the mechanism, not its name.** A box labelled
 "cache" says less than the prose; the path a request takes through it, and the
