@@ -171,12 +171,12 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 
 /* Vega renders once per theme. Show the one that matches, and let an explicit
    theme choice beat the OS setting in both directions. */
-.fig-chart .fig-dark { display: none; }
+.fig-themed .fig-dark { display: none; }
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) .fig-chart .fig-light { display: none; }
-	:root:not([data-theme="light"]) .fig-chart .fig-dark { display: block; }
+	:root:not([data-theme="light"]) .fig-themed .fig-light { display: none; }
+	:root:not([data-theme="light"]) .fig-themed .fig-dark { display: block; }
 }
-:root[data-theme="dark"] .fig-chart .fig-light { display: none; }
-:root[data-theme="dark"] .fig-chart .fig-dark { display: block; }
-:root[data-theme="light"] .fig-chart .fig-light { display: block; }
-:root[data-theme="light"] .fig-chart .fig-dark { display: none; }
+:root[data-theme="dark"] .fig-themed .fig-light { display: none; }
+:root[data-theme="dark"] .fig-themed .fig-dark { display: block; }
+:root[data-theme="light"] .fig-themed .fig-light { display: block; }
+:root[data-theme="light"] .fig-themed .fig-dark { display: none; }

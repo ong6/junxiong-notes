@@ -12,6 +12,7 @@ import crypto from "node:crypto";
 import { D2 } from "@terrastruct/d2";
 import * as vega from "vega";
 import { compile } from "vega-lite";
+import { execFileSync } from "node:child_process";
 
 const ROOT = process.cwd();
 const SRC = path.join(ROOT, "content", "articles");
@@ -198,7 +199,8 @@ async function renderVegaLite(spec, mode) {
 }
 
 /* ---------- walk ---------- */
-const FENCE = /^```(d2|vega-lite)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
+const FENCE = /^```(d2|vega-lite|uipack)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
+const figureJobs = [];
 const seen = new Set();
 let rendered = 0;
 let cached = 0;
@@ -209,6 +211,17 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 	for (const m of text.matchAll(FENCE)) {
 		const [, lang, , body] = m;
 		const id = hash(lang + body);
+		if (lang === "uipack") {
+			// The body names a module under content/figures/; both themes are
+			// rendered by scripts/render-figures.tsx (uipack/static) after the walk.
+			// Always rendered: the fence body is only a module name, so the hash
+			// cannot see an edit inside content/figures/. Rendering is deterministic
+			// and fast, so a stale file never ships.
+			const name = body.trim();
+			for (const mode of ["light", "dark"]) seen.add(`${id}.${mode}.svg`);
+			figureJobs.push({ id, name });
+			continue;
+		}
 		if (lang === "d2") {
 			seen.add(`${id}.svg`);
 			if (fs.existsSync(path.join(OUT, `${id}.svg`))) { cached++; continue; }
@@ -227,6 +240,11 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 			}
 		}
 	}
+}
+
+if (figureJobs.length) {
+	execFileSync("npx", ["tsx", "scripts/render-figures.tsx", JSON.stringify(figureJobs)], { stdio: "inherit", cwd: ROOT });
+	rendered += figureJobs.length * 2;
 }
 
 // Drop SVGs whose source fence is gone, so the directory never accumulates orphans.
