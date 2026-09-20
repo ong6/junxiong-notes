@@ -3,7 +3,7 @@
 // module under content/figures/, `id` the fence hash the article resolves.
 // Light and dark files are written like the charts, and the article surface
 // shows through (no painted canvas), so a figure sits in the column like text.
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { renderStatic } from "uipack/static";
@@ -26,6 +26,16 @@ for (const { id, name } of jobs) {
     const svg = renderStatic(fig, { theme: THEMES[mode], motion: true, frame: false, background: false });
     writeFileSync(path.join(OUT, `${id}.${mode}.svg`), svg);
     rendered++;
+    const mobileFile = path.join(OUT, `${id}.mobile.${mode}.svg`);
+    if (fig.mobile) {
+      const [, , mw, mh] = fig.mobile.viewBox.split(/\s+/).map(Number);
+      if (mw < 320 || mw > 600 || mh > 900) throw new Error(`${name}: mobile viewBox ${mw}x${mh} is outside the 320–600 wide, under 900 tall target`);
+      const mobileSvg = renderStatic(fig.mobile, { theme: THEMES[mode], motion: true, frame: false, background: false });
+      writeFileSync(mobileFile, mobileSvg);
+      rendered++;
+    } else if (existsSync(mobileFile)) {
+      unlinkSync(mobileFile);
+    }
   }
 }
 console.log(`figures: ${rendered} files from ${jobs.length} uipack fence(s)`);

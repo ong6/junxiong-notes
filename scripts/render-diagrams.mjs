@@ -244,6 +244,12 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 
 if (figureJobs.length) {
 	execFileSync("npx", ["tsx", "scripts/render-figures.tsx", JSON.stringify(figureJobs)], { stdio: "inherit", cwd: ROOT });
+	for (const { id } of figureJobs) {
+		for (const mode of ["light", "dark"]) {
+			const mobile = `${id}.mobile.${mode}.svg`;
+			if (fs.existsSync(path.join(OUT, mobile))) seen.add(mobile);
+		}
+	}
 	rendered += figureJobs.length * 2;
 }
 

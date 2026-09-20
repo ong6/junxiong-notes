@@ -2,7 +2,7 @@
 title: Why I optimize LinkedIn once a year
 description: A practical annual LinkedIn reset that creates recruiter inbound without turning your life into a personal-branding exercise.
 date: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-21
 tags: [linkedin, job-search, career, recruiting]
 draft: false
 ---
@@ -28,11 +28,16 @@ me. An inbound recruiter has already matched some part of my background to an op
 to decide whether the role is any good and pass the same interviews, but the first filter has already
 happened.
 
+```uipack A cold application enters the queue before the first relevance check. LinkedIn inbound starts with the recruiter's search matching the profile, so the role arrives before the application.
+linkedin-paths
+```
+
 My own numbers made this hard to ignore. Before my first serious profile pass, LinkedIn showed 49
-search appearances and 103 profile views over seven days, with no post impressions. Eight recruiter
-messages arrived the day after I made the changes. That single day does not prove the edits caused all
-eight, but it was the first obvious sign that the profile could create a pipeline without me becoming
-a LinkedIn content creator.
+search appearances and 103 profile views over seven days, with no post impressions. Over the same
+seven-day window after the changes, profile views rose to about 270, roughly 2.6 times the baseline.
+Eight recruiter messages also arrived the day after I made the changes. The view increase is measured;
+one day of messages does not prove the edits caused all eight. It was still the first obvious sign that
+the profile could create a pipeline without me becoming a LinkedIn content creator.
 
 A later snapshot was even more lopsided. Ten of 11 leads from in-house recruiters reached a real
 hiring process. None of my three self-applied or outbound applications in the same early sample had
@@ -181,6 +186,10 @@ My annual pass is short:
 4. Check privacy, links and consistency with the rest of my public presence.
 5. Measure qualified inbound for four weeks.
 6. Leave it alone until something real changes.
+
+```uipack The full profile review happens once a year. A promotion, new scope, relocation or real change in target roles takes the shorter path back to the profile; weekly noise does not.
+linkedin-annual-loop
+```
 
 ## Closing thoughts and resources
 

@@ -47,6 +47,10 @@ on a node is the green emphasis; `dashed` is a loss or a note. Never two arrowhe
 a return is a `Packet reverse`. One `Defs id` per figure, unique across the page. Write the `alt`
 as the sentence a screen reader gets; it is the whole figure in words.
 
+When a wide figure becomes unreadable at 390px, add `mobile: { alt, viewBox, children }` to the same
+module. Use a 320–600px-wide viewBox and stack the mechanism; the renderer writes a separate mobile
+SVG and the site switches at 600px. Do not solve phone layouts by shrinking 1080px of labels.
+
 Motion: every packet is SMIL, so the figure animates inline with no JavaScript. Keep two to four
 packets per flow; a figure that moves everywhere says nothing.
 

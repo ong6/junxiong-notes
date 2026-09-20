@@ -46,6 +46,12 @@ export interface NotesFigure {
   alt: string;
   viewBox: string;
   children: ReactNode;
+  /** Optional narrow composition. Rendered only below the site's 600px breakpoint. */
+  mobile?: {
+    alt: string;
+    viewBox: string;
+    children: ReactNode;
+  };
 }
 
 export const define = (f: NotesFigure) => f;

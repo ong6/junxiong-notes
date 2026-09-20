@@ -180,3 +180,16 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 :root[data-theme="dark"] .fig-themed .fig-dark { display: block; }
 :root[data-theme="light"] .fig-themed .fig-light { display: block; }
 :root[data-theme="light"] .fig-themed .fig-dark { display: none; }
+.fig-themed .fig-mobile { display: none; }
+
+@media (max-width: 600px) {
+	.fig-themed .fig-desktop { display: none !important; }
+	.fig-themed .fig-mobile.fig-light { display: block; }
+	.fig-themed .fig-mobile.fig-dark { display: none; }
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) .fig-themed .fig-mobile.fig-light { display: none; }
+		:root:not([data-theme="light"]) .fig-themed .fig-mobile.fig-dark { display: block; }
+	}
+	:root[data-theme="dark"] .fig-themed .fig-mobile.fig-light { display: none; }
+	:root[data-theme="dark"] .fig-themed .fig-mobile.fig-dark { display: block; }
+}
