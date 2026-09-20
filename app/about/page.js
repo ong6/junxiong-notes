@@ -17,13 +17,13 @@ export default function About() {
 				<div className="prose">
 					<p>
 						This is a working notebook, not a magazine. Each article covers one question I
-						had to answer properly for my own systems — what prompt caching actually does
-						across different agent harnesses, which half of a GPU matters for which half of
-						inference, what a quantization step really costs in quality.
+						had to answer properly for something I was building or doing: what prompt
+						caching actually does across agent harnesses, which half of a GPU matters for
+						which half of inference, or whether optimizing LinkedIn was actually worth it.
 					</p>
 					<p>
 						Everything is dated, and everything gets revised in place rather than reposted.
-						Numbers in this field go stale in months, so an article that has not been
+						Technical and career advice both go stale, so an article that has not been
 						touched in a year should be read with that in mind. Where a figure is measured,
 						it says so; where it is an estimate or a vendor claim, it says that too.
 					</p>

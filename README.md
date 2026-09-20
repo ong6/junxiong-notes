@@ -1,7 +1,7 @@
 # notes.junxiong.dev
 
-Working notes on making AI systems cheaper, faster and smarter. Static site, plain markdown,
-no CMS.
+Working notes on software, AI and building a career around both. Static site, plain markdown, no
+CMS.
 
 ## Writing
 
