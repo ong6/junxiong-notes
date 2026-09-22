@@ -16,8 +16,8 @@ export default function About() {
 				</header>
 				<div className="prose">
 					<p>
-						This is a working notebook, not a magazine. Each article covers one question I
-						had to answer properly for something I was building or doing: what prompt
+						I write these notes to work through questions I
+						run into while building things or figuring out what to try next: what prompt
 						caching actually does across agent harnesses, which half of a GPU matters for
 						which half of inference, or whether optimizing LinkedIn was actually worth it.
 					</p>
@@ -51,11 +51,11 @@ export default function About() {
 					</ul>
 					<h2>Corrections</h2>
 					<p>
-						If something here is wrong, it is worth telling me — open an issue on{" "}
+						If you spot a mistake, please open an issue on{" "}
 						<a href={SITE.github}>GitHub</a>. Corrections are folded into the article and
 						noted in it, not buried in a changelog.
 					</p>
-					<h2>The usual disclaimer, and it is a real one</h2>
+					<h2>About the material here</h2>
 					<p>
 						These are personal notes written on my own time. Nothing here reflects the
 						views, systems or internal practices of any employer, and nothing here is drawn

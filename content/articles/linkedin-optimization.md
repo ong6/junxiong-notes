@@ -1,19 +1,13 @@
 ---
 title: Why I optimize LinkedIn once a year
-description: A practical annual LinkedIn reset that creates recruiter inbound without turning your life into a personal-branding exercise.
+description: What changed after I updated my LinkedIn profile, which fields I focus on, and why I leave it alone between annual reviews.
 date: 2026-09-20
-updated: 2026-09-21
+updated: 2026-09-23
 tags: [linkedin, job-search, career, recruiting]
 draft: false
 ---
 
-## Why should you do it?
-
-Most job searches begin too late. You decide to leave, update a profile you have ignored for three
-years, send applications into a queue and hope somebody notices. That puts all the pressure on a
-small window when you are already impatient.
-
-I prefer to keep one quiet inbound channel running before I need it. A good LinkedIn profile lets
+I prefer to update LinkedIn before I need a new job. A good LinkedIn profile lets
 recruiters find me while I am busy doing my actual job. I do not have to know that a role exists,
 follow the company or happen to search on the right week. My profile can appear when somebody looks
 for a software engineer in Singapore with a particular mix of backend and AI infrastructure work.
@@ -36,14 +30,12 @@ My own numbers made this hard to ignore. Before my first serious profile pass, L
 search appearances and 103 profile views over seven days, with no post impressions. Over the same
 seven-day window after the changes, profile views rose to about 270, roughly 2.6 times the baseline.
 Eight recruiter messages also arrived the day after I made the changes. The view increase is measured;
-one day of messages does not prove the edits caused all eight. It was still the first obvious sign that
-the profile could create a pipeline without me becoming a LinkedIn content creator.
+one day of messages does not prove the edits caused all eight. It was enough to make me take the profile more seriously, even though I was not posting.
 
 A later snapshot was even more lopsided. Ten of 11 leads from in-house recruiters reached a real
 hiring process. None of my three self-applied or outbound applications in the same early sample had
 replied. The sample was small and the numbers have changed as the search continued. I would not turn
-91% versus 0% into a universal claim. I do treat it as a clear answer about where a few hours of my
-time belong.
+91% versus 0% into a universal claim. It did make spending a few hours on the profile seem worthwhile.
 
 This does not mean LinkedIn replaces applications. If I want a specific role, I still apply. A strong
 referral is better than either route. LinkedIn adds another way for an opportunity to begin, and that
@@ -80,8 +72,8 @@ Before changing anything, I record the previous seven days of search appearances
 recruiter messages and qualified recruiter messages. The last number matters most. Ten irrelevant
 agency blasts are worse than one message from a team I would join.
 
-Without a baseline, profile work is dangerously satisfying. I can rewrite the same paragraph for an
-hour and call that progress. A baseline forces the edit to earn its keep.
+I can spend an hour rewriting a paragraph without knowing whether it helped. Saving a baseline gives
+me something to compare with afterwards.
 
 ### 3. Fix the fields used for retrieval
 
@@ -123,9 +115,9 @@ This is where *I Hate Job Interviews* by Sam Owens becomes useful. One of its ce
 profile carries the compressed claim. I keep the full story ready for the interview, including the
 tradeoff, what I personally did and what changed.
 
-### 5. Add proof without starting a content treadmill
+### 5. Add examples of the work
 
-I would rather add evidence than manufacture activity. Useful proof includes a specific recommendation
+I would rather show work I have done than post just to stay visible. Useful proof includes a specific recommendation
 from somebody who saw the work, a strong public project, a personal site and a resume that agrees with
 the profile.
 
@@ -159,7 +151,7 @@ guidance recommends tracking multiple active opportunities, networking around ea
 up until each one reaches a clear outcome. [Her explanation of the "odds
 game" is available here](https://www.danamanciagli.com/blog-post-15.html).
 
-## When should you do it?
+## Why I review it once a year
 
 I think a deliberate LinkedIn review once a year is enough, even if I am happy in my job. I do it after
 reviewing my resume and accomplishments, when the year's strongest work and my next direction are
@@ -191,16 +183,10 @@ My annual pass is short:
 linkedin-annual-loop
 ```
 
-## Closing thoughts and resources
+## Preparing for the conversations
 
-LinkedIn optimization creates surface area for luck. It cannot rescue weak work, replace a referral or
-pass an interview for me. It can make more of the right conversations possible before I urgently need
-one.
-
-The loop I want is simple: be findable, show evidence, track the opportunity, practise the stories and
-follow through.
-
-Two books shaped how I think about the last three steps:
+The profile helps people find me. After that, I still need to assess the role, prepare examples and
+practise for the interview. Two books have been useful for that:
 
 - [*I Hate Job Interviews* by Sam Owens](https://www.harpercollinsleadership.com/9781400245901/i-hate-job-interviews/)
   is organised around confidence, inside information, power examples and practising with humans. I like
@@ -209,4 +195,5 @@ Two books shaped how I think about the last three steps:
   treats the whole search as an operating system: goals, preparation, applications, interviews, tracking
   and follow-up. It is direct and practical.
 
-The profile creates the opening. Those books are about what to do once the opening exists.
+Once the profile is current, I would spend the next hour preparing for a real conversation rather
+than rewriting the headline again.

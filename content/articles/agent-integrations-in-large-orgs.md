@@ -2,23 +2,21 @@
 title: How agent integrations get built inside large organisations
 description: Registries, auth brokering, generated tool schemas and the org failure modes that stall internal agent platforms — grounded in public specs.
 date: 2026-08-28
-updated: 2026-08-28
+updated: 2026-09-23
 tags: [agents, mcp, integrations, platform-engineering, auth]
 ---
 
-## The shape of the problem
+An internal agent needs access to the systems where the work happens. Connecting it to those systems means dealing with permissions, credentials and the teams that own them.
 
-An agent is worth exactly the set of systems it can reach. Everything else is a demo.
+Each service has its own authentication, rate limits and data-access rules. Its owners also have their own priorities. Connecting fifty services means working through those differences fifty times unless the platform gives teams a shared way to handle them.
 
-Inside a company of any size, reaching a system means clearing four separate gates for every service: an auth scheme somebody else chose, a rate limit somebody else tuned, a data-access policy somebody else owns, and a team whose roadmap does not include you. Four gates times fifty services is the actual project. The model is not the hard part and has not been for a while.
-
-This is the generic version of a problem I keep seeing solved the same way in different buildings. The convergent shape is worth writing down, because if you know the shape you can skip about six months of rediscovering it.
+I would start with a shared registry and an auth broker. The public specifications below explain what each can handle and which decisions still belong to the organisation.
 
 ## Why everyone builds a registry
 
-The first version of an internal agent always hand-rolls HTTP calls. Someone writes a Python function that hits the ticketing API, pastes a bearer token into a config, and it works. The second and third teams do the same thing against the same API with different tokens, different retry logic and no shared record that any of it exists.
+An internal agent can start with a few hand-written HTTP calls. Someone writes a Python function that hits the ticketing API, pastes a bearer token into a config, and it works. The second and third teams do the same thing against the same API with different tokens, different retry logic and no shared record that any of it exists.
 
-Then the org builds a registry. Not because registries are elegant, but because four questions have no answer without one:
+Once several teams do this, a registry gives them somewhere to answer four questions:
 
 | Question | What the registry answers |
 |---|---|
@@ -27,31 +25,29 @@ Then the org builds a registry. Not because registries are elegant, but because 
 | How do we turn it off? | One revocation point when a credential leaks |
 | What did it touch last Tuesday? | Audit that spans agents, not per-team logs |
 
-```uipack What changes is the number of paths. Above, each agent carries its own credential and reaches the service directly, so there is nowhere to look and nothing single to switch off. Below, the broker is the only route, which is what makes one audit log and one revocation point possible.
+```uipack What changes is the number of paths. Above, each agent carries its own credential and reaches the service directly, so auditing and revoking access means checking each path. Below, the broker is the only route, which is what makes one audit log and one revocation point possible.
 broker-paths
 ```
 
-The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). Ownership lives with the team, discovery is central. An agent tool registry that works has the same split. Ownership decentralised, index centralised.
+The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). The service team owns its entry, and everyone searches the same index. I would use that split for an agent tool registry too.
 
 MCP encodes the same split at the protocol level. A server declares a `tools` capability and answers `tools/list`; a client discovers what exists at connect time rather than at build time. Servers that declare `listChanged` push a `notifications/tools/list_changed` when the set changes, so the catalogue is live rather than a checked-in manifest ([MCP tools spec](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)).
 
-My read: the registry is the cheap part and it is still the part orgs get wrong, because a registry with no owner rots into a list of dead endpoints within two quarters. More on that below.
+The registry also needs an owner who keeps entries current. Otherwise teams will eventually stop trusting the catalogue and go back to asking around.
 
-## Auth brokering is the whole project
+## Whose permissions does the agent use?
 
-Everything else on this page is a week of work. This part is a year.
+I would settle this before building connectors. The choice affects every downstream permission check and audit log.
 
-There are two modes, and confusing them is the most common design error I see.
+**Service-to-service.** The agent platform holds its own identity and calls downstream with its own credential. This suits work authorised for the service itself. For a user request, though, the shared identity can hide who asked and leave the platform responsible for enforcing that user's permissions.
 
-**Service-to-service.** The agent platform holds its own identity and calls downstream with its own credential. Easy to build, and wrong for anything touching user data, because every downstream audit log now reads `agent-platform` and every access check has to be re-implemented inside the agent.
-
-**On-behalf-of-user.** The agent carries a credential scoped to the human who asked. Downstream permission checks work unchanged. Audit logs name a person. This is the correct default and it is genuinely hard.
+**On-behalf-of-user.** The agent carries a credential scoped to the human who asked. Downstream permission checks work unchanged. Audit logs name a person. I would use this as the default for user-initiated work, even though it takes more integration effort.
 
 The public app platforms model the distinction cleanly. Slack's OAuth v2 splits the request into `scope` (bot token, the app's own identity) and `user_scope` (user token, acting on behalf of a user), and you request both when you need both ([Slack OAuth docs](https://docs.slack.dev/authentication/installing-with-oauth)). GitHub Apps have three credentials for three situations: a JWT to authenticate as the app, an installation access token to act as the installation, and a user access token so the app "only takes actions that could be performed by a specific user" ([GitHub docs](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/about-authentication-with-a-github-app)).
 
-GitHub's installation token also demonstrates the two properties an internal broker needs. It **expires after 1 hour**, and when you mint one you can pass `repositories` and `permissions` to narrow it below what the app was granted ([token generation docs](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app)). Short-lived, and downscoped at mint time rather than at grant time. Copy that.
+GitHub's installation token also demonstrates the two properties an internal broker needs. It **expires after 1 hour**, and when you mint one you can pass `repositories` and `permissions` to narrow it below what the app was granted ([token generation docs](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app)). The broker can issue a short-lived credential with only the access needed for the request.
 
-The mechanism for doing this generically is [RFC 8693 token exchange](https://www.rfc-editor.org/rfc/rfc8693.html). Grant type `urn:ietf:params:oauth:grant-type:token-exchange`, a `subject_token` for the user whose rights are being used, an optional `actor_token` for the thing doing the acting. The RFC's distinction between **impersonation** (the agent becomes indistinguishable from the user) and **delegation** (the agent keeps its own identity, expressed in an `act` claim, while carrying the user's rights) is the design decision, and delegation is the one you want. When the audit trail says "agent X acting for user Y," an incident review takes an afternoon rather than a week. `audience` and `scope` on the exchange request are how you narrow per call.
+The mechanism for doing this generically is [RFC 8693 token exchange](https://www.rfc-editor.org/rfc/rfc8693.html). Grant type `urn:ietf:params:oauth:grant-type:token-exchange`, a `subject_token` for the user whose rights are being used, an optional `actor_token` for the thing doing the acting. The RFC's distinction between **impersonation** (the agent becomes indistinguishable from the user) and **delegation** (the agent keeps its own identity, expressed in an `act` claim, while carrying the user's rights) is the design decision, and delegation is the one you want. An audit trail that says "agent X acting for user Y" preserves both identities for an incident review. `audience` and `scope` on the exchange request are how you narrow per call.
 
 ```uipack Delegation via RFC 8693. The agent presents two things and receives one: a short-lived token whose audience is a single service, carrying an act claim that keeps the agent's own identity alongside the user's rights. The service accepts it only because the audience names the service.
 token-exchange
@@ -65,17 +61,17 @@ MCP's security best practices document spells out the specific version: a proxy 
 
 The related rule is short enough to memorise. **Token passthrough is forbidden.** An MCP server "MUST NOT accept any tokens that were not explicitly issued for the MCP server," and if it calls an upstream API it must obtain a separate token rather than forwarding the one it received. The enforcement mechanism is [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html) resource indicators: clients MUST send `resource` on authorisation and token requests, servers MUST validate they are the intended audience ([MCP authorization spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization)).
 
-If your internal broker forwards the caller's token to the downstream service unchanged, you have built the anti-pattern. It will pass review the first time, because it works.
+If your internal broker forwards the caller's token to the downstream service unchanged, you have built the anti-pattern. A successful API call alone would not reveal that mistake.
 
 ## Tool definitions are an interface contract
 
 Hand-written tool schemas drift. The API adds a required field, the schema does not, and the agent starts failing in a way that looks like a model problem for the two days it takes anyone to check the spec.
 
-Generate them. FastMCP's `from_openapi()` turns every endpoint in a spec into a tool by default, deriving names from `operationId`, with `RouteMap` rules that can mark internal or admin routes as `EXCLUDE` ([FastMCP OpenAPI docs](https://gofastmcp.com/integrations/openapi)). Protobuf service definitions work the same way. The generator is a day of work and it removes an entire class of drift bug permanently.
+Generate them. FastMCP's `from_openapi()` turns every endpoint in a spec into a tool by default, deriving names from `operationId`, with `RouteMap` rules that can mark internal or admin routes as `EXCLUDE` ([FastMCP OpenAPI docs](https://gofastmcp.com/integrations/openapi)). Protobuf service definitions work the same way. Generating schemas from the API definition reduces drift, provided the generation step runs when the API changes.
 
-The one field you cannot generate is `description`, and it is the field that decides whether the agent works.
+Descriptions still need editorial attention. An API spec may describe an endpoint without explaining when an agent should choose it.
 
-That field is prompt text. The model reads it and nothing else when choosing between two similar tools. Anthropic's guidance on this is blunt: "even small refinements to tool descriptions can yield dramatic improvements," and "too many tools or overlapping tools can also distract agents from pursuing efficient strategies" ([Writing tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents)). Namespacing under common prefixes is the recommended way to draw boundaries when there are many.
+That field is prompt text. The model uses it to distinguish similar tools. Anthropic's guidance on this is blunt: "even small refinements to tool descriptions can yield dramatic improvements," and "too many tools or overlapping tools can also distract agents from pursuing efficient strategies" ([Writing tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents)). Namespacing under common prefixes is the recommended way to draw boundaries when there are many.
 
 A generic example of a description doing real work:
 
@@ -94,13 +90,13 @@ A generic example of a description doing real work:
 }
 ```
 
-Three things in there are absent from any OpenAPI spec: when *not* to use it, what the cheaper alternative is, and that results are silently filtered by the caller's permissions. All three are the difference between a working agent and a confusing one. Write them by hand, keep them next to the generator config, and diff them in review like code.
+Three details in this example need more than a parameter schema: when *not* to use it, what the cheaper alternative is, and that results are silently filtered by the caller's permissions. All three are the difference between a working agent and a confusing one. Write them by hand, keep them next to the generator config, and diff them in review like code.
 
-Two mechanical consequences worth knowing. Tool definitions sit **first** in the cacheable prefix (the order is `tools`, `system`, then `messages`) and modifying tool definitions "invalidates the entire cache" at every level ([prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)). A registry that returns tools in nondeterministic order destroys the cache on every request. Sort the list. See [prompt caching across harnesses](/prompt-caching-across-harnesses) for what that costs, and [prefill vs decode](/prefill-vs-decode) for why a 40k-token tool prefix is a prefill bill you pay on every turn.
+This also affects caching. Tool definitions sit **first** in the cacheable prefix (the order is `tools`, `system`, then `messages`) and modifying tool definitions "invalidates the entire cache" at every level ([prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)). A registry that returns tools in nondeterministic order destroys the cache on every request. Sort the list. See [prompt caching across harnesses](/prompt-caching-across-harnesses) for what that costs, and [prefill vs decode](/prefill-vs-decode) for why a 40k-token tool prefix is a prefill bill you pay on every turn.
 
 ## Shipping it
 
-The deployment path is boring and should stay boring: the connector is a service, so it ships like a service. Internal PaaS or a Kubernetes target, staged environments, a review gate before production credentials are issued. Kubernetes operators are the closest structural analogue for the runtime — a control loop reconciling declared connector state against what is actually registered.
+I would deploy a connector using the same process as other services: internal PaaS or a Kubernetes target, staged environments, a review gate before production credentials are issued. Kubernetes operators are the closest structural analogue for the runtime — a control loop reconciling declared connector state against what is actually registered.
 
 Observability is where agent work differs from normal service work, and the three things you need are specific:
 
@@ -108,9 +104,9 @@ Observability is where agent work differs from normal service work, and the thre
 2. **Per-tool latency and error rate**, broken out by tool name. Tool sprawl is invisible until you can see that eleven tools have never been called and three account for 90% of errors.
 3. **Replayable transcripts.** The full message list including tool schemas as they were at the time. Without the schema snapshot you cannot reproduce a failure after someone edits a description.
 
-## What actually kills these projects
+## Where delivery gets stuck
 
-Not the model, and not the protocol. Roughly in order of how often they are the cause:
+The protocol leaves several organisational problems unresolved:
 
 **Data-owner sign-off has no SLA.** Every connector touching user data needs approval from whoever owns that data. That review is unbudgeted, unqueued and unowned, so it takes as long as it takes. Fifteen connectors at three weeks each, serialised through one privacy reviewer, is your actual delivery date.
 
@@ -122,10 +118,10 @@ Not the model, and not the protocol. Roughly in order of how often they are the 
 
 MCP's own scope-minimisation guidance names the pattern that makes all of this worse — publishing every possible scope in `scopes_supported` and using omnibus scopes like `*` or `full-access`, which drives consent abandonment and makes revocation disruptive. Start with a minimal read-only scope set and elevate on demand via `WWW-Authenticate` challenges.
 
-## What MCP actually changed
+## What a shared protocol changes
 
 It did not solve auth. The hard parts of auth are still hard, and the spec mostly points at OAuth 2.1, RFC 8707 and RFC 9728 rather than replacing them.
 
 What it changed is the coupling. Before a standard protocol, an internal tool server was written against one agent framework, and moving to a different framework meant rewriting the integration layer. Now the server is written once and any client speaking the protocol consumes it — an IDE assistant, a chat surface, a CI job, a different vendor's model entirely. `tools/list` and `tools/call` are the whole contract for tools.
 
-My read on why that matters organisationally rather than technically: it changes who has to say yes. The team that owns a service can stand up a server for their own data and put it in the registry, without the agent platform team writing a line of code and without a framework migration hanging over the decision. That removes the single worst bottleneck in this whole design, which was never a technical one.
+My read on why that matters organisationally rather than technically: it changes who has to say yes. The team that owns a service can stand up a server for their own data and put it in the registry, without the agent platform team writing a line of code and without a framework migration hanging over the decision. That lets service teams add integrations without waiting for the agent platform team to build each one.

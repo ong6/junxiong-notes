@@ -1,12 +1,14 @@
 ---
-title: What quantization actually costs you
-description: Formats, measured quality loss, the speed you get back, and why the KV cache is the part quantization never shrinks.
+title: What changes when you quantize a model
+description: How quantization changes model size, speed and answers, and why weight memory and KV-cache memory need separate budgets.
 date: 2026-08-28
-updated: 2026-08-28
+updated: 2026-09-23
 tags: [quantization, open-weights, local-llm, inference]
 ---
 
-Quantization is the field with the widest gap between what people repeat and what anyone has measured. "Q4 is basically lossless" gets said constantly, usually by someone quoting a perplexity number from a 2023 forum post about a model that no longer exists. The real answer depends on which format, which layers, and which task, and there is now enough published measurement to give it properly.
+I would start with a 4-bit build when trying a model locally, but I would still test the tasks I need it for. A smaller model file is easy to measure. Whether it changes the answers I care about takes more work.
+
+The useful comparisons below keep the model fixed and vary the quantization. They show why a result on sentence completion cannot tell you much about a coding agent.
 
 ## The formats
 
@@ -26,9 +28,9 @@ Quantization is the field with the widest gap between what people repeat and wha
 
 MXFP4 is the odd one, because for `gpt-oss` it is not a compression step applied afterwards. OpenAI post-trained with the MoE weights already in MXFP4, and those weights are [90%+ of the parameter count](https://arxiv.org/pdf/2508.10925), so the 120B fits on a single 80GB GPU and the 20B in 16GB. There is no fp16 reference version of those tensors to be worse than.
 
-### Dynamic quants are the actual recent development
+### Choosing precision per layer
 
-Everything above except the `_M`/`_S` split applies one width to the whole model. Unsloth's dynamic quants pick a width per layer from measured sensitivity, so a nominal "2-bit" build is 2-bit in the layers that tolerate it and 4- or 6-bit in the ones that don't. This is why models that "cannot fit" now fit.
+Everything above except the `_M`/`_S` split applies one width to the whole model. Unsloth's dynamic quants pick a width per layer from measured sensitivity, so a nominal "2-bit" build is 2-bit in the layers that tolerate it and 4- or 6-bit in the ones that don't. This gives the publisher another way to balance file size and error.
 
 The measurement that convinced me is Unsloth's [Qwen3.5-35B-A3B GGUF table](https://unsloth.ai/docs/models/qwen3.5/gguf-benchmarks), which reports mean KL-divergence against the reference for the same model quantized by several people:
 
@@ -44,7 +46,7 @@ The measurement that convinced me is Unsloth's [Qwen3.5-35B-A3B GGUF table](http
 | Unsloth `IQ2_XXS` | 9.09 GB | 7.7160 | 0.1846 |
 | bartowski `IQ2_XXS` | 8.15 GB | 9.3427 | 0.3457 |
 
-The two bolded rows are the point. The dynamic build is 0.6 GB *smaller* than the uniform `Q4_K_M` and 25% closer to the reference distribution. At 2 bits the gap widens to nearly 2×. Layer-width selection buys more at low bit counts, which is exactly where you need it.
+The two bolded rows are the comparison I would look at first. The dynamic build is 0.6 GB *smaller* than the uniform `Q4_K_M` and 25% closer to the reference distribution. At 2 bits the gap widens to nearly 2×. Layer-width selection buys more at low bit counts, which is exactly where you need it.
 
 ## PTQ vs QAT
 
@@ -52,7 +54,7 @@ Post-training quantization is everything above: take finished weights, calibrate
 
 Quantization-aware training simulates the rounding during training so the weights learn to survive it. Google shipped this for Gemma 3 with [~5,000 QAT steps against the non-quantized checkpoint's own probabilities](https://developers.googleblog.com/en/gemma-3-quantized-aware-trained-state-of-the-art-ai-to-consumer-gpus/) (April 2025), and reported that it **cut the Q4_0 perplexity drop by 54%** versus plain PTQ, taking the 27B from 54 GB to 14.1 GB.
 
-QAT is worth it if you publish the weights and can amortise the training cost over every download. It is almost never worth it if you are quantizing someone else's model for your own use — a good dynamic PTQ build closes most of that gap for free. Unsloth [reports their dynamic quants reaching lower KL-divergence than Gemma 3's QAT builds](https://unsloth.ai/blog/dynamic-v2) at comparable size, and while that is a vendor claim about their own product, the third-party KLD table above makes it plausible.
+QAT is worth it if you publish the weights and can amortise the training cost over every download. It is almost never worth it if you are quantizing someone else's model for your own use — a good dynamic PTQ build closes most of that gap for free. Unsloth [reports their dynamic quants reaching lower KL-divergence than Gemma 3's QAT builds](https://unsloth.ai/blog/dynamic-v2) at comparable size, and while that is a vendor claim about their own product, the KLD table above is also published by Unsloth and should be read with that source in mind.
 
 ## What it costs, measured
 
@@ -95,17 +97,17 @@ Read the bottom row across. Perplexity rises 22%, HellaSwag falls 0.6 points, MM
     "encoding":{"text":{"field":"v","type":"quantitative","format":".2~f"}}}]}
 ```
 
-One honesty note on that table: Q5_K_M scores 78.54 on GSM8K against the F16 baseline's 77.63. Quantization did not make the model better at arithmetic. That is benchmark noise, and it is a useful reminder that sub-point differences in these tables mean nothing.
+One caution when reading that table: Q5_K_M scores 78.54 on GSM8K against the F16 baseline's 77.63. That single result is not enough to conclude quantization improved arithmetic. I would want repeated measurements before drawing a conclusion from a small difference.
 
 On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](https://developers.redhat.com/articles/2024/10/17/we-ran-over-half-million-evaluations-quantized-llms) found all schemes recovering over 99% of baseline average on OpenLLM v1, with HumanEval recovery at **99.9% for 8-bit and 98.9% for 4-bit**. Their 4-bit W4A16 results drop more on AIME and GPQA-Diamond than elsewhere, which is the same reasoning-first pattern.
 
-## The ladder
+## How I would read the bit-depth tradeoff
 
-**8-bit is close to free.** Q8_0 moved perplexity by 0.01 and every task score by less than 0.2 points in the table above. Mean KLD around 0.003. If you have the memory, stop thinking about it.
+**8-bit is close to free.** Q8_0 moved perplexity by 0.01 and every task score by less than 0.2 points in the table above. Mean KLD around 0.003. If memory allows, that makes it a reasonable starting point.
 
 **4-bit is the sweet spot, and it is not free.** Expect roughly 1–3 points on reasoning-heavy tasks and near-zero on everything else. This is the default for a reason.
 
-**3-bit is where reasoning starts to break** while the model still sounds completely fine. This is the dangerous tier, because the failure is invisible in chat and shows up in arithmetic, tool arguments, and long code edits.
+**3-bit is where reasoning starts to break** while the model still sounds completely fine. A fluent chat response may not reveal errors in arithmetic, tool arguments or long code edits.
 
 **Sub-3-bit is a different proposition.** Unsloth's [Aider Polyglot runs on DeepSeek V3.1](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs/unsloth-dynamic-ggufs-on-aider-polyglot) put real numbers on it:
 
@@ -138,7 +140,7 @@ On the GPU-serving side, Red Hat/Neural Magic's [half-million-evaluation study](
 
 Going 4-bit → 2-bit costs 3.9 points and saves 132 GB. Going 2-bit → 1-bit costs 10.1 points and saves 49 GB. The curve has a knee and it sits just below 2-bit. Unsloth's own [Dynamic 3.0 documentation](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs) says the same thing more bluntly: below their `UD-Q2_K_XL` tier, models degrade badly on tool-calling and agentic use, loop, and return empty responses.
 
-My read: sub-3-bit only makes sense on models large enough that the alternative is not running the model at all. A 1-bit 400B beats a 4-bit 30B on most work. A 1-bit 30B is worse than a 4-bit 8B and you should not build anything on it.
+I would consider sub-3-bit when it is the only way to fit a larger model I have a reason to use. I would still compare it with a smaller model at higher precision on the actual workload; parameter count alone cannot settle that choice.
 
 ## What quantization buys beyond capacity
 
@@ -150,7 +152,7 @@ The Llama-3.1-8B CPU measurements in [Kurt's paper](https://arxiv.org/abs/2601.1
 
 Weight quantization does nothing to the KV cache. Cache size scales with context length, batch size, and attention-layer count, and at long context it can rival or exceed the weights. A model that fits at 4-bit with a 4K context may not fit at 128K.
 
-The lever is separate. llama.cpp and vLLM both quantize K and V independently. On the quality side, a [measurement on Qwen 2.5 Coder 7B](https://smcleod.net/2024/12/bringing-k/v-context-quantisation-to-ollama/) moved perplexity from 8.3891 to 8.3934 going from f16 to q8_0 KV, a change of 0.0043. That is nothing, and it halves the cache. The same write-up puts an 8B model's 32K cache at ~6 GB f16, ~3 GB q8_0, ~2 GB q4_0.
+The lever is separate. llama.cpp and vLLM both quantize K and V independently. On the quality side, a [measurement on Qwen 2.5 Coder 7B](https://smcleod.net/2024/12/bringing-k/v-context-quantisation-to-ollama/) moved perplexity from 8.3891 to 8.3934 going from f16 to q8_0 KV, a change of 0.0043. That is a small perplexity change in this measurement, alongside a halving of cache memory. The same write-up puts an 8B model's 32K cache at ~6 GB f16, ~3 GB q8_0, ~2 GB q4_0.
 
 q4_0 KV is a real trade rather than a free one, and its cost is architecture-dependent — reported deltas span roughly -0.7% to +3% perplexity depending on the model. Run `Q8_0` KV by default and treat `q4_0` as a long-context-only measure you verify on your own workload. Note also that quantized KV wants a Flash Attention path with dequant in-kernel; without it you may lose more speed than the memory is worth.
 
@@ -173,8 +175,8 @@ quant-decision
 
 MLX quantizes with group sizes of 64 for 4/6-bit and 32 for 2/3-bit, and the community convention is to keep embeddings and the final projection at higher width than the body — the same sensitivity principle as dynamic GGUF, applied by hand. Apple Silicon's practical constraint is that MLX and GGUF are separate ecosystems, so the model you want may only exist in one of them on any given day.
 
-## What I'd actually do
+## Choosing a build
 
-Take the largest model that fits at 4-bit dynamic with room for a full-context KV cache at q8_0, and prefer a dynamic build over a uniform one at equal file size, because the KLD data says you get it for free. Reach below 3-bit only when the model is large enough that the alternative is not running it. Test on your own reasoning and tool-calling traffic rather than on perplexity, because perplexity is the number that will tell you everything is fine right up until the agent starts mangling JSON arguments.
+Take the largest model that fits at 4-bit dynamic with room for a full-context KV cache at q8_0, and prefer a dynamic build over a uniform one at equal file size, because the KLD data says you get it for free. Reach below 3-bit only when the model is large enough that the alternative is not running it. Before using it in an agent, I would check reasoning tasks and tool arguments directly. Those are the failures I need to catch, even when the perplexity score barely moves.
 
 Related: [/local-inference-hardware](/local-inference-hardware) for what fits on what, [/prefill-vs-decode](/prefill-vs-decode) for why fewer bytes per token means faster decode, and [/context-engineering-for-coding-agents](/context-engineering-for-coding-agents) for keeping the context small enough that the KV cache question stops being the binding one.

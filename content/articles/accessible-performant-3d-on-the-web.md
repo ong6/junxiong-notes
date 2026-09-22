@@ -2,13 +2,15 @@
 title: How I build 3D that still behaves like a web page
 description: How junxiong.dev uses Three.js with native scroll, one active canvas, reduced motion and a readable fallback.
 date: 2026-09-19
-updated: 2026-09-19
+updated: 2026-09-23
 tags: [threejs, webgl, accessibility, performance, frontend]
 ---
 
-## The page has to work without the scene
+This post describes the first version of the hobbies page on 19 September 2026. The scenes have since changed; the details below refer to that initial implementation.
 
-I added 3D to the [hobbies page on junxiong.dev](https://junxiong.dev/hobbies) for one narrow reason: sometimes a small spatial object says more than another card. It is very easy to turn that into a worse website. A canvas can erase the document structure, trap scrolling, ignore motion preferences, burn the GPU below the fold and leave a blank rectangle when WebGL fails.
+## Adding 3D to the hobbies page
+
+I added 3D to the [hobbies page on junxiong.dev](https://junxiong.dev/hobbies) because I wanted a small object for each interest. I still wanted the page to be easy to read and scroll. A canvas can erase the document structure, trap scrolling, ignore motion preferences, burn the GPU below the fold and leave a blank rectangle when WebGL fails.
 
 My rule is that the article, controls and explanation remain ordinary HTML. The canvas is a visual rendering of the same idea, never the only copy of it. That makes the requirements concrete:
 
@@ -19,7 +21,7 @@ My rule is that the article, controls and explanation remain ordinary HTML. The 
 - failure leaves a labelled illustration rather than an error message; and
 - the page downloads no models, textures, HDR environments or web fonts for 3D.
 
-I now have two related implementations. The live-slide renderer in my `uipack` library keeps one scene alive while authored camera stops change. The hobbies page is simpler and more disposable: six semantic chapters stay in the document, while only the chapter crossing the viewport centre mounts a canvas and creates a Three.js renderer. They share principles, not a runtime.
+I now have two related implementations. The live-slide renderer in my `uipack` library keeps one scene alive while authored camera stops change. The hobbies page is simpler and more disposable: six semantic chapters stay in the document, while only the chapter crossing the viewport centre mounts a canvas and creates a Three.js renderer. They handle canvas ownership differently.
 
 ```uipack The document owns navigation. Only the chapter at the viewport centre gets a canvas; leaving it tears the renderer down, while the labelled CSS fallback never leaves the page.
 three-scene-lifecycle
@@ -29,7 +31,7 @@ three-scene-lifecycle
 
 Both implementations use Three.js directly. On the hobbies page, React mounts a canvas for the active chapter and an effect constructs its renderer. In `uipack`, React hands an element to an imperative `createSlideScene()` function whose small API moves to a named stop, pauses flow, changes the reduced-motion setting and disposes the runtime.
 
-React Three Fiber is good software, but it would not remove the difficult work here. I would still need to decide which chapter owns a context, when frames run, how fallback content works and what cleanup means. For these small renderers, direct boundaries make the lifetimes obvious. `uipack` retains its canvas across stops. Hobbies does the opposite: changing the centred chapter unmounts the previous canvas, runs its cleanup and mounts the next one. The page never has more than one canvas, but it does not pretend six unrelated objects are one continuous scene.
+React Three Fiber is good software, but it would not remove the difficult work here. I would still need to decide which chapter owns a context, when frames run, how fallback content works and what cleanup means. For these small renderers, direct boundaries make the lifetimes obvious. `uipack` retains its canvas across stops. Hobbies does the opposite: changing the centred chapter unmounts the previous canvas, runs its cleanup and mounts the next one. The page never has more than one canvas, and each chapter gets a fresh scene.
 
 There is also a bundle boundary. The hobbies component dynamically imports `three` only after its active canvas passes a WebGL capability check. Server rendering emits the chapters and labelled CSS illustrations with no canvas. Separately, `three` and `gsap` are optional peers of `uipack`; its normal SVG exports import neither.
 
@@ -45,7 +47,7 @@ That renderer has one `WebGLRenderer`, one `Scene` and one `PerspectiveCamera`. 
 
 Hobbies needs none of that choreography. Each chapter builds one fixed object behind a 35-degree perspective camera at `[0, 0, 7]`. The coding scene has a terminal and wireframe core; tennis has two rackets and a ball; trading has a risk ladder; the home server is an unfinished wireframe chassis; travel is a small route map; reading is an open book. The active object moves gently until the reader pauses it or asks for reduced motion. Crossing into another chapter destroys that scene and creates the next one.
 
-## Geometry is cheaper than an asset pipeline
+## Building the first objects from geometry
 
 Everything in both renderers is procedural. The richer slide renderer uses boxes and an icosahedron for components, edge geometries for boundaries, an instanced mesh for repeated records, toruses for restrained rings and buffer geometries for its grid and curved connections.
 
@@ -55,7 +57,7 @@ This is an aesthetic constraint as much as a performance one. Loading a detailed
 
 Text remains HTML. The hobbies canvas contains no labels and is `aria-hidden`; each chapter's real `h2`, prose and links sit beside it. The `uipack` slides do project HTML labels from 3D positions, then avoid collisions and repeat the information in screen-reader content. That tradeoff belongs to the presentation component, not the hobbies page.
 
-## Scroll should select the scene, not simulate a browser
+## Keeping native scrolling
 
 The slide player has explicit Previous, Next and numbered buttons. Its keyboard shortcuts are scoped to the focused player, and it ignores keystrokes from editable controls. That is right for a deck. The hobbies page takes a different route.
 
@@ -63,9 +65,9 @@ The shipped page has six normal document sections and ordinary anchor links. The
 
 This loses some cinematic control. A scrubbed timeline can map every pixel to an object pose; native chapters produce discrete scene changes. I take that trade. Readers move through the page with the input method and speed they already use, and each object still gives its chapter a visual identity.
 
-When a chapter leaves the centre, React removes its canvas. Cleanup cancels its pending [`requestAnimationFrame()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), disconnects its `ResizeObserver` and disposes the renderer. The next centred chapter starts fresh. This is more churn than retaining the `uipack` scene, but it gives off-screen chapters the strongest possible idle state: no canvas and no WebGL context.
+When a chapter leaves the centre, React removes its canvas. Cleanup cancels its pending [`requestAnimationFrame()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), disconnects its `ResizeObserver` and disposes the renderer. The next centred chapter starts fresh. This is more churn than retaining the `uipack` scene, but it leaves off-screen chapters with no canvas or WebGL context.
 
-## Motion is optional; meaning is not
+## Reduced motion and WebGL failures
 
 The hobbies UI reads [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) with `matchMedia`. It creates the active 3D object and draws a static frame, but never enters the animation-frame loop and does not show the Pause button. The chapter headings, prose, links and labelled CSS fallback remain available. `uipack` also accepts an explicit `motion="none"` setting; it applies stops immediately and freezes packets at the middle of their routes.
 
@@ -75,9 +77,9 @@ The hobbies canvas is `aria-hidden`. Every chapter keeps a labelled CSS illustra
 
 Before importing Three.js, hobbies checks whether a temporary canvas can create a WebGL context. If it cannot, or constructing `WebGLRenderer` throws, the labelled CSS illustration remains and no motion control appears. It also listens for [`webglcontextlost`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event), cancels the frame loop and returns to that fallback. `uipack` applies the same boundary with a richer HTML diagram.
 
-## The performance budget is architectural
+## Limits in the first implementation
 
-I do not have a production Lighthouse trace for the hobbies page yet, so I am not going to invent a kilobyte or frame-time claim. I can state what the code enforces:
+At the time of this implementation, I had not measured the production page with Lighthouse. These were the limits in the code:
 
 | Budget | Shipped decision |
 |---|---|
@@ -97,7 +99,7 @@ The hobbies loop is intentionally simple. The centred object renders continuousl
 
 Cleanup is part of the budget. Three.js cannot infer when application-owned GPU resources are no longer needed. Its API docs say to dispose each [buffer geometry](https://threejs.org/docs/pages/BufferGeometry.html#BufferGeometry.dispose), [material](https://threejs.org/docs/pages/Material.html#Material.dispose) and the [renderer](https://threejs.org/docs/pages/WebGLRenderer.html#WebGLRenderer.dispose) when the application is finished with them. Both implementations do that. Hobbies traverses the departing scene, disposes each geometry and material, then disposes the renderer and releases its context.
 
-## I test the exits, not only the picture
+## Testing cleanup and fallback behaviour
 
 A screenshot can prove that one frame looks good. Most failures in these components happen before or after that frame, so both suites check their lifecycles.
 
@@ -107,8 +109,8 @@ Its Playwright suite covers the browser failures that mocks tend to miss: interr
 
 The hobbies page has its own Playwright suite. It runs the six chapters at 390 and 1440 pixels in both themes, checks semantic heading order, native scrolling, lack of horizontal overflow, 44-pixel controls and a clean browser console. It then scrolls between chapters and asserts exactly one canvas, verifies that Pause stops its frame counter, confirms the old canvas disappears, checks that reduced motion holds the counter on one static frame, forces WebGL creation to fail and reads the labelled fallback, and exercises the expanded trading visual.
 
-## What I am deliberately giving up
+## What I would keep, and what could change
 
 Direct Three.js gives me an inspectable lifecycle, but I write more plumbing. The retained `uipack` scene avoids canvas churn, but story and theme changes require a rebuild. The hobbies page trades the other way: every chapter switch rebuilds a tiny scene so off-screen chapters own nothing. CSS fallbacks preserve a labelled visual, but not the spatial composition. Native scroll preserves browser behavior, but cannot deliver frame-perfect scroll choreography. Zero-asset scenes are fast to start and easy to license, but they will never look like a Blender render.
 
-Those limits fit the job. The 3D layer on junxiong.dev gives each hobby a little physical character, then gets out of the reader's way. If it becomes the thing a person has to operate before they can read the page, I have built the wrong page.
+I would keep native scrolling and readable HTML even if the objects became more detailed. Those choices let me experiment with the scenes without making readers learn how to use the page.
