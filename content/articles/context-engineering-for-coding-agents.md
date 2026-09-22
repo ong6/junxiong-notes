@@ -3,6 +3,7 @@ title: Where your tokens actually go in a coding agent
 description: How files and tool output fill a coding agent's context, what long-context studies show, and how I would keep a session focused.
 date: 2026-08-28
 updated: 2026-09-23
+category: AI systems
 tags: [agents, context, coding-agents, cost, productivity]
 ---
 

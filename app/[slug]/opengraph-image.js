@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
-import { notFound } from "next/navigation";
-import { articleSlugs, readArticle } from "../../lib/articles";
+import { allArticles, articleSlugs, readArticle } from "../../lib/articles";
 import { SITE } from "../../lib/site.mjs";
 
 export const alt = "Article preview";
@@ -8,7 +7,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-	return articleSlugs().map((slug) => ({ slug }));
+	return allArticles().map(({ slug }) => ({ slug }));
 }
 
 /**
@@ -18,8 +17,9 @@ export function generateStaticParams() {
  */
 export default async function Image({ params }) {
 	const { slug } = await params;
-	if (!articleSlugs().includes(slug)) notFound();
+	if (!articleSlugs().includes(slug)) return new Response("Not found", { status: 404 });
 	const { meta } = readArticle(slug);
+	if (meta.draft) return new Response("Not found", { status: 404 });
 	const title = meta.title ?? SITE.title;
 	// Long titles need to step down or they overflow the card.
 	const fontSize = title.length > 64 ? 60 : title.length > 44 ? 70 : 82;

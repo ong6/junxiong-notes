@@ -10,12 +10,13 @@ import {
 import { SITE } from "../../lib/site.mjs";
 
 export function generateStaticParams() {
-	return articleSlugs().map((slug) => ({ slug }));
+	return allArticles().map(({ slug }) => ({ slug }));
 }
 
 function load(slug) {
 	if (!articleSlugs().includes(slug)) return null;
-	return readArticle(slug);
+	const article = readArticle(slug);
+	return article.meta.draft ? null : article;
 }
 
 export async function generateMetadata({ params }) {
@@ -80,6 +81,7 @@ export default async function Article({ params }) {
 		mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE.url}/${slug}` },
 		inLanguage: "en",
 		keywords: (meta.tags ?? []).join(", "),
+		articleSection: meta.category,
 		isPartOf: { "@id": `${SITE.url}#blog` },
 	};
 
@@ -96,6 +98,10 @@ export default async function Article({ params }) {
 					</div>
 					<h1>{meta.title}</h1>
 					{meta.description ? <p className="dek">{meta.description}</p> : null}
+					<div className="post-taxonomy" aria-label="Category and tags">
+						<a className="category-label" href={`/?${new URLSearchParams({ category: meta.category })}`}>{meta.category}</a>
+						{meta.tags.map((tag) => <a key={tag} href={`/?${new URLSearchParams({ tag })}`}>#{tag}</a>)}
+					</div>
 				</header>
 
 				{toc.length > 2 ? (

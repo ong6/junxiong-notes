@@ -3,6 +3,7 @@ title: How I build 3D that still behaves like a web page
 description: How junxiong.dev uses Three.js with native scroll, one active canvas, reduced motion and a readable fallback.
 date: 2026-09-19
 updated: 2026-09-23
+category: Web engineering
 tags: [threejs, webgl, accessibility, performance, frontend]
 ---
 

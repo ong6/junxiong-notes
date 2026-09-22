@@ -3,6 +3,7 @@ title: What changes when you quantize a model
 description: How quantization changes model size, speed and answers, and why weight memory and KV-cache memory need separate budgets.
 date: 2026-08-28
 updated: 2026-09-23
+category: AI systems
 tags: [quantization, open-weights, local-llm, inference]
 ---
 

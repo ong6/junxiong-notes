@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import ArticleBrowser, { PostList } from "./article-browser";
 import { allArticles } from "../lib/articles";
 import { SITE } from "../lib/site.mjs";
 
@@ -6,16 +8,6 @@ export const metadata = {
 	alternates: { canonical: "/" },
 };
 
-function fmt(d) {
-	if (!d || Number.isNaN(Date.parse(`${d}T00:00:00Z`))) return "";
-	return new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-		timeZone: "UTC",
-	});
-}
-
 export default function Home() {
 	const posts = allArticles();
 	return (
@@ -23,19 +15,9 @@ export default function Home() {
 			{posts.length === 0 ? (
 				<p className="meta">No articles published yet.</p>
 			) : (
-				<ul className="post-list">
-					{posts.map((p) => (
-						<li key={p.slug}>
-							<div className="meta">
-								<time dateTime={p.date}>{fmt(p.date)}</time> · {p.readingMinutes} min read
-							</div>
-							<h2>
-								<a href={`/${p.slug}`}>{p.title}</a>
-							</h2>
-							<p>{p.description}</p>
-						</li>
-					))}
-				</ul>
+				<Suspense fallback={<PostList posts={posts} />}>
+					<ArticleBrowser posts={posts} />
+				</Suspense>
 			)}
 			<div className="agent-note">
 				<strong>Reading this as an agent?</strong> Every article is plain markdown at{" "}

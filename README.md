@@ -13,6 +13,7 @@ title: Prompt caching, and why the same prompt costs 10x more on some days
 description: One sentence, under 155 characters. Used as the meta description and in llms.txt.
 date: 2026-08-28
 updated: 2026-08-28
+category: AI systems
 tags: [prompt-caching, cost]
 draft: false
 ---
@@ -20,6 +21,12 @@ draft: false
 
 Body starts at `##` — the `<h1>` comes from `title`. Files starting with `_` are ignored, and
 so is anything with `draft: true`.
+
+Use one broad category per article: `AI systems`, `Web engineering`, `Career`, or `Trading`.
+Tags describe narrower topics and can be shared across categories. Both appear on article
+cards and article pages. The index filters by category and tag together, keeps newest-first
+order, and saves the selection in the URL (for example `/?category=AI+systems&tag=agents`).
+Missing categories fall back to `Uncategorized`; drafts never appear in filters or public article routes.
 
 The URL is the filename: `content/articles/foo.md` serves at `/foo`.
 
@@ -59,3 +66,7 @@ because canonicals, JSON-LD, the sitemap and both llms files all read from it.
 - Measured figure, vendor claim and personal read are visibly different things.
 - Articles are revised in place and `updated` is bumped. Nothing is reposted.
 - Personal notes only. Nothing here describes any employer's systems.
+
+## Editorial review
+
+[Trading article review](docs/trading-article-review.md) records the source evidence and publication checks for the trading article. It is not part of the public article surface.

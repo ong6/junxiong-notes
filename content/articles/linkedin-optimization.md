@@ -3,6 +3,7 @@ title: Why I optimize LinkedIn once a year
 description: What changed after I updated my LinkedIn profile, which fields I focus on, and why I leave it alone between annual reviews.
 date: 2026-09-20
 updated: 2026-09-23
+category: Career
 tags: [linkedin, job-search, career, recruiting]
 draft: false
 ---

@@ -3,6 +3,7 @@ title: Prefill and decode want different machines
 description: LLM inference has two phases with opposite bottlenecks. Which one you care about decides what hardware to buy.
 date: 2026-08-28
 updated: 2026-09-23
+category: AI systems
 tags: [inference, gpu, memory-bandwidth, serving, kv-cache]
 ---
 
