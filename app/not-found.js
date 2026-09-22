@@ -4,7 +4,7 @@ export const metadata = { title: "Not found" };
 
 export default function NotFound() {
 	return (
-		<main>
+		<main id="main-content" tabIndex={-1}>
 			<article>
 				<header>
 					<h1>Not found</h1>

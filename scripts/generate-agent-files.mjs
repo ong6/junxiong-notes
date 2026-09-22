@@ -71,3 +71,13 @@ fs.writeFileSync(
 );
 
 console.log(`agent surface: ${articles.length} article(s) -> public/raw, llms.txt, llms-full.txt`);
+
+// Full-size figures remain available to readers on narrow screens.
+const figureSource = path.join(ROOT, "content", "diagrams");
+const figureOutput = path.join(ROOT, "public", "figures");
+fs.mkdirSync(figureOutput, { recursive: true });
+for (const file of fs.readdirSync(figureSource).filter((name) => name.endsWith(".svg"))) {
+	const svg = fs.readFileSync(path.join(figureSource, file), "utf8");
+	// Full-size reading view is static; the article owns playback controls.
+	fs.writeFileSync(path.join(figureOutput, file), svg.replace(/<g data-uipack="packet"[\s\S]*?<\/g>/g, ""));
+}

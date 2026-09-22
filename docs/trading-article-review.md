@@ -2,7 +2,7 @@
 
 Reviewed 2026-09-23 against a fresh read-only clone of `ong6/trading-engine`, commit `96266fc85a283268de05089c261782ced907f106`. No engine files or trading state changed. This is inspection of checked-in code and generated reports, not a rerun of historical tests or a query of the running appliance.
 
-Article: [Why my trading strategies haven't earned real money](../content/articles/why-my-trading-strategies-havent-earned-real-money.md). Initially prepared as a private draft. Owner approved publication on 2026-09-23, with a link to the main trading-engine case study.
+Article: [Why My Automated Trading Strategies Haven’t Earned Real Money](../content/articles/why-my-trading-strategies-havent-earned-real-money.md). Initially prepared as a private draft. Owner approved publication on 2026-09-23, with a link to the main trading-engine case study.
 
 | Proposed claim | Finding | Article treatment |
 |---|---|---|

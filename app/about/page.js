@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function About() {
 	return (
-		<main>
+		<main id="main-content" tabIndex={-1}>
 			<article>
 				<header>
 					<h1>About these notes</h1>

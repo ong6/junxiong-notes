@@ -11,7 +11,8 @@ export const metadata = {
 export default function Home() {
 	const posts = allArticles();
 	return (
-		<main>
+		<main id="main-content" tabIndex={-1}>
+			<h1 className="sr-only">Notes</h1>
 			{posts.length === 0 ? (
 				<p className="meta">No articles published yet.</p>
 			) : (

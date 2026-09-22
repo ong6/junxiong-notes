@@ -1,5 +1,5 @@
 ---
-title: Why my trading strategies haven't earned real money
+title: Why My Automated Trading Strategies Haven’t Earned Real Money
 description: What my trading engine's tests actually showed, why positive returns weren't enough, and the agentic paper experiment I'm building next.
 date: 2026-09-23
 updated: 2026-09-23

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import ArticleContent from "../article-content";
 import {
 	allArticles,
 	articleSlugs,
@@ -86,7 +87,7 @@ export default async function Article({ params }) {
 	};
 
 	return (
-		<main>
+		<main id="main-content" tabIndex={-1}>
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -117,7 +118,7 @@ export default async function Article({ params }) {
 					</nav>
 				) : null}
 
-				<div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+				<ArticleContent html={html} />
 
 				<p className="updated">
 					{!fmt(meta.date)

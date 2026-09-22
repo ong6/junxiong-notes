@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteNavigation from "./site-navigation";
 import "./globals.css";
 import { SITE } from "../lib/site.mjs";
 
@@ -48,19 +49,14 @@ export default function RootLayout({ children }) {
 				/>
 			</head>
 			<body>
+				<a className="skip-link" href="#main-content">Skip to content</a>
 				<div className="wrap">
 					<header className="masthead">
-						<h1>
+						<p className="site-title">
 							<Link href="/">{SITE.title}</Link>
-						</h1>
+						</p>
 						<p>{SITE.tagline}</p>
-						<nav>
-							<Link href="/">Articles</Link>
-							<Link href="/about">About</Link>
-							<a href="/feed.xml">RSS</a>
-							<a href="/llms.txt">llms.txt</a>
-							<a href={SITE.authorUrl}>junxiong.dev</a>
-						</nav>
+						<SiteNavigation />
 					</header>
 					{children}
 					<footer>

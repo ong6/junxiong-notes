@@ -70,3 +70,7 @@ because canonicals, JSON-LD, the sitemap and both llms files all read from it.
 ## Editorial review
 
 [Trading article review](docs/trading-article-review.md) records the source evidence and publication checks for the trading article. It is not part of the public article surface.
+
+## Reading and navigation design
+
+Keep the index focused on titles: category navigation is underlined text, topics are disclosed on demand, and tags remain available on article pages. Use at least 44px targets for standalone controls and preserve URL filter state. Audit the whole notes site at phone and desktop widths in both appearances when shared navigation or article styling changes. See [the UX review](docs/notes-ux-review.md) for the design rationale and validation scope.
