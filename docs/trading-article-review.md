@@ -41,3 +41,13 @@ Every public article source link is pinned to the inspected commit. No current m
 ## Publication preparation — 2026-09-23
 
 Owner authorized publication of all notes changes. Added the main-site case-study link near the opening and changed the article to `draft: false`. Verified the destination is live and includes the interactive nightly-loop architecture figure. Publication verification is recorded below after deployment.
+
+Publication verified on 2026-09-23 (Asia/Singapore):
+
+- Release commit: `ab7bd16b7a9d193845c6a52981a50b9ceaabac24`, pushed to `origin/main`.
+- Vercel production deployment: `EDMzyE3dKXdHT4uLirkH3a51xJub`; GitHub deployment `6596692616`, success at `2026-09-22T17:26:20Z`.
+- Deployment URL: https://junxiong-notes-5k8v225lq-ong6s-projects.vercel.app
+- Previous successful production commit: `a9a529b637abde1b2bc24fda9bc549807f354cc8`.
+- Live custom domain: article, index, sitemap, feed, raw Markdown, both agent indexes and social image returned HTTP 200 with expected content.
+- Browser verified Trading category returns the new article and all nine articles appear in category totals.
+- Main-site case-study destination returned HTTP 200; article includes its link near the opening.
