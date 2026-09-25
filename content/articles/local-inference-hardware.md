@@ -1,7 +1,7 @@
 ---
 title: How I think about hardware for local models
 description: Bandwidth, capacity, KV cache and MoE active parameters — the four numbers that decide local inference hardware, with sources.
-date: 2026-08-28
+date: 2026-08-31
 updated: 2026-09-23
 category: AI systems
 tags: [hardware, local-llm, apple-silicon, gpu, memory-bandwidth]

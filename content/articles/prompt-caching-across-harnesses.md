@@ -1,7 +1,7 @@
 ---
 title: Why the same prompt can cost more on the next request
 description: How prefix caching actually bills, what silently breaks it, and a worked cost example across Claude Code, Codex, Cursor and the raw API.
-date: 2026-08-28
+date: 2026-08-29
 updated: 2026-09-23
 category: AI systems
 tags: [prompt-caching, cost, agents, inference]

@@ -1,7 +1,7 @@
 ---
 title: How agent integrations get built inside large organisations
 description: Registries, auth brokering, generated tool schemas and the org failure modes that stall internal agent platforms — grounded in public specs.
-date: 2026-08-28
+date: 2026-09-02
 updated: 2026-09-23
 category: AI systems
 tags: [agents, mcp, integrations, platform-engineering, auth]
