@@ -2,7 +2,9 @@
 import { Connector, Defs, Group, Label, Node, Packet } from "uipack";
 import { define } from "./_shared";
 
+// 200px nodes so "Matched shortlist" fits inside its box.
 const xs = [64, 320, 576, 832];
+const NODE_W = 200;
 
 const path = (
   y: number,
@@ -16,12 +18,12 @@ const path = (
         {i > 0 ? (
           <>
             <Connector
-              points={[[xs[i - 1] + 184, y + 32], [xs[i], y + 32]]}
+              points={[[xs[i - 1] + NODE_W, y + 32], [xs[i], y + 32]]}
               defs="lip"
               kind={kind}
             />
             <Packet
-              points={[[xs[i - 1] + 184, y + 32], [xs[i], y + 32]]}
+              points={[[xs[i - 1] + NODE_W, y + 32], [xs[i], y + 32]]}
               kind={kind}
               dur={1.8}
               delay={-i * 0.45}
@@ -34,7 +36,7 @@ const path = (
           subSize={12}
           x={xs[i]}
           y={y}
-          w={184}
+          w={NODE_W}
           h={64}
           label={label}
           sub={sub}
@@ -65,7 +67,7 @@ const mobilePath = (
           ) : null}
           <Node
             size={16}
-            subSize={11}
+            subSize={14}
             x={48}
             y={y}
             w={344}
@@ -102,10 +104,10 @@ export default define({
     children: (
       <>
         <Defs id="lipm" />
-        <Group titleSize={11} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
+        <Group titleSize={14} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
           {mobilePath(64, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false)}
         </Group>
-        <Group titleSize={11} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
+        <Group titleSize={14} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
           {mobilePath(432, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "response", true)}
         </Group>
       </>

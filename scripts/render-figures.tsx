@@ -13,6 +13,12 @@ const ROOT = process.cwd();
 const OUT = path.join(ROOT, "content", "diagrams");
 const jobs: { id: string; name: string }[] = JSON.parse(process.argv[2] ?? "[]");
 
+// A phone composition is shown, unscrolled, in the 350px column of a 390px
+// phone. Every label in it must land at 11px or more there.
+const PHONE_COLUMN = 350;
+const PHONE_FLOOR = 11;
+const minFontSize = (svg: string) => Math.min(...[...svg.matchAll(/font-size="([\d.]+)/g)].map((m) => Number(m[1])));
+
 async function main() {
 let rendered = 0;
 for (const { id, name } of jobs) {
@@ -31,6 +37,8 @@ for (const { id, name } of jobs) {
       const [, , mw, mh] = fig.mobile.viewBox.split(/\s+/).map(Number);
       if (mw < 320 || mw > 600 || mh > 900) throw new Error(`${name}: mobile viewBox ${mw}x${mh} is outside the 320–600 wide, under 900 tall target`);
       const mobileSvg = renderStatic(fig.mobile, { theme: THEMES[mode], motion: true, frame: false, background: false });
+      const smallest = minFontSize(mobileSvg);
+      if (smallest * PHONE_COLUMN / mw < PHONE_FLOOR) throw new Error(`${name}: mobile label at ${smallest}px renders at ${(smallest * PHONE_COLUMN / mw).toFixed(1)}px on a 390px phone; raise it to at least ${Math.ceil(PHONE_FLOOR * mw / PHONE_COLUMN)}px (floor ${PHONE_FLOOR}px)`);
       writeFileSync(mobileFile, mobileSvg);
       rendered++;
     } else if (existsSync(mobileFile)) {

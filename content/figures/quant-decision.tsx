@@ -27,7 +27,7 @@ export default define({
       <Packet points={toMlx} kind="neutral" dur={2} delay={-1} r={4} />
 
       <Node size={19} subSize={13} x={40} y={152} w={296} h={88} label="GGUF" sub="UD-Q4_K_XL or Q4_K_M · dynamic bits" icon="doc" accent />
-      <Node size={19} subSize={13} x={440} y={152} w={200} h={88} label="Which GPU generation?" icon="service" />
+      <Node size={19} subSize={13} x={404} y={152} w={272} h={88} label="Which GPU generation?" icon="service" />
       <Node size={19} subSize={13} x={744} y={152} w={296} h={88} label="MLX" sub="4-bit or 6-bit · unified memory" icon="doc" accent />
 
       {[260, 540, 820].map((x, i) => (

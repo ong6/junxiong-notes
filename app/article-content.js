@@ -29,6 +29,28 @@ export default function ArticleContent({ html }) {
 		media.addEventListener("change", sync);
 		return () => media.removeEventListener("change", sync);
 	}, [html]);
+	useEffect(() => {
+		// On phones a wide figure scrolls sideways inside .fig-scroll. Only then is it
+		// a keyboard stop and a named region; on desktop it doesn't scroll, so it isn't.
+		if (typeof ResizeObserver === "undefined") return;
+		const mark = (box) => {
+			const scrolls = box.scrollWidth > box.clientWidth + 1;
+			// The swipe hint is shown by CSS on phones; hide it if there is nothing to swipe to.
+			box.closest(".fig").dataset.scrolls = String(scrolls);
+			if (scrolls) {
+				box.tabIndex = 0;
+				box.setAttribute("role", "region");
+				box.setAttribute("aria-label", "Scrollable figure");
+			} else {
+				box.removeAttribute("tabindex");
+				box.removeAttribute("role");
+				box.removeAttribute("aria-label");
+			}
+		};
+		const observer = new ResizeObserver((entries) => entries.forEach((entry) => mark(entry.target)));
+		root.current.querySelectorAll(".fig-scroll").forEach((box) => observer.observe(box));
+		return () => observer.disconnect();
+	}, [html]);
 	function onClick(event) {
 		const button = event.target.closest("[data-figure-motion]");
 		if (!button) return;

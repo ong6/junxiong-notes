@@ -1,7 +1,10 @@
-@import "highlight.js/styles/github.css" (prefers-color-scheme: light);
-@import "highlight.js/styles/github-dark.css" (prefers-color-scheme: dark);
-
+/* Colour tokens. Light is the default; dark applies when the reader chose it
+   (data-theme, set before paint by app/layout.js) or, with no choice saved, when
+   the OS is dark. The two dark blocks are one set: keep them identical.
+   Syntax colours (--hl-*) are part of the set, so code follows the site's theme,
+   and each clears 4.5:1 on --code-bg in its theme. */
 :root {
+	color-scheme: light;
 	--bg: #fffdf9;
 	--surface: #f6f2ea;
 	--text: #14110d;
@@ -10,6 +13,15 @@
 	--accent: #9a3412;
 	--accent-soft: #f0e5dc;
 	--code-bg: #f3efe7;
+	--hl-keyword: #a62638;
+	--hl-string: #174a70;
+	--hl-number: #6f42c1;
+	--hl-constant: #0b5aa6;
+	--hl-builtin: #a3460b;
+	--hl-comment: #626970;
+	--hl-tag: #1d6b32;
+	--hl-bullet: #6b560e;
+	--hl-deletion: #a61b25;
 	--max: 44rem;
 	--serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif;
 	--sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
@@ -17,16 +29,20 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #12110f;
-		--surface: #1b1917;
-		--text: #ece7de;
-		--muted: #9d9488;
-		--faint: #322e29;
-		--accent: #f0854f;
-		--accent-soft: #2a1d16;
-		--code-bg: #1b1917;
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+		--bg: #12110f; --surface: #1b1917; --text: #ece7de; --muted: #aaa195; --faint: #423d35;
+		--accent: #f0854f; --accent-soft: #2a1d16; --code-bg: #1b1917;
+		--hl-keyword: #ff9f8d; --hl-string: #add2ef; --hl-number: #d9b3ff; --hl-constant: #8cc8ff;
+		--hl-builtin: #ffb37a; --hl-comment: #aaa195; --hl-tag: #8ddb8f; --hl-bullet: #f2cc60; --hl-deletion: #ffa198;
 	}
+}
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--bg: #12110f; --surface: #1b1917; --text: #ece7de; --muted: #aaa195; --faint: #423d35;
+	--accent: #f0854f; --accent-soft: #2a1d16; --code-bg: #1b1917;
+	--hl-keyword: #ff9f8d; --hl-string: #add2ef; --hl-number: #d9b3ff; --hl-constant: #8cc8ff;
+	--hl-builtin: #ffb37a; --hl-comment: #aaa195; --hl-tag: #8ddb8f; --hl-bullet: #f2cc60; --hl-deletion: #ffa198;
 }
 
 * { box-sizing: border-box; }
@@ -100,6 +116,9 @@ article h1 { font-size: 2.1rem; line-height: 1.2; letter-spacing: -.02em; margin
 .table-scroll { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--faint); border-radius: 6px; }
 .prose table { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: .875rem; }
 .prose th, .prose td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--faint); vertical-align: top; }
+/* Cells wrap between words only; a table too wide for the column scrolls in
+   .table-scroll instead of splitting words (.prose sets overflow-wrap:anywhere). */
+.prose table { overflow-wrap: normal; word-break: normal; }
 .prose th { background: var(--surface); font-weight: 600; white-space: nowrap; }
 .prose tbody tr:last-child td { border-bottom: 0; }
 
@@ -131,19 +150,16 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 }
 
 /* ---------- figures: diagrams and charts ---------- */
-/* Figures break out wider than the 44rem text measure. Prose wants a short line;
-   a diagram wants room. One width for every figure, so charts and diagrams share
-   a left and right edge down the page instead of stepping in and out. */
-.fig {
-	--fig-w: min(56rem, calc(100vw - 2.5rem));
-	margin: 2.6rem 0;
-	width: var(--fig-w);
-	margin-left: 50%;
-	transform: translateX(-50%);
-}
+/* .fig wraps a <figure> (drawing + caption) and its controls. Only the drawing
+   (.fig-media) breaks out wider than the 44rem text measure: prose wants a short
+   line, a diagram wants room. One width for every drawing, so charts and
+   diagrams share a left and right edge down the page. Caption and controls stay
+   on the text column and share its edges. */
+.fig { --fig-w: min(56rem, calc(100vw - 2.5rem)); margin: 2.6rem 0; }
+.fig figure { margin: 0; }
+.fig-media { width: var(--fig-w); margin-left: calc(50% - var(--fig-w) / 2); }
 /* Fill the slot exactly. Natural widths sit in an 830-1140 band, so this scales
    by 0.79-1.08 - close enough that type stays even across figures. */
-.fig .fig-svg { overflow: visible; }
 .fig svg { width: 100%; height: auto; display: block; }
 
 .fig figcaption {
@@ -152,72 +168,68 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 	color: var(--muted);
 	line-height: 1.6;
 	margin-top: 1rem;
-	text-align: left;
-	max-width: 46rem;
-	padding-left: .1rem;
-	border-top: 1px solid var(--faint);
 	padding-top: .8rem;
+	border-top: 1px solid var(--faint);
 }
 .fig figcaption .fig-source {
 	display: block;
 	margin-top: .35rem;
 	font-size: .78rem;
-	opacity: .8;
 }
+.fig-actions { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.25rem; margin-top: .25rem; font: .8rem var(--sans); }
+.figure-fullsize { display: inline-flex; align-items: center; min-height: 44px; }
+.figure-motion { min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--muted); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.figure-motion:hover { color: var(--accent); }
 
 /* D2 bakes both palettes into one SVG behind prefers-color-scheme, but it
    ships its own font; force the site's type onto every label. */
 .fig-diagram text { font-family: var(--sans) !important; }
 
-/* Vega renders once per theme. Show the one that matches, and let an explicit
-   theme choice beat the OS setting in both directions. */
-.fig-themed .fig-dark { display: none; }
+/* Each themed figure ships a light and a dark drawing (and its full-size link),
+   and some ship a phone composition too. These rules only ever hide, so no
+   selector can out-rank another into showing two drawings at once. An explicit
+   theme choice beats the OS setting in both directions. */
+@media not all and (prefers-color-scheme: dark) {
+	:root:not([data-theme="dark"]) .fig-dark { display: none; }
+}
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) .fig-themed .fig-light { display: none; }
-	:root:not([data-theme="light"]) .fig-themed .fig-dark { display: block; }
+	:root:not([data-theme="light"]) .fig-light { display: none; }
 }
-:root[data-theme="dark"] .fig-themed .fig-light { display: none; }
-:root[data-theme="dark"] .fig-themed .fig-dark { display: block; }
-:root[data-theme="light"] .fig-themed .fig-light { display: block; }
-:root[data-theme="light"] .fig-themed .fig-dark { display: none; }
-.fig-themed .fig-mobile { display: none; }
+:root[data-theme="light"] .fig-dark,
+:root[data-theme="dark"] .fig-light { display: none; }
+@media (max-width: 600px) { .fig-desktop { display: none; } }
+@media not all and (max-width: 600px) { .fig-mobile { display: none; } }
 
+/* Phones: a wide drawing without a phone composition keeps its layout and
+   scrolls sideways inside its own box, at the width (set per figure by
+   lib/rehype-figures.js) that brings its smallest label to 11px. */
+.fig-swipe { display: none; }
 @media (max-width: 600px) {
-	.fig-themed .fig-desktop { display: none !important; }
-	.fig-themed .fig-mobile.fig-light { display: block; }
-	.fig-themed .fig-mobile.fig-dark { display: none; }
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme="light"]) .fig-themed .fig-mobile.fig-light { display: none; }
-		:root:not([data-theme="light"]) .fig-themed .fig-mobile.fig-dark { display: block; }
-	}
-	:root[data-theme="dark"] .fig-themed .fig-mobile.fig-light { display: none; }
-	:root[data-theme="dark"] .fig-themed .fig-mobile.fig-dark { display: block; }
+	.fig-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+	.fig-scroll svg { width: var(--fig-phone-w, 100%); max-width: none; }
+	.fig .fig-swipe { display: block; margin-top: .5rem; font: 700 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+	.fig[data-scrolls="false"] .fig-swipe { display: none; }
 }
 
+/* ---------- code highlighting (highlight.js classes, site palette) ---------- */
+.hljs { color: var(--text); }
+.hljs-doctag, .hljs-keyword, .hljs-meta .hljs-keyword, .hljs-template-tag, .hljs-template-variable,
+.hljs-type, .hljs-variable.language_ { color: var(--hl-keyword); }
+.hljs-string, .hljs-regexp, .hljs-meta .hljs-string, .hljs-attr { color: var(--hl-string); }
+.hljs-number, .hljs-literal, .hljs-title, .hljs-title.class_, .hljs-title.function_ { color: var(--hl-number); }
+.hljs-attribute, .hljs-meta, .hljs-operator, .hljs-variable, .hljs-selector-attr, .hljs-selector-class,
+.hljs-selector-id { color: var(--hl-constant); }
+.hljs-section { color: var(--hl-constant); font-weight: 600; }
+.hljs-built_in, .hljs-symbol { color: var(--hl-builtin); }
+.hljs-comment, .hljs-code, .hljs-formula { color: var(--hl-comment); }
+.hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-pseudo, .hljs-addition { color: var(--hl-tag); }
+.hljs-bullet { color: var(--hl-bullet); }
+.hljs-deletion { color: var(--hl-deletion); }
+.hljs-subst, .hljs-punctuation, .hljs-params, .hljs-property, .hljs-tag, .hljs-link, .hljs-char.escape_ { color: inherit; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
 
 /* Reading controls belong to the page's typography, not a separate toolbar. */
-:root { color-scheme: light; }
-@media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
-:root[data-theme="light"] {
-	color-scheme: light; --bg: #fffdf9; --surface: #f6f2ea; --text: #14110d;
-	--muted: #6b6459; --faint: #d9d2c5; --accent: #9a3412;
-	--accent-soft: #f0e5dc; --code-bg: #f3efe7;
-}
-:root[data-theme="dark"] {
-	color-scheme: dark; --bg: #12110f; --surface: #1b1917; --text: #ece7de;
-	--muted: #aaa195; --faint: #423d35; --accent: #f0854f;
-	--accent-soft: #2a1d16; --code-bg: #1b1917;
-}
-:root[data-theme="dark"] .hljs { color: #ece7de; background: var(--code-bg); }
-:root[data-theme="dark"] .hljs-keyword, :root[data-theme="dark"] .hljs-selector-tag { color: #ff9f8d; }
-:root[data-theme="dark"] .hljs-string, :root[data-theme="dark"] .hljs-attr { color: #add2ef; }
-:root[data-theme="dark"] .hljs-number, :root[data-theme="dark"] .hljs-literal, :root[data-theme="dark"] .hljs-title { color: #d9b3ff; }
-:root[data-theme="dark"] .hljs-comment { color: #aaa195; }
-:root[data-theme="light"] .hljs { color: #24292e; background: var(--code-bg); }
-:root[data-theme="light"] .hljs-keyword, :root[data-theme="light"] .hljs-selector-tag { color: #a62638; }
-:root[data-theme="light"] .hljs-string, :root[data-theme="light"] .hljs-attr { color: #174a70; }
-:root[data-theme="light"] .hljs-number, :root[data-theme="light"] .hljs-literal, :root[data-theme="light"] .hljs-title { color: #6f42c1; }
-:root[data-theme="light"] .hljs-comment { color: #626970; }
 html { scroll-padding-top: 1.5rem; }
 :where(h2,h3) { scroll-margin-top: 1.5rem; }
 :where(a,button,summary,select) { touch-action: manipulation; }
@@ -229,8 +241,12 @@ main:focus { outline: none; }
 .masthead .site-title { font-family: var(--serif); font-size: 1.6rem; line-height: 1.4; color: var(--text); }
 .masthead .site-title a { display: inline-flex; align-items: center; min-height: 44px; }
 .masthead-navigation { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .8rem; }
-.masthead nav { margin: 0; gap: 1.1rem; }
-.masthead nav a, footer .links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; }
+/* Nav and footer links: each target is the text plus .55rem a side (always
+   over 44px wide), and the row is pulled left by that padding so the first
+   word sits on the column edge and every word-to-word gap is the same 1.1rem. */
+.masthead nav { margin: 0 0 0 -.55rem; gap: 0; }
+footer .links { margin-left: -.55rem; gap: 0; }
+.masthead nav a, footer .links a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; padding: 0 .55rem; }
 .masthead nav a[aria-current="page"] { color: var(--text); text-decoration: underline; text-underline-offset: 7px; }
 .theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: transparent; color: var(--muted); border: 1px solid transparent; border-radius: 50%; cursor: pointer; }
 .theme-toggle:hover, .theme-toggle[aria-pressed="true"] { color: var(--accent); background: var(--surface); }
@@ -248,7 +264,9 @@ main:focus { outline: none; }
 .topic-panel { background: var(--surface); border-radius: 8px; padding: 1.1rem 1.25rem; margin: .5rem 0 1rem; }
 .topic-picker:not([open]) .topic-panel { display: none; }
 .topic-panel p { font-size: .8rem; color: var(--muted); margin: 0 0 .65rem; }
-.topic-links { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .25rem .8rem; }
+/* Links keep .5rem of hover padding; the grid is pulled out by the same amount
+   so their text lines up with the panel heading. */
+.topic-links { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .25rem .8rem; margin: 0 -.5rem; }
 .topic-links a { display: flex; align-items: center; min-height: 44px; padding: .35rem .5rem; font-size: .8rem; text-decoration: none; color: var(--text); overflow-wrap: anywhere; border-radius: 4px; }
 .topic-links a:hover { background: var(--bg); }
 .topic-links a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
@@ -274,7 +292,7 @@ main:focus { outline: none; }
 }
 .project-link:hover { border-color: var(--accent); }
 .project-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.project-link-kicker { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.project-link-kicker { font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .project-link-name { display: inline-flex; align-items: baseline; gap: .4rem; font-size: 1.2rem; font-weight: 650; line-height: 1.35; }
 .project-link-arrow { color: var(--accent); transition: transform .15s ease; }
 .project-link:hover .project-link-arrow { transform: translate(2px, -2px); }
@@ -289,13 +307,14 @@ main:focus { outline: none; }
 .toc li { margin: 0; }
 .toc li.d3 { padding-left: 1rem; }
 .toc p { text-transform: none; font-size: .9rem; letter-spacing: 0; }
-.fig figcaption .fig-source { opacity: 1; }
-footer .links { gap: .5rem 1rem; }
 @media (max-width: 600px) {
 	.masthead { margin-bottom: 1.5rem; padding-bottom: 1rem; }
-	.masthead nav { gap: .9rem; }
-	.category-filters { column-gap: 1.1rem; }
-	.category-filters a { font-size: .85rem; }
+	.masthead nav { margin-left: -.45rem; }
+	.masthead nav a { padding: 0 .45rem; }
+	/* One row that scrolls sideways, so the active underline stays on the divider row. */
+	.category-filters { column-gap: 1.1rem; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+	.category-filters::-webkit-scrollbar { display: none; }
+	.category-filters a { flex: none; white-space: nowrap; font-size: .85rem; }
 	.topic-links { grid-template-columns: repeat(2,minmax(0,1fr)); }
 	.topic-panel { padding: .85rem; }
 	.post-list h2 { font-size: 1.35rem; }
@@ -310,14 +329,10 @@ footer .links { gap: .5rem 1rem; }
 	*, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
 
-.figure-fullsize { display: inline-flex; align-items: center; min-height: 44px; margin-top: .5rem; font: .8rem var(--sans); }
-.fig figcaption { margin-top: .35rem; }
 @media (max-width: 600px) {
 	.post-meta .reading-time { display: none; }
 }
 
-.figure-motion { min-height: 44px; margin: .5rem 0 0 1.25rem; padding: .3rem 0; border: 0; background: transparent; color: var(--muted); font: .8rem var(--sans); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.figure-motion:hover { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
 	.fig:not([data-user-play="true"]) [data-uipack="packet"] { visibility: hidden; }
 }

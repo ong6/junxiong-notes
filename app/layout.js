@@ -23,6 +23,11 @@ export const metadata = {
 	robots: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
 };
 
+// Runs before first paint: apply a saved appearance choice (written by the
+// toggle in site-navigation.js) so a stored dark choice never flashes light.
+// With no saved choice, CSS follows the OS until the toggle syncs.
+const THEME_SCRIPT = `try{var t=localStorage.getItem("notes-appearance");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }) {
 	const jsonLd = {
 		"@context": "https://schema.org",
@@ -40,8 +45,9 @@ export default function RootLayout({ children }) {
 		},
 	};
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
+				<script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
 				<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
 				<script
 					type="application/ld+json"

@@ -42,10 +42,10 @@ export default define({
           <Packet key={i} points={[[224, s.at], [272, s.at]]} kind="request" dur={1.6} delay={-i * 0.5} r={4} />
         ))}
         <Packet points={[[272, b.mid], [352, b.mid]]} kind="request" dur={1.6} delay={-0.8} r={4} />
-        <Node size={19} subSize={13} x={352} y={b.mid - 24} w={200} h={48} label="Auth broker" sub="the only path" icon="lock" accent />
-        <Connector points={[[552, b.mid], [656, b.mid]]} defs="bp" kind="response" />
-        <Label x={584} y={b.mid - 10} text="scoped token" anchor="middle" size={13} />
-        <Packet points={[[552, b.mid], [656, b.mid]]} kind="response" dur={1.6} delay={-1.1} r={4} />
+        <Node size={19} subSize={13} x={352} y={b.mid - 24} w={184} h={48} label="Auth broker" sub="the only path" icon="lock" accent />
+        <Connector points={[[536, b.mid], [656, b.mid]]} defs="bp" kind="response" />
+        <Label x={596} y={b.mid - 10} text="scoped token" anchor="middle" size={13} />
+        <Packet points={[[536, b.mid], [656, b.mid]]} kind="response" dur={1.6} delay={-1.1} r={4} />
         <Node size={19} subSize={13} x={656} y={b.mid - 24} w={192} h={48} label="Internal service" icon="service" />
         <Connector points={[[848, b.mid], [880, b.mid]]} defs="bp" kind="response" />
         <Packet points={[[848, b.mid], [880, b.mid]]} kind="response" dur={1.6} delay={-1.4} r={4} />

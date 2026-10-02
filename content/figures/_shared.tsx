@@ -15,9 +15,11 @@ export const THEMES: Record<"light" | "dark", NonNullable<StaticOptions["theme"]
     "surface-raised": "#efe9df",
     grid: "#d9d2c5",
     border: "#d9d2c5",
-    accent: "#1baf7a",
+    // Green labels sit on node fills (surface) and the page (bg). #1baf7a was
+    // ~2.5:1 there; this is 4.8:1 on surface and 5.3:1 on bg.
+    accent: "#0f7a55",
     "token-request": "#2a78d6",
-    "token-response": "#1baf7a",
+    "token-response": "#0f7a55",
     "token-change": "#eb6834",
     sans: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif",
     mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",

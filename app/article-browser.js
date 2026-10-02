@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
 function filterUrl(category = "", tag = "") {
@@ -37,6 +37,7 @@ export function PostList({ posts }) {
 
 export default function ArticleBrowser({ posts }) {
 	const topicPicker = useRef(null);
+	const categoryNav = useRef(null);
 	const params = useSearchParams();
 	const category = params.get("category") ?? "";
 	const tag = params.get("tag") ?? "";
@@ -46,10 +47,23 @@ export default function ArticleBrowser({ posts }) {
 	const filtered = categoryPosts.filter((post) => !tag || post.tags.includes(tag));
 	const nextCategoryUrl = (name) => filterUrl(name, posts.some((p) => (!name || p.category === name) && p.tags.includes(tag)) ? tag : "");
 
+	// On phones the category tabs are one row that scrolls sideways; keep the
+	// active tab in view without moving the page.
+	useEffect(() => {
+		const nav = categoryNav.current;
+		const active = nav?.querySelector('[aria-current="page"]');
+		if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
+		const box = active.getBoundingClientRect();
+		const left = box.left - nav.getBoundingClientRect().left + nav.scrollLeft;
+		if (left < nav.scrollLeft || left + box.width > nav.scrollLeft + nav.clientWidth) {
+			nav.scrollLeft = Math.max(0, left - (nav.clientWidth - box.width) / 2);
+		}
+	}, [category]);
+
 	return (
 		<>
 			<section className="article-filters" aria-label="Browse articles">
-				<nav className="category-filters" aria-label="Article categories">
+				<nav className="category-filters" aria-label="Article categories" ref={categoryNav}>
 					<Link href={nextCategoryUrl("")} scroll={false} aria-current={!category ? "page" : undefined}>All notes <span>{posts.length}</span></Link>
 					{categories.map((name) => (
 						<Link key={name} href={nextCategoryUrl(name)} scroll={false} aria-current={category === name ? "page" : undefined}>
@@ -69,7 +83,7 @@ export default function ArticleBrowser({ posts }) {
 					}}>
 						<summary>Topics <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></summary>
 						<div className="topic-panel">
-							<p>Explore {category ? category.toLowerCase() : "the notes"} by topic</p>
+							<p>Explore {category || "the notes"} by topic</p>
 							<div className="topic-links">
 								<Link href={filterUrl(category)} scroll={false} aria-current={!tag ? "page" : undefined}>All topics</Link>
 								{tags.map((name) => <Link key={name} href={filterUrl(category, name)} scroll={false} aria-current={tag === name ? "page" : undefined}>{name}</Link>)}
