@@ -103,6 +103,16 @@ export default async function Article({ params }) {
 						<a className="category-label" href={`/?${new URLSearchParams({ category: meta.category })}`}>{meta.category}</a>
 						{meta.tags.map((tag) => <a key={tag} href={`/?${new URLSearchParams({ tag })}`}>#{tag}</a>)}
 					</div>
+					{meta.project ? (
+						<a className="project-link" href={meta.project.href}>
+							<span className="project-link-kicker">Project page</span>
+							<span className="project-link-name">
+								{meta.project.name}
+								<span className="project-link-arrow" aria-hidden="true">↗</span>
+							</span>
+							{meta.project.detail ? <span className="project-link-detail">{meta.project.detail}</span> : null}
+						</a>
+					) : null}
 				</header>
 
 				{toc.length > 2 ? (

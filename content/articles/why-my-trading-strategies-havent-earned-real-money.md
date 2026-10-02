@@ -5,6 +5,10 @@ date: 2026-09-23
 updated: 2026-09-23
 category: Trading
 tags: [trading, backtesting, agents, systematic-trading]
+project:
+  name: Trading engine case study
+  href: https://junxiong.dev/trading-engine
+  detail: How the engine works, with interactive diagrams of every version, on my main site.
 draft: false
 ---
 

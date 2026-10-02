@@ -19,6 +19,10 @@ draft: false
 ---
 ```
 
+Optional `project: { name, href, detail }` names the one page an article is about (an absolute
+URL, usually on junxiong.dev). It renders as a large framed link under the title, so the related
+project never hides as a small inline link.
+
 Body starts at `##` — the `<h1>` comes from `title`. Files starting with `_` are ignored, and
 so is anything with `draft: true`.
 

@@ -5,6 +5,10 @@ date: 2026-09-19
 updated: 2026-09-23
 category: Web engineering
 tags: [threejs, webgl, accessibility, performance, frontend]
+project:
+  name: Hobbies page
+  href: https://junxiong.dev/hobbies
+  detail: The 3D scenes this article describes, as they are today, on my main site.
 ---
 
 This post describes the first version of the hobbies page on 19 September 2026. The scenes have since changed; the details below refer to that initial implementation.
