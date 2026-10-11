@@ -22,13 +22,10 @@
 	--hl-tag: #1d6b32;
 	--hl-bullet: #6b560e;
 	--hl-deletion: #a61b25;
-	/* Figure palette (content/figures/_shared.tsx): green emphasis, blue request,
-	   orange change. The HTML charts read it through --uipack-* below. */
+	/* Figure palette (content/figures/_shared.tsx): green marks data, orange a
+	   change. The HTML charts read it through --uipack-* below. */
 	--fig-accent: #0f7a55;
-	--fig-request: #2a78d6;
 	--fig-change: #eb6834;
-	/* The span chart's "also in" cells: 15% green on the page, as uipack derives it. */
-	--fig-tint: #dbe9e0;
 	--max: 44rem;
 	--serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif;
 	--sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
@@ -42,7 +39,7 @@
 		--accent: #f0854f; --accent-soft: #2a1d16; --code-bg: #1b1917;
 		--hl-keyword: #ff9f8d; --hl-string: #add2ef; --hl-number: #d9b3ff; --hl-constant: #8cc8ff;
 		--hl-builtin: #ffb37a; --hl-comment: #aaa195; --hl-tag: #8ddb8f; --hl-bullet: #f2cc60; --hl-deletion: #ffa198;
-		--fig-accent: #199e70; --fig-request: #3987e5; --fig-change: #d95926; --fig-tint: #14382a;
+		--fig-accent: #199e70; --fig-change: #d95926;
 	}
 }
 :root[data-theme="dark"] {
@@ -51,7 +48,7 @@
 	--accent: #f0854f; --accent-soft: #2a1d16; --code-bg: #1b1917;
 	--hl-keyword: #ff9f8d; --hl-string: #add2ef; --hl-number: #d9b3ff; --hl-constant: #8cc8ff;
 	--hl-builtin: #ffb37a; --hl-comment: #aaa195; --hl-tag: #8ddb8f; --hl-bullet: #f2cc60; --hl-deletion: #ffa198;
-	--fig-accent: #199e70; --fig-request: #3987e5; --fig-change: #d95926; --fig-tint: #14382a;
+	--fig-accent: #199e70; --fig-change: #d95926;
 }
 
 * { box-sizing: border-box; }
@@ -221,11 +218,10 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 }
 
 /* ---------- HTML charts: ```span (SpanChart) and ```stack (LayerStack) ---------- */
-/* uipack/charts.css (imported once, in app/[slug]/page.js) styles the components;
-   the site only maps its palette. The tokens below already switch with the theme
-   (data-theme or the OS), so no dark block is needed. --fig-tint is set because
-   15% of the darker dark-mode green (uipack's derived tint) is almost invisible
-   on the dark page. */
+/* uipack/charts.css (imported once, in app/[slug]/page.js) styles the components,
+   including their own resets against .prose; the site only maps its palette. The
+   tokens below already switch with the theme (data-theme or the OS), so no dark
+   block is needed. Both charts use the standard 56rem figure slot. */
 .fig-html {
 	--uipack-fg: var(--text);
 	--uipack-muted: var(--muted);
@@ -234,17 +230,10 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 	--uipack-surface-raised: var(--surface);
 	--uipack-border: var(--faint);
 	--uipack-accent: var(--fig-accent);
-	--uipack-token-request: var(--fig-request);
 	--uipack-token-change: var(--fig-change);
-	--uipack-span-tint: var(--fig-tint);
 	--uipack-sans: var(--sans);
 	--uipack-mono: var(--mono);
 }
-/* Both use the standard 56rem figure slot, on the same edges as every other
-   figure; the span chart picks its own column-header mode for the width and
-   stacks its rows below 640px. They reflow rather than scale, and their text
-   must wrap between words (.prose sets overflow-wrap: anywhere). */
-.fig-html .fig-media { overflow-wrap: normal; }
 
 /* ---------- code highlighting (highlight.js classes, site palette) ---------- */
 .hljs { color: var(--text); }

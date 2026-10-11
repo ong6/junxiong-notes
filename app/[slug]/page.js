@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-// Styles for ```span and ```stack charts (uipack/charts). Imported here, not in the
-// layout, so it loads after globals.css: at equal specificity the charts' own
-// resets must beat the .prose rules, and pages without articles skip it.
+// Styles for ```span and ```stack charts (uipack/charts). Imported here rather
+// than in the layout so pages without articles skip it.
 import "uipack/charts.css";
 import ArticleContent from "../article-content";
 import {

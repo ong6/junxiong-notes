@@ -3,3 +3,5 @@
 # monogram tile in the chart.
 thinking-machines  # the service returns a featureless dark square
 common-crawl       # a wordmark, unreadable in a 20px tile
+tsmc               # only a 16px wordmark favicon, unreadable in a 20px tile
+supermicro         # only a 16px wordmark favicon, unreadable in a 20px tile

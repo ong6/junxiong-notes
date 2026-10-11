@@ -241,7 +241,9 @@ onto the component's props, renders it with `renderToStaticMarkup` and writes
 `content/diagrams/<hash>.html`. `lib/rehype-figures.js` inlines that file in the usual
 `.fig > figure > figcaption` structure, in the standard 56rem figure slot, with no full-size link,
 motion control or swipe hint; the span chart chooses full labels, `short` labels or `abbr` codes for
-its column headers by the width it gets. The
+its column headers by the width it gets (in the 56rem slot: a name column and `short` words; on
+phones: codes). Both render with `headingLevel: "none"`, so their group and zone labels stay out of
+the article's outline. The
 chart's `id` is the data file's name, so a data file can appear once per article. The site maps its
 palette onto the `--uipack-*` properties in `app/globals.css` (`.fig-html`), and
 `app/article-content.js` adds the optional keyboard enhancement (`enhanceSpanChart`).
@@ -251,8 +253,9 @@ palette onto the `--uipack-*` properties in `app/globals.css` (`.fig-html`), and
 `valuation.usdB`, the size tier is the first `sizeTiers` entry whose `minB` it reaches (with no
 figure, `usdB: null`, the row goes in `unsizedTier`, the last chip), and the label is
 `valuation.display` if set (such as "part of Microsoft" or ">$1B"), else `$4.3T`, `$17.5B`, `$60B` or
-`$350M`, else `—`. Layers pass their `short` label through and stack zones their `note`. The date in
-the footer is the file's `asOf`.
+`$350M`, else `—`. Layers pass their `short` label through and stack zones their `note`. Any company
+with a `status` other than `shutdown` counts toward the chart's "Deals" filter, and tags are
+explained in the legend as "model type". The date in the footer is the file's `asOf`.
 
 **The build fails** on YAML syntax errors, an unknown field (it suggests the nearest real one, so
 `feautred` is caught), a wrong type, anything the component rejects (unknown layer or tier, duplicate

@@ -99,8 +99,7 @@ function spanProps(name: string): SpanChartProps {
   const data = only(file, "the file", load(file), ["asOf", "zones", "layers", "sizeTiers", "unsizedTier", "companies"], ["layers", "companies"]);
 
   const zones = data.zones === undefined ? undefined : list(file, "zones", data.zones).map((z, i) => only(file, `zones[${i}]`, z, ["id", "label"], ["id", "label"]));
-  // `short` (a one-word header label) is passed through as-is: uipack reads it once
-  // its short-label mode ships, and ignores it until then.
+  // `short` is the one-word column header the chart uses at mid widths (the 56rem slot).
   const layers = list(file, "layers", data.layers).map((l, i) => only(file, `layers[${i}]`, l, ["id", "label", "short", "abbr", "zone"], ["id", "label", "abbr"]));
   const sizeTiers = data.sizeTiers === undefined ? [] : list(file, "sizeTiers", data.sizeTiers).map((t, i) => {
     const tier = only(file, `sizeTiers[${i}]`, t, ["id", "label", "range", "minB"], ["id", "label", "minB"]);
@@ -175,6 +174,8 @@ function spanProps(name: string): SpanChartProps {
     tiers: sizeTiers.length || unsized ? [...sizeTiers.map(({ id, label, range }) => ({ id, label, range })), ...(unsized ? [unsized] : [])] : undefined,
     items,
     asOf: data.asOf === undefined ? undefined : String(data.asOf),
+    // Tags in this data are model types (image, video, voice, world, robotics).
+    labels: { tagLegend: "model type" },
   };
 }
 
@@ -183,7 +184,7 @@ function spanProps(name: string): SpanChartProps {
 function stackProps(name: string): LayerStackProps {
   const file = `content/data/${name}.yaml`;
   const data = only(file, "the file", load(file), ["zones", "layers", "rails", "brackets"], ["zones", "layers"]);
-  // A zone's `note` is passed through as-is: uipack shows it once zone notes ship.
+  // A zone's optional `note` is shown beside its label ("MODELS · built once per model").
   const zones = list(file, "zones", data.zones).map((z, i) => only(file, `zones[${i}]`, z, ["id", "label", "note"], ["id", "label"]));
   const layers = list(file, "layers", data.layers).map((l, i) => {
     const layer = only(file, `layers[${i}]`, l, ["id", "label", "zone", "summary", "metric", "detail", "href"], ["id", "label", "zone", "summary"]);
@@ -204,7 +205,12 @@ function main() {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) throw new DataError(`\`\`\`${k} fence names "${name}"; expected a kebab-case data file name under content/data/ without extension`);
     let html: string;
     try {
-      html = k === "span" ? renderToStaticMarkup(<SpanChart {...spanProps(name)} />) : renderToStaticMarkup(<LayerStack {...stackProps(name)} />);
+      // headingLevel "none": the charts sit inside articles, so their group and zone
+      // labels must not enter the page outline (they become role="group" labels).
+      html =
+        k === "span"
+          ? renderToStaticMarkup(<SpanChart {...spanProps(name)} headingLevel="none" />)
+          : renderToStaticMarkup(<LayerStack {...stackProps(name)} headingLevel="none" />);
     } catch (e) {
       // The library names the chart and the item; say which file to edit.
       if (e instanceof DataError) throw e;
