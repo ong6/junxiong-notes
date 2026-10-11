@@ -1,9 +1,12 @@
 # Figure spec for notes.junxiong.dev
 
-Two fences. Both render to SVG at **build time** — no runtime JavaScript, real
-`<text>` nodes, and the source stays readable in `/raw/<slug>.md` for agents.
-A malformed fence **fails the build with a line/column error**, so a broken
-figure can never ship. Run `npm run diagrams` to check your work.
+Every figure is a fenced block rendered at **build time** — no runtime JavaScript
+needed, and the source stays readable in `/raw/<slug>.md` for agents. Diagrams
+and charts (`uipack`, `vega-lite`, legacy `d2`) become SVG with real `<text>`
+nodes; the two data figures (`span`, `stack`, section 3) become responsive HTML
+built from a YAML file. A malformed fence or data file **fails the build with a
+clear error**, so a broken figure can never ship. Run `npm run diagrams` to check
+your work.
 
 Text after the language word becomes the caption. Always write one — it states
 what the figure shows.
@@ -207,6 +210,70 @@ background yourself.**
 - A layered chart with an explicit `"sort":[...]` array logs a
   `Domains that should be unioned has conflicting sort properties` warning. It is
   cosmetic and the rendered order is correct — ignore it.
+
+---
+
+## 3. ```span and ```stack — data figures from YAML
+
+Two [`uipack/charts`](https://github.com/ong6/uipack/blob/main/docs/charts.md) components for
+articles that walk the AI stack. They are HTML and CSS rather than SVG: they reflow to the
+container instead of scaling, and every interaction (expand, filters, opening a row or band) is a
+native radio, checkbox or `<details>`, so they work with JavaScript off. The fence body names a data
+file under `content/data/` without its extension; the caption rule above still applies.
+
+````
+```span Each bar is the run of layers a company sells into; the solid cell is its main layer. | Source: company sites and deal announcements, linked from each row.
+ai-stack
+```
+
+```stack Ten layers, bottom-up, each with the number that shows its constraint. | Source: the figures are sourced in each layer's section below.
+ai-stack-layers
+```
+````
+
+| Fence | Component | Data file |
+|---|---|---|
+| `span` | `SpanChart`: companies as rows, layers as columns, filters by layer and size | `content/data/<name>.yaml` with `layers`, `zones`, `sizeTiers`, `unsizedTier`, `companies` (the header comment documents every field) |
+| `stack` | `LayerStack`: the layers bottom-up, each opening to a self-test question and a link to its section | `content/data/<name>.yaml` with `zones` (optional `note`), `layers`, `rails`, `brackets` |
+
+`npm run diagrams` (and so `prebuild`) runs `scripts/render-charts.tsx`, which loads the YAML, maps it
+onto the component's props, renders it with `renderToStaticMarkup` and writes
+`content/diagrams/<hash>.html`. `lib/rehype-figures.js` inlines that file in the usual
+`.fig > figure > figcaption` structure, in the standard 56rem figure slot, with no full-size link,
+motion control or swipe hint; the span chart chooses full labels, `short` labels or `abbr` codes for
+its column headers by the width it gets. The
+chart's `id` is the data file's name, so a data file can appear once per article. The site maps its
+palette onto the `--uipack-*` properties in `app/globals.css` (`.fig-html`), and
+`app/article-content.js` adds the optional keyboard enhancement (`enhanceSpanChart`).
+
+**Mapping (`span`).** Each company becomes a row: `href` is `https://<domain>`, `logo` is
+`public/logos/<id>.png` or `.jpg` if that file exists (otherwise a monogram), `value` is
+`valuation.usdB`, the size tier is the first `sizeTiers` entry whose `minB` it reaches (with no
+figure, `usdB: null`, the row goes in `unsizedTier`, the last chip), and the label is
+`valuation.display` if set (such as "part of Microsoft" or ">$1B"), else `$4.3T`, `$17.5B`, `$60B` or
+`$350M`, else `—`. Layers pass their `short` label through and stack zones their `note`. The date in
+the footer is the file's `asOf`.
+
+**The build fails** on YAML syntax errors, an unknown field (it suggests the nearest real one, so
+`feautred` is caught), a wrong type, anything the component rejects (unknown layer or tier, duplicate
+id, a status without its counterparty), an in-page link in a chart that matches no heading of the
+rendered article (the `stack` bands link to `###` headings by their rehype-slug ids, such as
+`#power-and-sites`), and a chart id that collides with another id on the page.
+
+**Logos are never fetched by the build.** `npm run logos` downloads a favicon for each company with
+a `domain` and no logo yet, verifies it (PNG or JPEG signature and dimensions, at most 200 KB, at
+least 24px, not the service's generic globe) and writes it to `public/logos/<id>.png` or `.jpg`.
+Look at every new file before committing it; delete any that is wrong or unreadable at 20px and add
+its id to `content/data/logo-rejects.txt` so the next run skips it.
+
+### Adding a company
+
+1. Add a block under `companies:` in `content/data/ai-stack.yaml` (order does not matter): `id`,
+   `name`, `domain`, `primary`, `also`, `tags`, `note`, `source`, `valuation`, and `featured` or
+   `status` if they apply. Bump `asOf` if you re-checked the placements.
+2. `npm run logos`, then open the new file in `public/logos/` and delete it if it is wrong.
+3. `npm run build`. It re-renders the chart from the YAML and stops with the file and field if
+   anything is off. Update any count the article states (for example "158 companies").
 
 ---
 

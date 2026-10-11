@@ -1,0 +1,2157 @@
+# AI stack span chart data. Hand-editable; asOf is the date the placements were checked.
+#
+# To add a company, append a block under `companies:` (order does not matter):
+#   id        kebab-case, unique, stable (the logo file is named after it)
+#   domain    the site's real domain, for logo lookup
+#   primary   one layer id from `layers` (where the company is strongest)
+#   also      other layer ids it sells into, [] if none
+#   tags      model type for specialists: image | video | voice | world | robotics ([] for text/general)
+#   featured  true to show in the chart's initial view
+#   note      one plain sentence, under ~110 characters, no marketing words
+#   status    optional: kind acquired | pending | licensed | shutdown, plus a short label (counterparty, year)
+#   source    one URL that supports the placement or the status
+#   valuation usdB (USD billions, null if unknown), basis (public | private | deal | parent | undisclosed | none), asOf (month), source,
+#             optional display (label shown instead of the number, e.g. ">$1B" when only a floor is public)
+# Keep status.kind honest: pending = agreed or reported but not closed.
+asOf: 2026-10-12
+zones:
+  - { id: infrastructure, label: Infrastructure }
+  - { id: models, label: Models }
+  - { id: serving, label: Serving }
+  - { id: product, label: Product }
+layers:
+  - { id: power, label: Power and sites, short: Power, abbr: PWR, zone: infrastructure }
+  - { id: chips, label: Chips and memory, short: Chips, abbr: CHP, zone: infrastructure }
+  - { id: systems, label: Racks and networks, short: Racks, abbr: NET, zone: infrastructure }
+  - { id: cloud, label: Cloud and capital, short: Cloud, abbr: CLD, zone: infrastructure }
+  - { id: data, label: Data, short: Data, abbr: DAT, zone: models }
+  - { id: pretraining, label: Pretraining, short: Pretrain, abbr: PRE, zone: models }
+  - { id: post-training, label: Post-training, short: Post-train, abbr: PST, zone: models }
+  - { id: inference, label: Inference, short: Inference, abbr: INF, zone: serving }
+  - { id: control, label: Gateways and observability, short: Gateways, abbr: GWY, zone: serving }
+  - { id: evals, label: Evals, short: Evals, abbr: EVL, zone: serving }
+  - { id: harness, label: Harness, short: Harness, abbr: HRN, zone: product }
+  - { id: apps, label: Apps, short: Apps, abbr: APP, zone: product }
+# Size tiers by valuation in USD billions: public market cap, last private valuation, or deal price.
+sizeTiers:
+  - { id: large, label: Large, range: "$50B+", minB: 50 }
+  - { id: mid, label: Mid, range: "$5–50B", minB: 5 }
+  - { id: small, label: Small, range: "under $5B", minB: 0 }
+# Rows with no usable figure (undisclosed, non-profit, or a unit of a larger company) go in this tier.
+unsizedTier: { id: unsized, label: Not sized, range: "no public figure" }
+companies:
+  # --- power ---
+  - id: crusoe
+    name: "Crusoe"
+    domain: crusoe.ai
+    primary: power
+    also: [cloud]
+    tags: []
+    featured: true
+    note: "Builds AI datacenters, including the Abilene Stargate site, and runs its own AI cloud."
+    source: https://crusoe.ai
+    valuation:
+      usdB: 30.9
+      basis: private
+      asOf: "2026-09"
+      source: https://www.crusoe.ai/resources/newsroom/crusoe-announces-series-f-funding
+  - id: aligned-data-centers
+    name: "Aligned Data Centers"
+    domain: aligneddc.com
+    primary: power
+    also: []
+    tags: []
+    note: "Hyperscale and AI campus developer with 51 campuses and over 6 GW of capacity."
+    status:
+      kind: acquired
+      label: "AIP consortium, 2026"
+    source: https://www.datacenterdynamics.com/en/news/mgx-aip-and-blackrocks-gip-complete-40bn-acquisition-of-aligned-data-centers/
+    valuation:
+      usdB: 40
+      basis: deal
+      asOf: "2026-07"
+      source: https://aligneddc.com/press-release/aip-mgx-and-blackrocks-gip-close-acquisition-of-aligned-data-centers/
+  - id: core-scientific
+    name: "Core Scientific"
+    domain: corescientific.com
+    primary: power
+    also: [cloud]
+    tags: []
+    note: "Former bitcoin miner that hosts AI and HPC capacity; CoreWeave is its main tenant."
+    source: https://corescientific.com
+    valuation:
+      usdB: 5
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/core-scientific/marketcap/
+  - id: terawulf
+    name: "TeraWulf"
+    domain: terawulf.com
+    primary: power
+    also: []
+    tags: []
+    note: "Data center and power developer; signed a 20-year Anthropic lease at its Kentucky campus in 2026."
+    source: https://terawulf.com
+    valuation:
+      usdB: 7
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/terawulf/marketcap/
+  - id: constellation-energy
+    name: "Constellation Energy"
+    domain: constellationenergy.com
+    primary: power
+    also: []
+    tags: []
+    note: "Largest US nuclear operator; supplies firm power to data centers and closed its Calpine purchase in 2026."
+    source: https://constellationenergy.com
+    valuation:
+      usdB: 106
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/constellation-energy/marketcap/
+  - id: kairos-power
+    name: "Kairos Power"
+    domain: kairospower.com
+    primary: power
+    also: []
+    tags: []
+    note: "Develops fluoride-salt-cooled small modular reactors, with power contracts for data centers."
+    source: https://kairospower.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  # --- chips ---
+  - id: nvidia
+    name: "Nvidia"
+    domain: nvidia.com
+    primary: chips
+    also: [systems, cloud, data, pretraining, post-training, inference]
+    tags: []
+    featured: true
+    note: "GPUs and networking, DGX Cloud, Nemotron open models and data, NeMo training and Dynamo serving."
+    source: https://blogs.nvidia.com/blog/ai-5-layer-cake/
+    valuation:
+      usdB: 5536
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/nvidia/marketcap/
+  - id: amd
+    name: "AMD"
+    domain: amd.com
+    primary: chips
+    also: [systems]
+    tags: []
+    featured: true
+    note: "Instinct GPUs and the Helios rack; has multi-gigawatt supply deals with OpenAI and Anthropic."
+    source: https://amd.com
+    valuation:
+      usdB: 993
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/amd/marketcap/
+  - id: cerebras
+    name: "Cerebras"
+    domain: cerebras.ai
+    primary: chips
+    also: [inference, cloud]
+    tags: []
+    note: "Wafer-scale AI chips, sold directly and as a hosted inference service; listed on Nasdaq in May 2026."
+    source: https://cerebras.ai
+    valuation:
+      usdB: 39
+      basis: public
+      asOf: "2026-10"
+      source: https://stockanalysis.com/stocks/cbrs/market-cap/
+  - id: sambanova
+    name: "SambaNova"
+    domain: sambanova.ai
+    primary: chips
+    also: [inference]
+    tags: []
+    note: "Dataflow AI chips and a hosted inference service."
+    source: https://sambanova.ai
+    valuation:
+      usdB: 11
+      basis: private
+      asOf: "2026-07"
+      source: https://techcrunch.com/2026/07/08/sambanova-draws-1b-at-11b-valuation-in-series-f-first-close/
+  - id: etched
+    name: "Etched"
+    domain: etched.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Builds Sohu, an ASIC designed only for transformer inference."
+    source: https://etched.com
+    valuation:
+      usdB: 21
+      basis: private
+      asOf: "2026-08"
+      source: https://techcrunch.com/2026/08/18/etcheds-valuation-doubles-to-21b-in-a-month/
+  - id: tenstorrent
+    name: "Tenstorrent"
+    domain: tenstorrent.com
+    primary: chips
+    also: []
+    tags: []
+    note: "RISC-V AI accelerators and Galaxy servers, led by Jim Keller."
+    source: https://tenstorrent.com
+    valuation:
+      usdB: 2.6
+      basis: private
+      asOf: "2024-12"
+      source: https://tracxn.com/d/companies/tenstorrent/__p54YXQoDh79n2Cg0a71HzwpVoEx1MJmN5NLVmq-dRbE/funding-and-investors
+  - id: taalas
+    name: "Taalas"
+    domain: taalas.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Toronto startup that hard-wires a specific model into custom inference silicon."
+    status:
+      kind: pending
+      label: "AMD, 2026"
+    source: https://ir.amd.com/news-events/press-releases/detail/1296/amd-acquires-taalas-to-advance-compute-solutions-for-rapidly
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-08"
+  - id: intel
+    name: "Intel"
+    domain: intel.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Gaudi and Crescent Island accelerators, Xeon host CPUs and a chip foundry."
+    source: https://intel.com
+    valuation:
+      usdB: 553
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/intel/marketcap/
+  - id: qualcomm
+    name: "Qualcomm"
+    domain: qualcomm.com
+    primary: chips
+    also: [inference]
+    tags: []
+    note: "AI200 and AI250 datacenter inference cards; owns the Modular inference software since 2026."
+    source: https://qualcomm.com
+    valuation:
+      usdB: 187
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/qualcomm/marketcap/
+  - id: huawei
+    name: "Huawei"
+    domain: huawei.com
+    primary: chips
+    also: [cloud]
+    tags: []
+    note: "Ascend AI accelerators and Huawei Cloud; DeepSeek V4 was adopted on Ascend."
+    source: https://huawei.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: tsmc
+    name: "TSMC"
+    domain: tsmc.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Foundry and CoWoS packaging for Nvidia, AMD and most custom AI accelerators."
+    source: https://tsmc.com
+    valuation:
+      usdB: 2351
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/tsmc/marketcap/
+  - id: sk-hynix
+    name: "SK hynix"
+    domain: skhynix.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Leading supplier of HBM memory for AI accelerators."
+    source: https://skhynix.com
+    valuation:
+      usdB: 891
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/sk-hynix/marketcap/
+  - id: samsung
+    name: "Samsung Electronics"
+    domain: samsung.com
+    primary: chips
+    also: []
+    tags: []
+    note: "Memory and foundry maker; supplies HBM and led Mistral's 2026 funding round."
+    source: https://samsung.com
+    valuation:
+      usdB: 1282
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/samsung/marketcap/
+  - id: micron
+    name: "Micron"
+    domain: micron.com
+    primary: chips
+    also: []
+    tags: []
+    note: "US memory maker supplying HBM; exited the Crucial consumer brand in 2026 to focus on AI."
+    source: https://micron.com
+    valuation:
+      usdB: 1162
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/micron-technology/marketcap/
+  - id: broadcom
+    name: "Broadcom"
+    domain: broadcom.com
+    primary: chips
+    also: [systems]
+    tags: []
+    note: "Co-designs custom AI chips, including OpenAI's, and sells Ethernet switch silicon."
+    source: https://broadcom.com
+    valuation:
+      usdB: 1725
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/broadcom/marketcap/
+  - id: marvell
+    name: "Marvell"
+    domain: marvell.com
+    primary: chips
+    also: [systems]
+    tags: []
+    note: "Custom AI silicon and optical interconnect; bought Celestial AI in December 2025."
+    source: https://marvell.com
+    valuation:
+      usdB: 241
+      basis: public
+      asOf: "2026-10"
+      source: https://stockanalysis.com/stocks/mrvl/market-cap/
+  - id: rebellions
+    name: "Rebellions"
+    domain: rebellions.ai
+    primary: chips
+    also: []
+    tags: []
+    note: "Korean AI inference chip maker; merged with SK Telecom's Sapeon in 2024."
+    source: https://rebellions.ai
+    valuation:
+      usdB: 2.34
+      basis: private
+      asOf: "2026-03"
+      source: https://thenextweb.com/news/rebellions-closes-400m-pre-ipo-round-at-a-2-34b-valuation
+  # --- systems ---
+  - id: arista
+    name: "Arista Networks"
+    domain: arista.com
+    primary: systems
+    also: []
+    tags: []
+    featured: true
+    note: "Ethernet switches for AI back-end networks in large GPU clusters."
+    source: https://arista.com
+    valuation:
+      usdB: 273
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/arista-networks/marketcap/
+  - id: supermicro
+    name: "Supermicro"
+    domain: supermicro.com
+    primary: systems
+    also: []
+    tags: []
+    note: "Builds GPU servers and liquid-cooled racks for AI datacenters."
+    source: https://supermicro.com
+    valuation:
+      usdB: 27
+      basis: public
+      asOf: "2026-10"
+      source: https://stockanalysis.com/stocks/smci/market-cap/
+  - id: dell
+    name: "Dell Technologies"
+    domain: dell.com
+    primary: systems
+    also: []
+    tags: []
+    note: "Sells AI servers and racks, including Nvidia-based systems."
+    source: https://dell.com
+    valuation:
+      usdB: 373
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/dell/marketcap/
+  - id: hpe
+    name: "Hewlett Packard Enterprise"
+    domain: hpe.com
+    primary: systems
+    also: []
+    tags: []
+    note: "AI servers and supercomputers; owns Cray and Juniper networking."
+    source: https://hpe.com
+    valuation:
+      usdB: 98
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/hewlett-packard-enterprise/marketcap/
+  - id: vertiv
+    name: "Vertiv"
+    domain: vertiv.com
+    primary: systems
+    also: []
+    tags: []
+    note: "Power distribution and liquid cooling equipment for AI datacenters."
+    source: https://vertiv.com
+    valuation:
+      usdB: 93
+      basis: public
+      asOf: "2026-10"
+      source: https://stockanalysis.com/stocks/vrt/market-cap/
+  - id: astera-labs
+    name: "Astera Labs"
+    domain: asteralabs.com
+    primary: systems
+    also: []
+    tags: []
+    note: "Connectivity chips and retimers linking GPUs, memory and switches inside AI racks."
+    source: https://asteralabs.com
+    valuation:
+      usdB: 59
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/astera-labs/marketcap/
+  # --- cloud ---
+  - id: amazon-aws
+    name: "Amazon (AWS)"
+    domain: aws.amazon.com
+    primary: cloud
+    also: [chips, inference, harness]
+    tags: []
+    featured: true
+    note: "Largest cloud; designs Trainium chips, serves models via Bedrock and ships the Strands agent SDK."
+    source: https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost
+    valuation:
+      usdB: 2830
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/amazon/marketcap/
+  - id: microsoft
+    name: "Microsoft"
+    domain: microsoft.com
+    primary: cloud
+    also: [chips, harness, apps]
+    tags: []
+    featured: true
+    note: "Azure cloud, Maia 200 inference chip, Agent Framework SDK and GitHub Copilot."
+    source: https://blogs.microsoft.com/blog/2026/01/26/maia-200-the-ai-accelerator-built-for-inference/
+    valuation:
+      usdB: 3970
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/microsoft/marketcap/
+  - id: oracle
+    name: "Oracle (OCI)"
+    domain: oracle.com
+    primary: cloud
+    also: [power]
+    tags: []
+    note: "Cloud provider with a reported $300B five-year OpenAI compute contract and a Stargate partner."
+    source: https://oracle.com
+    valuation:
+      usdB: 429
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/oracle/marketcap/
+  - id: coreweave
+    name: "CoreWeave"
+    domain: coreweave.com
+    primary: cloud
+    also: [post-training, evals]
+    tags: []
+    featured: true
+    note: "GPU neocloud; owns Weights & Biases and OpenPipe, so it also sells tracing and RL tuning."
+    source: https://coreweave.com/news/coreweave-launches-first-publicly-available-serverless-reinforcement-learning-capability-to-build-reliable-ai-agents
+    valuation:
+      usdB: 45
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/coreweave/marketcap/
+  - id: nebius
+    name: "Nebius"
+    domain: nebius.com
+    primary: cloud
+    also: [inference]
+    tags: []
+    note: "GPU neocloud with an inference service (Token Factory); has Microsoft and Meta contracts."
+    source: https://nebius.com
+    valuation:
+      usdB: 56
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/nebius-group/marketcap/
+  - id: lambda
+    name: "Lambda"
+    domain: lambda.ai
+    primary: cloud
+    also: []
+    tags: []
+    note: "GPU cloud and on-demand clusters for AI training."
+    source: https://lambda.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: nscale
+    name: "Nscale"
+    domain: nscale.com
+    primary: cloud
+    also: [power]
+    tags: []
+    note: "UK-based AI cloud and datacenter builder with a large Anthropic capacity lease."
+    source: https://nscale.com
+    valuation:
+      usdB: 14.6
+      basis: private
+      asOf: "2026-03"
+      source: https://thenextweb.com/news/nscale-raises-2bn-series-c-at-14-6bn-valuation
+  - id: fluidstack
+    name: "Fluidstack"
+    domain: fluidstack.io
+    primary: cloud
+    also: [power]
+    tags: []
+    note: "GPU cloud that builds and operates dedicated clusters for AI labs."
+    source: https://fluidstack.io
+    valuation:
+      usdB: 7.5
+      basis: private
+      asOf: "2026-07"
+      source: https://dealroom.co/news/139936-fluidstack-confirms-830m-series-a-at-7-5b-valuation-larger-than-earlier/
+  - id: runpod
+    name: "RunPod"
+    domain: runpod.io
+    primary: cloud
+    also: [inference]
+    tags: []
+    note: "GPU cloud with serverless endpoints for AI workloads."
+    source: https://runpod.io
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2026-06"
+      source: https://siliconangle.com/2026/06/25/runpod-raises-100m-build-leading-cloud-platform-ai-developers/
+  - id: vast-ai
+    name: "Vast.ai"
+    domain: vast.ai
+    primary: cloud
+    also: []
+    tags: []
+    note: "Marketplace that rents GPUs from third-party hosts."
+    source: https://vast.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  # --- data ---
+  - id: scale-ai
+    name: "Scale AI"
+    domain: scale.com
+    primary: data
+    also: [post-training, evals]
+    tags: []
+    note: "Human and expert labelling for RLHF and RL environments, plus the SEAL evaluation leaderboards."
+    source: https://scale.com/blog/scale-appoints-new-ceo
+    valuation:
+      usdB: 29
+      basis: private
+      asOf: "2025-06"
+      source: https://www.hl.co.uk/news/meta-poaches-28-year-old-scale-ai-ceo-after-taking-multibillion-dollar-stake-in-startup
+  - id: surge-ai
+    name: "Surge AI"
+    domain: surgehq.ai
+    primary: data
+    also: [post-training]
+    tags: []
+    featured: true
+    note: "Expert human data and RL environments for frontier labs."
+    source: https://surgehq.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: mercor
+    name: "Mercor"
+    domain: mercor.com
+    primary: data
+    also: []
+    tags: []
+    featured: true
+    note: "Marketplace of domain experts who produce training data and evaluations for labs."
+    source: https://mercor.com
+    valuation:
+      usdB: 10
+      basis: private
+      asOf: "2025-10"
+      source: https://sacra.com/c/mercor/
+  - id: handshake-ai
+    name: "Handshake AI"
+    domain: joinhandshake.com
+    primary: data
+    also: []
+    tags: []
+    note: "Supplies expert-written training data to AI labs through its network of graduate students."
+    source: https://joinhandshake.com
+    valuation:
+      usdB: 3.5
+      basis: private
+      asOf: "2022-01"
+      source: https://sacra.com/c/handshake/
+  - id: snorkel-ai
+    name: "Snorkel AI"
+    domain: snorkel.ai
+    primary: data
+    also: [post-training]
+    tags: []
+    note: "Programmatic data labelling and expert datasets, extended to RL environments."
+    source: https://snorkel.ai/blog/data-2-0-and-the-research-era-of-ai-data/
+    valuation:
+      usdB: 1.3
+      basis: private
+      asOf: "2025-05"
+      source: https://snorkel.ai/press/snorkel-ai-raises-100-million-to-build-better-evaluators-for-ai-models/
+  - id: labelbox
+    name: "Labelbox"
+    domain: labelbox.com
+    primary: data
+    also: [post-training]
+    tags: []
+    note: "Data labelling platform that launched an enterprise agent-RL product, Recursion."
+    source: https://labelbox.com/blog/introducing-recursion-enterprise-agent-rl-platform
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2022-01"
+      source: https://www.cbinsights.com/company/labelbox/financials
+  - id: datologyai
+    name: "DatologyAI"
+    domain: datologyai.com
+    primary: data
+    also: []
+    tags: []
+    note: "Curates training data for pretraining, selecting and rephrasing web text."
+    source: https://www.datologyai.com/blog
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: common-crawl
+    name: "Common Crawl"
+    domain: commoncrawl.org
+    primary: data
+    also: []
+    tags: []
+    note: "Nonprofit that publishes the open web crawl used to train most language models."
+    source: https://commoncrawl.org
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  # --- pretraining ---
+  - id: openai
+    name: "OpenAI"
+    domain: openai.com
+    primary: pretraining
+    also: [power, chips, inference, harness, apps]
+    tags: []
+    featured: true
+    note: "Trains the GPT models, leads the Stargate sites, co-designs a chip with Broadcom, and ships ChatGPT and Codex."
+    source: https://openai.com/index/openai-and-broadcom-announce-strategic-collaboration/
+    valuation:
+      usdB: 852
+      basis: private
+      asOf: "2026-03"
+      source: https://www.hl.co.uk/shares/stock-market-news/company--news/openai-clinches-$122bn-funding-round,-pushing-valuation-to-$852bn
+  - id: anthropic
+    name: "Anthropic"
+    domain: anthropic.com
+    primary: pretraining
+    also: [inference, harness, apps]
+    tags: []
+    featured: true
+    note: "Trains the Claude models; sells them by API and in Claude, Claude Code and the Agent SDK."
+    source: https://www.anthropic.com/engineering/managed-agents
+    valuation:
+      usdB: 965
+      basis: private
+      asOf: "2026-05"
+      source: https://www.orrick.com/en/News/2026/05/Anthropic-Raises-65B-Series-H-at-965B-Post-Money-Valuation
+  - id: google
+    name: "Google"
+    domain: google.com
+    primary: pretraining
+    also: [chips, cloud, harness, apps]
+    tags: []
+    featured: true
+    note: "Gemini models from DeepMind, TPU chips, Google Cloud, the ADK agent SDK and the Gemini app."
+    source: https://cloud.google.com/tpu
+    valuation:
+      usdB: 4254
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/alphabet-google/marketcap/
+  - id: meta
+    name: "Meta"
+    domain: ai.meta.com
+    primary: pretraining
+    also: [chips, apps]
+    tags: []
+    note: "Trains the Llama and Muse models; designs MTIA chips and ships Meta AI in its apps."
+    source: https://ai.meta.com
+    valuation:
+      usdB: 1830
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/meta-platforms/marketcap/
+  - id: spacex-xai
+    name: "SpaceX (xAI)"
+    domain: spacex.com
+    primary: pretraining
+    also: [power, cloud, apps]
+    tags: []
+    featured: true
+    note: "Grok models trained on Colossus, which runs on its own turbines and is rented out; owns Cursor."
+    source: https://cleanview.co/reports/behind-the-meter-data-centers/full-report/colossus
+    valuation:
+      usdB: 2141
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/spacex/marketcap/
+  - id: mistral-ai
+    name: "Mistral AI"
+    domain: mistral.ai
+    primary: pretraining
+    also: [cloud]
+    tags: []
+    note: "French lab with open-weight and commercial models, and its own compute offering."
+    source: https://mistral.ai
+    valuation:
+      usdB: 24
+      basis: private
+      asOf: "2026-09"
+      source: https://app.sentisense.ai/stories/mistral-secures-multi-billion-funding-valuation-tops-24-billion-as-samsung-leads-09082026
+  - id: deepseek
+    name: "DeepSeek"
+    domain: deepseek.com
+    primary: pretraining
+    also: []
+    tags: []
+    note: "Chinese lab behind the open-weight DeepSeek-V4 and R1 reasoning models."
+    source: https://deepseek.com
+    valuation:
+      usdB: 52
+      basis: private
+      asOf: "2026-07"
+      source: https://www.caixinglobal.com/2026-07-17/deepseek-reaches-52-billion-valuation-in-round-backed-by-tencent-catl-102465358.html
+  - id: alibaba-qwen
+    name: "Alibaba (Qwen)"
+    domain: qwen.ai
+    primary: pretraining
+    also: [cloud]
+    tags: []
+    note: "Qwen open-weight model family, served on Alibaba Cloud."
+    source: https://qwen.ai
+    valuation:
+      usdB: null
+      basis: parent
+      display: "part of Alibaba"
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/alibaba/marketcap/
+  - id: moonshot-ai
+    name: "Moonshot AI"
+    domain: moonshot.ai
+    primary: pretraining
+    also: []
+    tags: []
+    note: "Chinese lab behind the open-weight Kimi models; Kimi K3 has 2.8T parameters."
+    source: https://moonshot.ai
+    valuation:
+      usdB: 20
+      basis: private
+      asOf: "2026-05"
+      source: https://www.thestandard.com.hk/innovation/article/331387/China-AI-startup-Moonshot-AI-hits-US20-bln-valuation-after-Meituan-led-financing-round
+  - id: zai
+    name: "Z.ai (Zhipu)"
+    domain: z.ai
+    primary: pretraining
+    also: []
+    tags: []
+    note: "Chinese lab behind the GLM open-weight models; listed in Hong Kong in January 2026."
+    source: https://z.ai
+    valuation:
+      usdB: 38
+      basis: public
+      asOf: "2026-10"
+      source: https://stockanalysis.com/quote/hkg/2513/market-cap/
+  - id: minimax
+    name: "MiniMax"
+    domain: minimax.io
+    primary: pretraining
+    also: []
+    tags: [video, voice]
+    note: "Chinese lab with text models plus Hailuo video and speech models; listed in Hong Kong in 2026."
+    source: https://minimax.io
+    valuation:
+      usdB: 9.5
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/minimax-group/marketcap/
+  - id: ai2
+    name: "Ai2"
+    domain: allenai.org
+    primary: pretraining
+    also: [post-training]
+    tags: []
+    note: "Nonprofit lab releasing fully open models (Olmo) and the Tulu post-training recipes."
+    source: https://allenai.org/olmo
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  - id: reflection-ai
+    name: "Reflection AI"
+    domain: reflection.ai
+    primary: pretraining
+    also: []
+    tags: []
+    note: "US lab building open-weight frontier models, backed by Nvidia."
+    source: https://reflection.ai
+    valuation:
+      usdB: 8
+      basis: private
+      asOf: "2025-10"
+      source: https://www.folio3.ai/ai-pulse/reflection-ai-securesusd-2-billion-in-massive-funding-round-valuation-soars-usd-8-billion
+  - id: poolside
+    name: "Poolside"
+    domain: poolside.ai
+    primary: pretraining
+    also: [power]
+    tags: []
+    note: "Trains coding models (Laguna) and is building a 2 GW datacenter campus."
+    source: https://poolside.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: pytorch
+    name: "PyTorch"
+    domain: pytorch.org
+    primary: pretraining
+    also: [inference]
+    tags: []
+    note: "Open-source training framework hosted by the PyTorch Foundation; the default for most labs."
+    source: https://pytorch.org
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  - id: databricks
+    name: "Databricks"
+    domain: databricks.com
+    primary: pretraining
+    also: [data, inference]
+    tags: []
+    note: "Data platform with MosaicML model training and model serving."
+    source: https://databricks.com
+    valuation:
+      usdB: 190
+      basis: private
+      asOf: "2026-08"
+      source: https://letsdatascience.com/news/databricks-closes-5-billion-funding-at-190-billion-2cbf4001
+  - id: black-forest-labs
+    name: "Black Forest Labs"
+    domain: bfl.ai
+    primary: pretraining
+    also: [inference]
+    tags: [image]
+    featured: true
+    note: "Trains the FLUX image models and sells them by API."
+    source: https://bfl.ai/blog/flux-3
+    valuation:
+      usdB: 3.25
+      basis: private
+      asOf: "2025-12"
+      source: https://tech.eu/2025/12/01/black-forest-labs-secures-300m-series-b-at-325b-valuation/
+  - id: midjourney
+    name: "Midjourney"
+    domain: midjourney.com
+    primary: pretraining
+    also: [apps]
+    tags: [image, video]
+    note: "Image and video generation product with its own models; licenses its technology to Meta."
+    source: https://engadget.com/ai/meta-is-licensing-midjourneys-ai-image-and-video-tech-120012178.html
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: stability-ai
+    name: "Stability AI"
+    domain: stability.ai
+    primary: pretraining
+    also: [inference]
+    tags: [image, video]
+    note: "Open image models (Stable Diffusion) plus video, audio and 3D models sold by API."
+    source: https://stability.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: runway
+    name: "Runway"
+    domain: runwayml.com
+    primary: pretraining
+    also: [apps]
+    tags: [video, world]
+    featured: true
+    note: "Video generation models and apps; training world models under the GWM-1 line."
+    source: https://runwayml.com
+    valuation:
+      usdB: 5.3
+      basis: private
+      asOf: "2026-02"
+      source: https://bloomberg.com/news/articles/2026-02-10/ai-video-startup-runway-valued-at-5-3-billion-with-new-funding
+  - id: luma-ai
+    name: "Luma AI"
+    domain: lumalabs.ai
+    primary: pretraining
+    also: [apps]
+    tags: [video]
+    note: "Trains the Ray video models and sells them through an app and API."
+    source: https://lumalabs.ai
+    valuation:
+      usdB: 4
+      basis: private
+      asOf: "2025-11"
+      source: https://www.thewrap.com/luma-ai-first-movie-2026-saudi-investment
+  - id: kling-ai
+    name: "Kling AI (Kuaishou)"
+    domain: klingai.com
+    primary: pretraining
+    also: [apps]
+    tags: [video]
+    note: "Kuaishou's Kling video models, sold through a consumer app and API."
+    source: https://kuaishou.gcs-web.com/news-releases/news-release-details/kuaishou-technology-announces-first-quarter-2026-unaudited-financial-results
+    valuation:
+      usdB: 15
+      basis: private
+      asOf: "2026-07"
+      source: https://dealroom.co/news/136888-kling-ai-raises-2-8b-at-15b-valuation-backed-by-alibaba-tencent-and-baid/
+  - id: bytedance-seed
+    name: "ByteDance Seed"
+    domain: bytedance.com
+    primary: pretraining
+    also: [apps]
+    tags: [video, image]
+    note: "Trains the Seedance video and Seedream image models, used in CapCut."
+    source: https://seed.bytedance.com
+    valuation:
+      usdB: null
+      basis: parent
+      display: "part of ByteDance"
+      asOf: "2026-02"
+      source: https://whbl.com/2026/02/25/exclusive-bytedance-valued-at-550-billion-in-proposed-share-sale-by-general-atlantic-sources-say/
+  - id: elevenlabs
+    name: "ElevenLabs"
+    domain: elevenlabs.io
+    primary: pretraining
+    also: [apps, harness]
+    tags: [voice]
+    featured: true
+    note: "Trains speech, transcription and music models and sells a voice-agent platform."
+    source: https://elevenlabs.io
+    valuation:
+      usdB: 11
+      basis: private
+      asOf: "2026-02"
+      source: https://news.bgov.com/private-equity/ai-startup-elevenlabs-more-than-triples-valuation-to-11-billion
+  - id: deepgram
+    name: "Deepgram"
+    domain: deepgram.com
+    primary: pretraining
+    also: [inference]
+    tags: [voice]
+    note: "Speech-to-text and voice-agent models sold by API."
+    source: https://deepgram.com
+    valuation:
+      usdB: 1.3
+      basis: private
+      asOf: "2026-01"
+      source: https://techcrunch.com/2026/01/13/deepgram-raises-130m-at-1-3b-valuation-and-buys-a-yc-ai-startup
+  - id: hume-ai
+    name: "Hume AI"
+    domain: hume.ai
+    primary: pretraining
+    also: []
+    tags: [voice]
+    note: "Emotionally expressive speech models; Google DeepMind licensed its tech and hired its CEO."
+    status:
+      kind: licensed
+      label: "Google DeepMind, 2026"
+    source: https://techcrunch.com/2026/01/22/google-reportedly-snags-up-team-behind-ai-voice-startup-hume-ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: world-labs
+    name: "World Labs"
+    domain: worldlabs.ai
+    primary: pretraining
+    also: [apps]
+    tags: [world]
+    featured: true
+    note: "Fei-Fei Li's lab; builds 3D world models and sells them through the Marble product."
+    status:
+      kind: pending
+      label: "AMD, 2026"
+    source: https://www.nextplatform.com/ai/2026/09/29/amd-buys-world-labs-for-82-billion-to-get-ai-model-cred/5299801
+    valuation:
+      usdB: 8.2
+      basis: deal
+      asOf: "2026-09"
+      source: https://www.nextplatform.com/ai/2026/09/29/amd-buys-world-labs-for-82-billion-to-get-ai-model-cred/5299801
+  - id: decart
+    name: "Decart"
+    domain: decart.ai
+    primary: pretraining
+    also: [inference]
+    tags: [world, video]
+    note: "Real-time interactive video and world models, with its own inference stack."
+    source: https://decart.ai
+    valuation:
+      usdB: 4
+      basis: private
+      asOf: "2026-05"
+      source: https://dealroom.co/news/129032-decart-raises-300m-at-4b-valuation-to-power-real-time-ai/
+  - id: physical-intelligence
+    name: "Physical Intelligence"
+    domain: physicalintelligence.company
+    primary: pretraining
+    also: []
+    tags: [robotics]
+    note: "Trains the pi family of vision-language-action models for general robot control."
+    source: https://www.pi.website/blog/pi07
+    valuation:
+      usdB: 5.6
+      basis: private
+      asOf: "2025-11"
+      source: https://news.bgov.com/private-equity/robotics-startup-physical-intelligence-valued-at-5-6-billion
+  - id: figure-ai
+    name: "Figure"
+    domain: figure.ai
+    primary: pretraining
+    also: []
+    tags: [robotics]
+    note: "Humanoid robots driven by its in-house Helix vision-language-action model."
+    source: https://figure.ai
+    valuation:
+      usdB: 39
+      basis: private
+      asOf: "2025-09"
+      source: https://finance.yahoo.com/news/figure-reaches-39b-valuation-latest-164944663.html
+  - id: skild-ai
+    name: "Skild AI"
+    domain: skild.ai
+    primary: pretraining
+    also: []
+    tags: [robotics]
+    note: "Builds a cross-embodiment robot foundation model."
+    source: https://skild.ai
+    valuation:
+      usdB: 14
+      basis: private
+      asOf: "2026-01"
+      source: https://news.bloomberglaw.com/private-equity/robotics-startup-skild-ai-valued-above-14-billion-in-new-round
+  # --- post-training ---
+  - id: thinking-machines
+    name: "Thinking Machines Lab"
+    domain: thinkingmachines.ai
+    primary: post-training
+    also: [pretraining, inference]
+    tags: []
+    featured: true
+    note: "Tinker fine-tuning and RL API, plus the open-weight Inkling models."
+    source: https://thinkingmachines.ai/blog/on-policy-distillation/
+    valuation:
+      usdB: 12
+      basis: private
+      asOf: "2025-07"
+      source: https://cryptobriefing.com/thinking-machines-lab-40b-valuation/
+  - id: prime-intellect
+    name: "Prime Intellect"
+    domain: primeintellect.ai
+    primary: post-training
+    also: [cloud, data, pretraining]
+    tags: []
+    note: "RL training platform with a GPU marketplace, an Environments Hub and INTELLECT models."
+    source: https://primeintellect.ai
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2026-07"
+      source: https://www.cooley.com/news/coverage/2026/2026-07-08-prime-intellect-raises-$130-million-series-a
+  - id: openpipe
+    name: "OpenPipe"
+    domain: openpipe.ai
+    primary: post-training
+    also: []
+    tags: []
+    note: "RL fine-tuning for agents (ART); now CoreWeave's serverless RL product."
+    status:
+      kind: acquired
+      label: "CoreWeave, 2025"
+    source: https://coreweave.com/news/coreweave-launches-first-publicly-available-serverless-reinforcement-learning-capability-to-build-reliable-ai-agents
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: predibase
+    name: "Predibase"
+    domain: predibase.com
+    primary: post-training
+    also: [inference]
+    tags: []
+    note: "Fine-tuning and multi-LoRA serving platform."
+    status:
+      kind: acquired
+      label: "Rubrik, 2025"
+    source: https://blocksandfiles.com/2025/06/26/rubrik-buying-predibase/
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: unsloth
+    name: "Unsloth"
+    domain: unsloth.ai
+    primary: post-training
+    also: []
+    tags: []
+    note: "Open-source library that speeds up fine-tuning and RL on a single GPU."
+    source: https://unsloth.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: axolotl
+    name: "Axolotl"
+    domain: axolotl.ai
+    primary: post-training
+    also: []
+    tags: []
+    note: "Open-source framework for fine-tuning language models."
+    source: https://axolotl.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: hugging-face
+    name: "Hugging Face"
+    domain: huggingface.co
+    primary: post-training
+    also: [data, pretraining, inference]
+    tags: []
+    featured: true
+    note: "Model and dataset hub; maintains Transformers and TRL and sells inference providers access."
+    status:
+      kind: pending
+      label: "Nvidia, 2026"
+    source: https://semafor.com/article/09/03/2026/nvidia-to-buy-hugging-face-for-nearly-13-billion
+    valuation:
+      usdB: 11.9
+      basis: deal
+      asOf: "2026-09"
+      source: https://theenergymag.com/news/market-news/nvidia-reaches-11-9-billion-deal-acquire-ai
+  - id: applied-compute
+    name: "Applied Compute"
+    domain: appliedcompute.com
+    primary: post-training
+    also: []
+    tags: []
+    note: "Builds custom RL-trained agents for enterprises."
+    source: https://www.appliedcompute.com/company/fundraise
+    valuation:
+      usdB: 1.3
+      basis: private
+      asOf: "2026-04"
+      source: https://kucoin.com/news/flash/applied-compute-completes-80m-funding-round-valued-at-1-3b
+  # --- inference ---
+  - id: fireworks-ai
+    name: "Fireworks AI"
+    domain: fireworks.ai
+    primary: inference
+    also: [post-training, pretraining]
+    tags: []
+    featured: true
+    note: "Serverless inference and fine-tuning for open models; ships its own Ember-1 model."
+    source: https://vercel.com/changelog/ember-1-from-fireworks-now-available-on-ai-gateway
+    valuation:
+      usdB: 17.5
+      basis: private
+      asOf: "2026-07"
+      source: https://otpp.com/en-ca/about-us/news-and-insights/2026/fireworks-raises-a-1-5-billion-series-d-to-lead-the-specialized-intelligence-revolution/
+  - id: together-ai
+    name: "Together AI"
+    domain: together.ai
+    primary: inference
+    also: [cloud, post-training]
+    tags: []
+    featured: true
+    note: "Inference API for open models, GPU clusters and fine-tuning."
+    source: https://together.ai
+    valuation:
+      usdB: 8.3
+      basis: private
+      asOf: "2026-07"
+      source: https://www.eagletribune.com/region/together-ai-raises-800-million-at-8-3-billion-valuation-to-make-frontier-ai-accessible/article_102971fe-d58d-5ca0-bff2-06d9a5b8c4a5.html
+  - id: baseten
+    name: "Baseten"
+    domain: baseten.co
+    primary: inference
+    also: []
+    tags: []
+    note: "Inference platform for deploying open and custom models in production."
+    source: https://baseten.co
+    valuation:
+      usdB: 13
+      basis: private
+      asOf: "2026-06"
+      source: https://www.techpartner.news/news/ai-startup-baseten-hits-13-billion-valuation-as-australias-blackbird-makes-record-bet-626878
+  - id: modal
+    name: "Modal"
+    domain: modal.com
+    primary: inference
+    also: [cloud, harness]
+    tags: []
+    featured: true
+    note: "Serverless GPU compute for inference, training and agent sandboxes."
+    source: https://modal.com
+    valuation:
+      usdB: 4.65
+      basis: private
+      asOf: "2026-05"
+      source: https://dealroom.co/news/129203-modal-raises-355m-series-c-at-4-65b-valuation/
+  - id: deepinfra
+    name: "DeepInfra"
+    domain: deepinfra.com
+    primary: inference
+    also: []
+    tags: []
+    note: "Low-cost API hosting for open-weight models."
+    source: https://deepinfra.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: fal
+    name: "fal"
+    domain: fal.ai
+    primary: inference
+    also: []
+    tags: []
+    note: "Inference platform for image, video and audio generation models."
+    source: https://fal.ai
+    valuation:
+      usdB: 4.5
+      basis: private
+      asOf: "2025-12"
+      source: https://bridgemena.com/news/fal-raises-140m-in-series-d-at-4-5b-valuation
+  - id: replicate
+    name: "Replicate"
+    domain: replicate.com
+    primary: inference
+    also: [post-training]
+    tags: []
+    note: "Run and fine-tune community models through one API; now part of Cloudflare Workers AI."
+    status:
+      kind: acquired
+      label: "Cloudflare, 2025"
+    source: https://www.sec.gov/Archives/edgar/data/0001477333/000147733326000038/cloud-20260331.htm
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: cloudflare
+    name: "Cloudflare"
+    domain: cloudflare.com
+    primary: inference
+    also: [control, harness, data]
+    tags: []
+    note: "Workers AI edge inference, AI Gateway, sandboxes and the Human Native data marketplace."
+    source: https://cloudflare.com
+    valuation:
+      usdB: 128.5
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/cloudflare/marketcap/
+  - id: groq
+    name: "Groq"
+    domain: groq.com
+    primary: inference
+    also: [chips, cloud]
+    tags: []
+    featured: true
+    note: "LPU inference cloud; Nvidia licensed its technology and hired its founder."
+    status:
+      kind: licensed
+      label: "Nvidia, 2025"
+    source: https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale
+    valuation:
+      usdB: 6.9
+      basis: private
+      asOf: "2025-09"
+      source: https://www.datacenterdynamics.com/en/news/groq-raises-750m-for-69bn-valuation/
+  - id: vllm-inferact
+    name: "vLLM (Inferact)"
+    domain: vllm.ai
+    primary: inference
+    also: []
+    tags: []
+    note: "Open-source inference engine; the team formed Inferact in 2026 to commercialise it."
+    source: https://techcrunch.com/2026/01/22/inference-startup-inferact-lands-150m-to-commercialize-vllm/
+    valuation:
+      usdB: 0.8
+      basis: private
+      asOf: "2026-01"
+      source: https://pulse2.com/inferact-launches-with-150-million-funding-at-800m-valuation-to-commercialize-vllm-as-inference-demand-surges/
+  - id: sglang-radixark
+    name: "SGLang (RadixArk)"
+    domain: radixark.ai
+    primary: inference
+    also: [post-training]
+    tags: []
+    note: "Open-source inference engine and Miles RL framework, commercialised as RadixArk."
+    source: https://radixark.ai
+    valuation:
+      usdB: 0.4
+      basis: private
+      asOf: "2026-05"
+      source: https://letsdatascience.com/news/radixark-raises-100m-seed-to-scale-inference-engine-e8f0f3b6
+  - id: ollama
+    name: "Ollama"
+    domain: ollama.com
+    primary: inference
+    also: []
+    tags: []
+    note: "Tool for running open models locally, with a hosted cloud option."
+    source: https://ollama.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: modular
+    name: "Modular"
+    domain: modular.com
+    primary: inference
+    also: [chips]
+    tags: []
+    note: "MAX hardware-agnostic inference engine and the Mojo language."
+    status:
+      kind: acquired
+      label: "Qualcomm, 2026"
+    source: https://www.nand-research.com/qualcomm-acquires-modular-for-its-hardware-agnostic-ai-software-layer/
+    valuation:
+      usdB: 3.9
+      basis: deal
+      asOf: "2026-07"
+      source: https://app.sentisense.ai/stories/qualcomm-closes-3.9b-acquisition-named-bmws-lead-chip-supplier-07292026
+  - id: llm-d
+    name: "llm-d"
+    domain: llm-d.ai
+    primary: inference
+    also: []
+    tags: []
+    note: "Kubernetes-native distributed inference project from Red Hat, IBM, Google and CoreWeave, in the CNCF."
+    source: https://www.cncf.io/blog/2026/03/24/welcome-llm-d-to-the-cncf-evolving-kubernetes-into-sota-ai-infrastructure/
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  # --- control ---
+  - id: openrouter
+    name: "OpenRouter"
+    domain: openrouter.ai
+    primary: control
+    also: [inference]
+    tags: []
+    featured: true
+    note: "One API and bill across hundreds of models and providers."
+    status:
+      kind: pending
+      label: "Stripe, 2026"
+    source: https://stripe.com/newsroom/news/stripe-agrees-to-acquire-openrouter
+    valuation:
+      usdB: 7.5
+      basis: deal
+      asOf: "2026-09"
+      source: https://www.fintechfutures.com/m-a/stripe-reportedly-to-acquire-openrouter-for-7bn
+  - id: langfuse
+    name: "Langfuse"
+    domain: langfuse.com
+    primary: control
+    also: [evals]
+    tags: []
+    featured: true
+    note: "Open-source LLM tracing, evals and prompt management."
+    status:
+      kind: acquired
+      label: "ClickHouse, 2026"
+    source: https://clickhouse.com/blog/clickhouse-acquires-langfuse-open-source-llm-observability
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: helicone
+    name: "Helicone"
+    domain: helicone.ai
+    primary: control
+    also: []
+    tags: []
+    featured: true
+    note: "Open-source LLM observability proxy and gateway; in maintenance mode after the sale."
+    status:
+      kind: acquired
+      label: "Mintlify, 2026"
+    source: https://www.mintlify.com/blog/mintlify-acquires-helicone
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: portkey
+    name: "Portkey"
+    domain: portkey.ai
+    primary: control
+    also: []
+    tags: []
+    featured: true
+    note: "AI gateway with routing, fallbacks, guardrails and spend controls."
+    status:
+      kind: acquired
+      label: "Palo Alto Networks, 2026"
+    source: https://paloaltonetworks.com/company/press/2026/palo-alto-networks-completes-acquisition-of-portkey-to-secure-ai-agents
+    valuation:
+      usdB: 0.117
+      basis: deal
+      asOf: "2026-05"
+      source: https://www.sec.gov/Archives/edgar/data/0001327567/000132756726000023/panw-20260731.htm
+  - id: litellm
+    name: "LiteLLM"
+    domain: litellm.ai
+    primary: control
+    also: []
+    tags: []
+    note: "Open-source proxy and SDK that calls many model providers through one interface."
+    source: https://litellm.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: martian
+    name: "Martian"
+    domain: withmartian.com
+    primary: control
+    also: []
+    tags: []
+    note: "Model router that picks the model for each request."
+    source: https://withmartian.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: not-diamond
+    name: "Not Diamond"
+    domain: notdiamond.ai
+    primary: control
+    also: []
+    tags: []
+    note: "Model router that selects the best model per prompt."
+    source: https://notdiamond.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: datadog
+    name: "Datadog"
+    domain: datadoghq.com
+    primary: control
+    also: [evals]
+    tags: []
+    note: "Monitoring vendor with an LLM Observability product for tracing agents."
+    source: https://www.datadoghq.com/product/llm-observability/
+    valuation:
+      usdB: 105.3
+      basis: public
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/datadog/marketcap/
+  # --- evals ---
+  - id: braintrust
+    name: "Braintrust"
+    domain: braintrust.dev
+    primary: evals
+    also: [control]
+    tags: []
+    note: "Evaluation and observability platform for LLM applications."
+    source: https://braintrust.dev
+    valuation:
+      usdB: 0.8
+      basis: private
+      asOf: "2026-02"
+      source: https://www.axios.com/pro/enterprise-software-deals/2026/02/17/ai-observability-braintrust-80-million-800-million
+  - id: arize-ai
+    name: "Arize AI"
+    domain: arize.com
+    primary: evals
+    also: [control]
+    tags: []
+    featured: true
+    note: "Enterprise eval and observability platform, plus the open-source Phoenix tracer."
+    status:
+      kind: pending
+      label: "Dynatrace, 2026"
+    source: https://www.dynatrace.com/news/press-release/dynatrace-to-acquire-arize/
+    valuation:
+      usdB: 0.915
+      basis: deal
+      asOf: "2026-08"
+      source: https://www.goodwinlaw.com/en/news-and-events/news/2026/08/announcement-technology-ma-goodwin-advises-dynatrace-915-million-agreement-acquire-arize
+  - id: galileo
+    name: "Galileo"
+    domain: galileo.ai
+    primary: evals
+    also: [control]
+    tags: []
+    featured: true
+    note: "Agent evals and guardrails built on small evaluator models."
+    status:
+      kind: pending
+      label: "Cisco, 2026"
+    source: https://blogs.cisco.com/news/cisco-announces-the-intent-to-acquire-galileo
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: weights-and-biases
+    name: "Weights & Biases"
+    domain: wandb.ai
+    primary: evals
+    also: [post-training]
+    tags: []
+    featured: true
+    note: "Experiment tracking plus the Weave toolkit for LLM tracing and evals."
+    status:
+      kind: acquired
+      label: "CoreWeave, 2025"
+    source: https://coreweave.com/blog/coreweave-completes-acquisition-of-weights-biases
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: promptfoo
+    name: "Promptfoo"
+    domain: promptfoo.dev
+    primary: evals
+    also: []
+    tags: []
+    featured: true
+    note: "Open-source eval and red-team command-line tool."
+    status:
+      kind: pending
+      label: "OpenAI, 2026"
+    source: https://openai.com/blog/openai-to-acquire-promptfoo
+    valuation:
+      usdB: 0.086
+      basis: private
+      asOf: "2025-07"
+      source: https://finance.yahoo.com/news/openai-acquires-promptfoo-secure-ai-174904138.html
+  - id: humanloop
+    name: "Humanloop"
+    domain: humanloop.com
+    primary: evals
+    also: []
+    tags: []
+    note: "Early LLM eval and prompt-management platform; its team joined Anthropic in 2025."
+    status:
+      kind: shutdown
+      label: "closed Sep 2025"
+    source: https://humanloop.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: arena
+    name: "Arena (LMArena)"
+    domain: arena.ai
+    primary: evals
+    also: []
+    tags: []
+    note: "Crowd-voted leaderboards that rank models by human preference."
+    source: https://arena.ai
+    valuation:
+      usdB: 1.7
+      basis: private
+      asOf: "2026-01"
+      source: https://www.cooley.com/news/coverage/2026/2026-01-06-lmarena-secures-$150-million-series-a
+  - id: artificial-analysis
+    name: "Artificial Analysis"
+    domain: artificialanalysis.ai
+    primary: evals
+    also: []
+    tags: []
+    note: "Independent benchmarks of model quality, speed and price."
+    source: https://artificialanalysis.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: epoch-ai
+    name: "Epoch AI"
+    domain: epoch.ai
+    primary: evals
+    also: [power]
+    tags: []
+    note: "Research group that tracks AI compute, datacenters and benchmark results."
+    source: https://epoch.ai
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  - id: metr
+    name: "METR"
+    domain: metr.org
+    primary: evals
+    also: []
+    tags: []
+    note: "Nonprofit that measures how long a task frontier agents can complete (time horizons)."
+    source: https://metr.org/blog/2026-1-29-time-horizon-1-1/
+    valuation:
+      usdB: null
+      basis: none
+      asOf: "2026-10"
+  # --- harness ---
+  - id: langchain
+    name: "LangChain"
+    domain: langchain.com
+    primary: harness
+    also: [evals, control]
+    tags: []
+    note: "LangChain and LangGraph agent frameworks, with LangSmith for tracing and evals."
+    source: https://langchain.com
+    valuation:
+      usdB: 1.25
+      basis: private
+      asOf: "2025-10"
+      source: https://sacra.com/c/langchain
+  - id: llamaindex
+    name: "LlamaIndex"
+    domain: llamaindex.ai
+    primary: harness
+    also: []
+    tags: []
+    note: "Framework and document-parsing tools for retrieval and agents."
+    source: https://llamaindex.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: mastra
+    name: "Mastra"
+    domain: mastra.ai
+    primary: harness
+    also: []
+    tags: []
+    note: "TypeScript agent framework with memory, evals and a studio."
+    source: https://mastra.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: crewai
+    name: "CrewAI"
+    domain: crewai.com
+    primary: harness
+    also: []
+    tags: []
+    note: "Multi-agent orchestration framework."
+    source: https://crewai.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: pydantic-ai
+    name: "Pydantic AI"
+    domain: pydantic.dev
+    primary: harness
+    also: [control]
+    tags: []
+    note: "Typed Python agent framework from the Pydantic team, paired with Logfire tracing."
+    source: https://ai.pydantic.dev
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: vercel
+    name: "Vercel"
+    domain: vercel.com
+    primary: harness
+    also: [control, apps]
+    tags: []
+    note: "AI SDK, AI Gateway, Sandbox and Workflow for building agent apps."
+    source: https://ai-sdk.dev
+    valuation:
+      usdB: 9.3
+      basis: private
+      asOf: "2025-09"
+      source: https://news.bgov.com/crypto/vercel-notches-9-3-billion-valuation-in-latest-ai-megaround
+  - id: e2b
+    name: "E2B"
+    domain: e2b.dev
+    primary: harness
+    also: []
+    tags: []
+    featured: true
+    note: "Cloud sandboxes for running agent-generated code."
+    source: https://e2b.dev
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: daytona
+    name: "Daytona"
+    domain: daytona.io
+    primary: harness
+    also: []
+    tags: []
+    note: "Secure sandboxes for running AI-generated code."
+    source: https://daytona.io
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: browserbase
+    name: "Browserbase"
+    domain: browserbase.com
+    primary: harness
+    also: []
+    tags: []
+    featured: true
+    note: "Hosted headless browsers and the Stagehand framework for web agents."
+    source: https://browserbase.com
+    valuation:
+      usdB: 0.3
+      basis: private
+      asOf: "2025-06"
+      source: https://sacra.com/c/browserbase
+  - id: browser-use
+    name: "Browser Use"
+    domain: browser-use.com
+    primary: harness
+    also: []
+    tags: []
+    note: "Open-source library that lets agents control a web browser."
+    source: https://browser-use.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: composio
+    name: "Composio"
+    domain: composio.dev
+    primary: harness
+    also: []
+    tags: []
+    note: "Managed tool integrations and authentication for agents."
+    source: https://composio.dev
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: arcade-dev
+    name: "Arcade.dev"
+    domain: arcade.dev
+    primary: harness
+    also: []
+    tags: []
+    note: "Tool-calling and authorization platform for agents."
+    source: https://www.arcade.dev/blog/
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: pinecone
+    name: "Pinecone"
+    domain: pinecone.io
+    primary: harness
+    also: []
+    tags: []
+    featured: true
+    note: "Managed vector database for retrieval."
+    source: https://pinecone.io
+    valuation:
+      usdB: 0.75
+      basis: private
+      asOf: "2023-04"
+      source: https://komo.ai/directory/pinecone-funding
+  - id: weaviate
+    name: "Weaviate"
+    domain: weaviate.io
+    primary: harness
+    also: []
+    tags: []
+    note: "Open-source vector database."
+    source: https://weaviate.io
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: turbopuffer
+    name: "turbopuffer"
+    domain: turbopuffer.com
+    primary: harness
+    also: []
+    tags: []
+    note: "Serverless vector and full-text search built on object storage."
+    source: https://turbopuffer.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: chroma
+    name: "Chroma"
+    domain: trychroma.com
+    primary: harness
+    also: []
+    tags: []
+    note: "Open-source vector database; authors of the context-rot study."
+    source: https://research.trychroma.com/context-rot
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: mem0
+    name: "Mem0"
+    domain: mem0.ai
+    primary: harness
+    also: []
+    tags: []
+    note: "Memory layer that stores and recalls user context for agents."
+    source: https://mem0.ai
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: letta
+    name: "Letta"
+    domain: letta.com
+    primary: harness
+    also: [apps]
+    tags: []
+    note: "Stateful agent platform with long-term memory; ships Letta Code."
+    source: https://letta.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: temporal
+    name: "Temporal"
+    domain: temporal.io
+    primary: harness
+    also: []
+    tags: []
+    note: "Durable execution platform for long-running workflows and agents."
+    source: https://temporal.io
+    valuation:
+      usdB: 12.55
+      basis: private
+      asOf: "2026-09"
+      source: https://thenextweb.com/news/temporal-550m-series-e-12-55bn-valuation-lightspeed
+  # --- apps ---
+  - id: cursor
+    name: "Cursor"
+    domain: cursor.com
+    primary: apps
+    also: [harness]
+    tags: []
+    featured: true
+    note: "AI coding editor and agents; SpaceX closed its roughly $60B purchase in August 2026."
+    status:
+      kind: acquired
+      label: "SpaceX, 2026"
+    source: https://cursor.com/blog/joining-spacex
+    valuation:
+      usdB: 60
+      basis: deal
+      asOf: "2026-06"
+      source: https://pulse2.com/spacex-to-acquire-cursor-in-stock-deal-valuing-ai-coding-startup-at-60-billion/
+  - id: cognition
+    name: "Cognition"
+    domain: cognition.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "Maker of the Devin coding agent; bought Windsurf in 2025."
+    source: https://cognition.ai/blog
+    valuation:
+      usdB: 48
+      basis: private
+      asOf: "2026-09"
+      source: https://dealroom.co/news/149496-cognition-raises-2b-series-e-at-48b-valuation-to-scale-devin/
+  - id: replit
+    name: "Replit"
+    domain: replit.com
+    primary: apps
+    also: [cloud]
+    tags: []
+    note: "Browser IDE and agent that builds and hosts apps."
+    source: https://blog.replit.com
+    valuation:
+      usdB: 9
+      basis: private
+      asOf: "2026-03"
+      source: https://cfotech.com.au/story/replit-raises-usd-400m-hits-usd-9bn-ai-valuation
+  - id: lovable
+    name: "Lovable"
+    domain: lovable.dev
+    primary: apps
+    also: []
+    tags: []
+    note: "Prompt-to-app builder for non-developers."
+    source: https://lovable.dev
+    valuation:
+      usdB: 13.3
+      basis: private
+      asOf: "2026-08"
+      source: https://aibusiness.com/generative-ai/euro-vibe-coding-standout-lovable-valued-at-13-3b
+  - id: bolt-new
+    name: "Bolt.new"
+    domain: bolt.new
+    primary: apps
+    also: []
+    tags: []
+    note: "Browser-based app builder from StackBlitz."
+    source: https://bolt.new/blog
+    valuation:
+      usdB: 0.7
+      basis: private
+      asOf: "2025-01"
+      source: https://sacra.com/c/bolt-new/
+  - id: github
+    name: "GitHub"
+    domain: github.com
+    primary: apps
+    also: []
+    tags: []
+    note: "Home of GitHub Copilot, the IDE assistant and cloud coding agent."
+    source: https://github.com/features/copilot
+    valuation:
+      usdB: null
+      basis: parent
+      display: "part of Microsoft"
+      asOf: "2026-10"
+      source: https://companiesmarketcap.com/microsoft/marketcap/
+  - id: sierra
+    name: "Sierra"
+    domain: sierra.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "Customer-service agents for large companies."
+    source: https://sierra.ai
+    valuation:
+      usdB: 15.8
+      basis: private
+      asOf: "2026-05"
+      source: https://qz.com/sierra-ai-funding-round-950-million-valuation-050426
+  - id: decagon
+    name: "Decagon"
+    domain: decagon.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "Customer-support agents for enterprises."
+    source: https://decagon.ai
+    valuation:
+      usdB: 4.5
+      basis: private
+      asOf: "2026-03"
+      source: https://decagon.ai/blog/decagon-closes-employee-tender-at-4-5-billion-valuation
+  - id: harvey
+    name: "Harvey"
+    domain: harvey.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "AI assistant for law firms and legal teams."
+    source: https://harvey.ai
+    valuation:
+      usdB: 15.5
+      basis: private
+      asOf: "2026-09"
+      source: https://www.legalbusiness.co.uk/in-house/harvey-hits-15-5bn-valuation-in-largest-fundraising-round-yet/
+  - id: glean
+    name: "Glean"
+    domain: glean.com
+    primary: apps
+    also: [harness]
+    tags: []
+    note: "Enterprise search and an agent platform over company data."
+    source: https://glean.com
+    valuation:
+      usdB: 7.2
+      basis: private
+      asOf: "2025-06"
+      source: https://www.glean.com/press/glean-150-million-series-f-raised-at-7-2-billion-valuation-for-advancing-enterprise-ai-agent-technology
+  - id: perplexity
+    name: "Perplexity"
+    domain: perplexity.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "Answer engine with the Comet browser and agents."
+    source: https://perplexity.ai
+    valuation:
+      usdB: 20
+      basis: private
+      asOf: "2025-09"
+      source: https://finance.yahoo.com/news/perplexity-finalizes-20-billion-valuation-232758524.html
+  - id: character-ai
+    name: "Character.ai"
+    domain: character.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "Consumer companion chat app; barred under-18s from open-ended chat in 2025."
+    source: https://character.ai
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2023-03"
+      source: https://tynmagazine.com/?p=173496
+  - id: copilotkit
+    name: "CopilotKit"
+    domain: copilotkit.ai
+    primary: apps
+    also: [harness]
+    tags: []
+    note: "Generative-UI framework and maker of the AG-UI agent-to-frontend protocol."
+    source: https://www.copilotkit.ai/blog
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: thesys
+    name: "Thesys"
+    domain: thesys.dev
+    primary: apps
+    also: [harness]
+    tags: []
+    note: "Generative-UI API (OpenUI Cloud) that returns interface components from models."
+    source: https://thesys.dev
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-10"
+  - id: livekit
+    name: "LiveKit"
+    domain: livekit.io
+    primary: apps
+    also: [harness]
+    tags: []
+    note: "Realtime voice and video infrastructure and the Agents framework for voice agents."
+    source: https://livekit.io
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2026-01"
+      source: https://www.unite.ai/livekit-reaches-1-billion-valuation-as-voice-ai-infrastructure-heats-up/
+  - id: vapi
+    name: "Vapi"
+    domain: vapi.ai
+    primary: apps
+    also: [harness]
+    tags: []
+    note: "Developer platform for building phone and voice agents."
+    source: https://vapi.ai/blog/series-b
+    valuation:
+      usdB: 0.5
+      basis: private
+      asOf: "2026-05"
+      source: https://www.cxodigitalpulse.com/peak-xv-leads-50-million-funding-round-in-ai-voice-startup-vapi/
+  - id: abnormal-ai
+    name: "Abnormal AI"
+    domain: abnormal.ai
+    primary: apps
+    also: []
+    tags: []
+    note: "AI email-security platform that detects phishing and account takeover from behavior."
+    source: https://abnormal.ai
+    valuation:
+      usdB: 5.1
+      basis: private
+      asOf: "2024-08"
+      source: https://www.securityweek.com/abnormal-security-raises-250-million-at-5-1-billion-valuation/
+  - id: manus
+    name: "Manus"
+    domain: manus.im
+    primary: apps
+    also: []
+    tags: []
+    note: "General-purpose AI agent product; China blocked Meta's 2025 purchase and it runs independently."
+    source: https://manus.im
+    valuation:
+      usdB: 4
+      basis: private
+      asOf: "2026-10"
+      display: "~$4B"
+      source: https://siliconangle.com/2026/10/08/ai-agent-developer-manus-raises-500m-at-reported-4b-valuation/
+  - id: plaud
+    name: "Plaud"
+    domain: plaud.ai
+    primary: apps
+    also: []
+    tags: [voice]
+    note: "AI voice recorder hardware with an app that transcribes and summarizes recordings."
+    source: https://www.plaud.ai
+    valuation:
+      usdB: 1
+      basis: private
+      asOf: "2026-09"
+      display: ">$1B"
+      source: https://techfundingnews.com/plaud-eyes-2028-us-ipo-after-crossing-1b-valuation/
+  - id: retell-ai
+    name: "Retell AI"
+    domain: retellai.com
+    primary: apps
+    also: [harness]
+    tags: [voice]
+    note: "Platform for building, testing and deploying AI voice agents that handle phone calls."
+    source: https://www.retellai.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-09"
+  - id: telnyx
+    name: "Telnyx"
+    domain: telnyx.com
+    primary: apps
+    also: [inference]
+    tags: [voice]
+    note: "Phone and messaging platform with voice-AI agents and inference on its own GPUs."
+    source: https://telnyx.com
+    valuation:
+      usdB: null
+      basis: undisclosed
+      asOf: "2026-09"

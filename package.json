@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "diagrams": "node scripts/render-diagrams.mjs"
+    "diagrams": "node scripts/render-diagrams.mjs",
+    "logos": "node scripts/fetch-logos.mjs"
   },
   "dependencies": {
     "github-slugger": "^2.0.0",
@@ -33,8 +34,9 @@
     "eslint-config-next": "^15.5.4",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "tsx": "^4.23.13",
-    "uipack": "github:ong6/uipack#268b31d",
+    "uipack": "github:ong6/uipack#b66b7de",
     "vega": "^6.4.0",
-    "vega-lite": "^6.4.3"
+    "vega-lite": "^6.4.3",
+    "yaml": "^2.9.1"
   }
 }

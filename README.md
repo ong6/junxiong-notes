@@ -34,6 +34,16 @@ Missing categories fall back to `Uncategorized`; drafts never appear in filters 
 
 The URL is the filename: `content/articles/foo.md` serves at `/foo`.
 
+## Data
+
+Two figures are built from data files rather than drawn: `content/data/ai-stack.yaml` (158
+companies placed on the layers of the AI stack, rendered by a ```` ```span ```` fence in
+`who-builds-the-ai-stack`) and `content/data/ai-stack-layers.yaml` (the layer stack in
+`ai-stack-roadmap`, a ```` ```stack ```` fence). Edit the YAML, run `npm run logos` for new
+companies, then `npm run build`; bad data fails the build. Company logos live in `public/logos/`
+and are fetched only by `npm run logos`, never by the build. The steps are in
+[docs-figures.md](docs-figures.md#3-span-and-stack--data-figures-from-yaml).
+
 ## Agent-readable by construction
 
 The markdown is the source of truth for both surfaces, so the HTML and the machine-readable
@@ -54,8 +64,10 @@ via `prebuild` and at the start of `dev`.
 
 ```bash
 npm install
-npm run dev     # regenerates the agent files, then serves on :3000
-npm run build   # prebuild + next build
+npm run dev       # regenerates the agent files, then serves on :3000
+npm run build     # prebuild + next build
+npm run diagrams  # re-render figures and data charts only
+npm run logos     # fetch logos for new companies in content/data/*.yaml
 ```
 
 ## Deploying

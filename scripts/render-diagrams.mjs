@@ -1,5 +1,7 @@
 /**
- * Pre-renders every ```d2 and ```vega-lite fence to a committed SVG.
+ * Pre-renders every ```d2 and ```vega-lite fence to a committed SVG, ```uipack
+ * fences through scripts/render-figures.tsx, and ```span / ```stack chart fences
+ * to committed HTML through scripts/render-charts.tsx.
  *
  * Rendering happens once here rather than inside the markdown pipeline, so
  * page builds stay synchronous and fast, and so an upstream layout change in
@@ -199,8 +201,9 @@ async function renderVegaLite(spec, mode) {
 }
 
 /* ---------- walk ---------- */
-const FENCE = /^```(d2|vega-lite|uipack)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
+const FENCE = /^```(d2|vega-lite|uipack|span|stack)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
 const figureJobs = [];
+const chartJobs = [];
 const seen = new Set();
 let rendered = 0;
 let cached = 0;
@@ -208,9 +211,22 @@ let cached = 0;
 const files = fs.existsSync(SRC) ? fs.readdirSync(SRC) : [];
 for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {
 	const text = fs.readFileSync(path.join(SRC, file), "utf8");
+	// A chart's id is its data file's name, and ids must be unique on a page.
+	const chartNames = new Set();
 	for (const m of text.matchAll(FENCE)) {
 		const [, lang, , body] = m;
 		const id = hash(lang + body);
+		if (lang === "span" || lang === "stack") {
+			// The body names a data file under content/data/; scripts/render-charts.tsx
+			// renders it to responsive HTML (uipack/charts) after the walk. Always
+			// rendered, like uipack figures: the hash cannot see an edit to the YAML.
+			const name = body.trim();
+			if (chartNames.has(name)) throw new Error(`${file}: two chart fences name "${name}"; each data file can appear once per article`);
+			chartNames.add(name);
+			seen.add(`${id}.html`);
+			chartJobs.push({ id, kind: lang, name });
+			continue;
+		}
 		if (lang === "uipack") {
 			// The body names a module under content/figures/; both themes are
 			// rendered by scripts/render-figures.tsx (uipack/static) after the walk.
@@ -253,9 +269,19 @@ if (figureJobs.length) {
 	rendered += figureJobs.length * 2;
 }
 
-// Drop SVGs whose source fence is gone, so the directory never accumulates orphans.
+if (chartJobs.length) {
+	try {
+		execFileSync("npx", ["tsx", "scripts/render-charts.tsx", JSON.stringify(chartJobs)], { stdio: "inherit", cwd: ROOT });
+	} catch {
+		// render-charts.tsx already printed which data file and field is wrong.
+		process.exit(1);
+	}
+	rendered += chartJobs.length;
+}
+
+// Drop files whose source fence is gone, so the directory never accumulates orphans.
 let pruned = 0;
-for (const f of fs.readdirSync(OUT).filter((f) => f.endsWith(".svg"))) {
+for (const f of fs.readdirSync(OUT).filter((f) => f.endsWith(".svg") || f.endsWith(".html"))) {
 	if (!seen.has(f)) { fs.unlinkSync(path.join(OUT, f)); pruned++; }
 }
 

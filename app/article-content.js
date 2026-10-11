@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { enhanceSpanChart } from "uipack/charts";
 
 function setPaused(figure, paused) {
 	for (const svg of figure.querySelectorAll("svg")) {
@@ -50,6 +51,12 @@ export default function ArticleContent({ html }) {
 		const observer = new ResizeObserver((entries) => entries.forEach((entry) => mark(entry.target)));
 		root.current.querySelectorAll(".fig-scroll").forEach((box) => observer.observe(box));
 		return () => observer.disconnect();
+	}, [html]);
+	useEffect(() => {
+		// ```span charts work without JavaScript (radios, a checkbox, <details>).
+		// This only adds repeat-to-clear, Escape and a live count announcement.
+		const cleanups = [...root.current.querySelectorAll(".uipack-span")].map((el) => enhanceSpanChart(el));
+		return () => cleanups.forEach((cleanup) => cleanup());
 	}, [html]);
 	function onClick(event) {
 		const button = event.target.closest("[data-figure-motion]");
