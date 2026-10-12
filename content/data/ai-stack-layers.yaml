@@ -43,14 +43,14 @@ layers:
   - id: pretraining
     label: Pretraining
     zone: models
-    summary: Each equal gain costs multiplicatively more chip-months
-    metric: { value: "6·N·D", label: "FLOPs to train (N params, D tokens)" }
+    summary: Each equal gain costs multiplicatively more compute
+    metric: { value: "6·N·D", label: "FLOPs to train (N active params, D tokens)" }
     detail: Why is a 1.6T-parameter MoE cheap to train per token but expensive to serve?
     href: "#pretraining"
   - id: post-training
     label: Post-training
     zone: models
-    summary: Each RL rollout costs a full answer and returns a few bits of reward
+    summary: Each rollout is a whole answer that earns a few bits
     metric: { value: "~30×", label: "cheaper to distil than keep fine-tuning" }
     detail: Why does GRPO learn nothing from a task the model always passes?
     href: "#post-training"
@@ -64,7 +64,7 @@ layers:
   - id: harness
     label: Harness
     zone: serving
-    summary: The model sees only its context window, so the harness picks what goes in
+    summary: Context is finite, so the harness picks what goes in
     metric: { value: "150k → 2k", label: "tokens when tools load on demand" }
     detail: Why can giving an agent more tools make it worse at its task?
     href: "#harness"
@@ -77,5 +77,5 @@ layers:
     href: "#apps"
 rails:
   - { id: evals, label: Evals, from: post-training, to: apps, summary: "A score is tasks × grader × budget", href: "#evals" }
-  - { id: control, label: Gateways and observability, from: inference, to: apps, summary: "Cost is decided call by call", href: "#gateways-and-observability" }
+  - { id: control, label: Gateways and observability, short: Gateways, from: inference, to: apps, summary: "Cost is decided call by call", href: "#gateways-and-observability" }
   - { id: safety, label: Safety, from: power, to: apps, summary: "Risk is likelihood × blast radius", href: "#safety-across-all-of-it" }

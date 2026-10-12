@@ -192,7 +192,7 @@ function stackProps(name: string): LayerStackProps {
     for (const key of ["detail", "href"]) kind(file, `layers[${i}].${key}`, layer[key], "string");
     return layer;
   });
-  const rails = data.rails === undefined ? undefined : list(file, "rails", data.rails).map((r, i) => only(file, `rails[${i}]`, r, ["id", "label", "from", "to", "summary", "href"], ["id", "label", "from", "to"]));
+  const rails = data.rails === undefined ? undefined : list(file, "rails", data.rails).map((r, i) => only(file, `rails[${i}]`, r, ["id", "label", "short", "from", "to", "summary", "href"], ["id", "label", "from", "to"]));
   const brackets = data.brackets === undefined ? undefined : list(file, "brackets", data.brackets).map((b, i) => only(file, `brackets[${i}]`, b, ["label", "from", "to"], ["label", "from", "to"]));
   return { id: name, zones, layers, rails, brackets } as unknown as LayerStackProps;
 }

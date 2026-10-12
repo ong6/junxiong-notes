@@ -11,7 +11,7 @@ Every layer of the AI stack is organised around something it is short of, and th
 
 I use that as my map of the field. When a new product, layer or job title appears, I ask what it is short of and which layer caused the shortage. Tools turn over every few months. The shortages are physical or economic, so they last, and most tools are built around one of them.
 
-This post walks the ten layers from the power plant to the product, with evals, gateways and safety running beside them. Each layer gets the number that shows its constraint, the terms worth learning, what changed in 2025 and 2026, one question you should be able to answer before moving on, and where to go deeper. The companies building each layer, and the ones buying the layer next door, are in the sister post, [who builds the AI stack](/who-builds-the-ai-stack).
+This post walks the ten layers from the power plant to the product, with evals, gateways and safety running beside them. Each layer gets the number that shows its constraint, the terms worth learning, what changed in 2025 and 2026, one question you should be able to answer before moving on, and where to go deeper. The companies building each layer, and who has been buying them, are in the sister post, [who builds the AI stack](/who-builds-the-ai-stack).
 
 ```stack Ten layers, bottom-up, each with the number that shows its constraint. Models are built once and served on every request, on the same infrastructure. Evals and gateways run beside the layers they serve, and safety runs across all of them. Open a layer for its self-test question. | Source: the figures are sourced in each layer's section below.
 ai-stack-layers
@@ -224,6 +224,6 @@ The interfaces are converging. Google's video flagship is now Gemini Omni rather
 
 ## Where I would start
 
-My rule for using this map is to learn the layer directly below the one you work in, because that is where your constraint comes from.
+My rule for using this map is to learn the layer your constraint comes from, which is usually somewhere below the one you work in.
 
-If you build agents, learn inference: cache hits and batch size decide your bill and your latency. If you run inference, learn post-training, because RL is itself an inference workload, run in hundreds of thousands of sandboxes per cluster at the labs that publish it ([Hugging Face](https://huggingface.co/blog/sergiopaniego/rl-environments-2026)), and it looks nothing like chat traffic. If you train models, learn the data layer, since the next gain is more likely a task you can buy or build than a crawl you already have. If you work in infrastructure, the layer below is power, and it is the one layer nobody can speed up with software.
+If you build agents, learn inference: cache hits and batch size decide your bill and your latency. If you run inference, learn chips and memory, because bandwidth sets your ceiling, and then post-training, because RL is itself an inference workload, run in hundreds of thousands of sandboxes per cluster at the labs that publish it ([Hugging Face](https://huggingface.co/blog/sergiopaniego/rl-environments-2026)), and it looks nothing like chat traffic. If you train models, learn the data layer, since the next gain is more likely a task you can buy or build than a crawl you already have. If you work in infrastructure, the layer below is power, and it is the one layer nobody can speed up with software.

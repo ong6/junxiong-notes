@@ -7,23 +7,23 @@ category: AI systems
 tags: [ai-stack, landscape, inference, evals, agents, hardware]
 ---
 
-In 2026 the AI stack started consolidating from the outside in. Companies that already owned one step of a customer's request, such as the chip, the cloud, the database, the monitor or the payment, bought the AI specialist sitting next to them on that path. Stripe agreed to buy OpenRouter, the model router ([Stripe](https://stripe.com/newsroom/news/stripe-agrees-to-acquire-openrouter)). Dynatrace agreed to buy Arize, the eval and tracing company ([Dynatrace](https://www.dynatrace.com/news/press-release/dynatrace-to-acquire-arize/)). Nvidia agreed to buy Hugging Face, where developers pick the models its chips run ([Semafor](https://semafor.com/article/09/03/2026/nvidia-to-buy-hugging-face-for-nearly-13-billion)). And SpaceX, which merged with xAI in February ([TechRepublic](https://techrepublic.com/article/news-spacex-cursor-acquisition/)), closed its purchase of Cursor in August ([Cursor](https://cursor.com/blog/joining-spacex)).
+In 2026 the AI stack started consolidating along its request paths. Companies that already owned one step of a customer's request, such as the chip, the cloud, the database, the monitor or the payment, bought the AI specialist sitting next to them on that path. Stripe agreed to buy OpenRouter, the model router ([Stripe](https://stripe.com/newsroom/news/stripe-agrees-to-acquire-openrouter)). Dynatrace agreed to buy Arize, the eval and tracing company ([Dynatrace](https://www.dynatrace.com/news/press-release/dynatrace-to-acquire-arize/)). Nvidia agreed to buy Hugging Face, where developers pick the models its chips run ([Semafor](https://semafor.com/article/09/03/2026/nvidia-to-buy-hugging-face-for-nearly-13-billion)). Cloudflare, whose network already sits in front of websites, bought Replicate, a hosted inference service ([Cloudflare](https://www.cloudflare.com/en-gb/press/press-releases/2025/cloudflare-to-acquire-replicate-to-build-the-most-seamless-ai-cloud-for-developers/)). And SpaceX, which merged with xAI in February ([TechRepublic](https://techrepublic.com/article/news-spacex-cursor-acquisition/)), closed its purchase of Cursor in August ([Cursor](https://cursor.com/blog/joining-spacex)).
 
-I wanted to see that on one page, so I placed 158 companies on the ten layers from [the roadmap](/ai-stack-roadmap). Evals and gateways, which run beside those layers, get columns of their own because whole companies live there. The chart opens with 35 of them: the companies that span the most layers and the ones this post discusses. Expand it to see all 158, or choose a layer or a size to see everyone in it.
+I wanted to see that on one page, so I placed 158 companies on the ten layers from [the roadmap](/ai-stack-roadmap). Evals and gateways, which run beside those layers, get columns of their own because whole companies live there. The chart opens with 39 of them: the companies that span the most layers and the ones this post discusses. Expand it to see all 158, or choose a layer or a size to see everyone in it. Choose **Deals** to see only the 19 companies in a deal. Eight of those 19 went to buyers that are not in the chart at all: an infrastructure fund, a data-security company, a database, a documentation platform, two network-security companies, a payments company and a monitoring company.
 
-```span Each bar is the run of layers a company sells into, and the solid cell is its main layer. Long bars are companies that span the stack. | Source: company sites and deal announcements, linked from each row. Placements as of 12 October 2026.
+```span Each bar is the run of layers a company sells into, and the solid cell is its main layer. Long bars are companies that span the stack. | Source: company sites and deal announcements, linked from each row.
 ai-stack
 ```
 
 ## How to read it
 
-The main layer is where I judge a company to be strongest, by what it is known for and what it mostly sells. The tinted cells are other layers it sells into. A badge marks a deal: **→** with a name for a closed acquisition, *pending* when it is agreed but not closed, *licensed* for a licence-and-hire deal, and *shut* for a company that closed. Open any row for a one-line note and the source behind the placement.
+The main layer is where I judge a company to be strongest, by what it is known for and what it mostly sells. The tinted cells are other layers it sells into. A badge marks a deal: **→** and the buyer for an acquisition, drawn dashed while the sale is agreed but not closed, **↝** and the licensee for a licence-and-hire deal, and *shut* for a company that closed. Open any row for a one-line note and the source behind the placement.
 
-Rows inside each layer are sorted by size. I use market cap for public companies, the last reported valuation for private ones, the deal price for acquired ones, and the parent's market cap for divisions such as AWS. Large is $50B and up, mid is $5–50B, and small is under $5B. 54 rows are not sized: 45 private companies that have not published a valuation, six non-profits or open projects, and three units of larger companies, which name their parent instead of a number. They show that instead of an estimate.
+Rows inside each layer are sorted by size. I use market cap for public companies, the last reported valuation for private ones, the deal price for acquired ones, and the parent's market cap for divisions such as AWS. Large is $50B and up, mid is $5–50B, and small is under $5B. 54 rows are not sized: 45 private companies that have not published a valuation, six non-profits or open projects, and three units of larger companies, whose notes name the parent. They show a dash instead of an estimate.
 
 The selection is for relevance, not completeness. Every layer has at least six companies, and pretraining has the most (31) because each model type has its own labs. I picked several companies *because* of their deals, so the 19 rows carrying a deal badge are a list, not a rate. The data is a [YAML file in the site's repository](https://github.com/ong6/junxiong-notes/blob/main/content/data/ai-stack.yaml), and corrections are welcome as issues or pull requests.
 
-Size and span go together. Ten companies sell into four or more layers, and eight of them are worth more than $50B. The exceptions are Hugging Face, which Nvidia agreed to buy, and Prime Intellect.
+Size and span go together. Eleven companies sell into four or more layers, and eight of them are worth more than $50B. The exceptions are Hugging Face, which Nvidia agreed to buy, Modal and Prime Intellect.
 
 ## Chipmakers are moving up
 
@@ -54,7 +54,7 @@ Gateways, tracing and evals changed hands faster than any other part of the char
 | Arize | Evals and tracing | Dynatrace, agreed 2026, $915M | Application monitoring |
 | OpenRouter | Model router | Stripe, agreed 2026 | Payments |
 
-Every buyer already sold something that sits on the same request path: a database the traces land in, a monitor that watches the app, a firewall in front of it, or the payment behind it. In the roadmap I called this layer a side rail rather than a layer, because nothing above it consumes what it produces. That is also why it is hard to sell alone. A trace or a gateway is valuable to whoever already owns the path, and that is who bought them.
+Seven of the eight buyers already sold something that sits on the same request path: a database the traces land in, a monitor that watches the app, a firewall in front of it, or the payment behind it. The exception is Mintlify, a documentation platform, which put Helicone into maintenance mode after the sale ([Mintlify](https://www.mintlify.com/blog/mintlify-acquires-helicone)). In the roadmap I called this layer a side rail rather than a layer, because nothing above it consumes what it produces. That is also why it is hard to sell alone. A trace or a gateway is valuable to whoever already owns the path, and that is who bought them.
 
 ## Labs are stretching both ways
 
@@ -66,7 +66,7 @@ The labs also buy what their own products depend on. Anthropic bought Bun, the J
 
 Three groups have stayed mostly on their own so far:
 - **Data vendors.** Surge, Mercor and Handshake sell expert data and RL tasks to every lab at once, and owning one would cost a lab the others' business.
-- **Model labs for one modality.** ElevenLabs in voice, Black Forest Labs in images and Runway in video are still independent. World Labs was the exception.
+- **Model labs for one modality.** ElevenLabs in voice, Black Forest Labs in images and Runway in video are still independent. The exceptions are World Labs, which AMD agreed to buy, and Hume, whose team and technology Google DeepMind took in a licence-and-hire deal ([TechCrunch](https://techcrunch.com/2026/01/22/google-reportedly-snags-up-team-behind-ai-voice-startup-hume-ai)).
 - **Harness infrastructure.** Sandboxes (E2B, Daytona), browser infrastructure (Browserbase) and vector databases (Pinecone, turbopuffer) are still standalone.
 
 My prediction is that harness infrastructure goes the way tracing did. A sandbox or a hosted browser is a feature of whoever runs the agent, the same way a trace is a feature of whoever runs the request. Modal already sells sandboxes beside inference, and the labs already ship hosted agents with their own computers. That is a guess, and the chart's next revision will show whether it held.

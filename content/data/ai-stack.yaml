@@ -17,8 +17,7 @@ asOf: 2026-10-12
 zones:
   - { id: infrastructure, label: Infrastructure }
   - { id: models, label: Models }
-  - { id: serving, label: Serving }
-  - { id: product, label: Product }
+  - { id: serving, label: Serving and product }
 layers:
   - { id: power, label: Power and sites, short: Power, abbr: PWR, zone: infrastructure }
   - { id: chips, label: Chips and memory, short: Chips, abbr: CHP, zone: infrastructure }
@@ -28,10 +27,10 @@ layers:
   - { id: pretraining, label: Pretraining, short: Pretrain, abbr: PRE, zone: models }
   - { id: post-training, label: Post-training, short: Post-train, abbr: PST, zone: models }
   - { id: inference, label: Inference, short: Inference, abbr: INF, zone: serving }
-  - { id: control, label: Gateways and observability, short: Gateways, abbr: GWY, zone: serving }
+  - { id: control, label: Gateways and observability, short: Gateway, abbr: GWY, zone: serving }
   - { id: evals, label: Evals, short: Evals, abbr: EVL, zone: serving }
-  - { id: harness, label: Harness, short: Harness, abbr: HRN, zone: product }
-  - { id: apps, label: Apps, short: Apps, abbr: APP, zone: product }
+  - { id: harness, label: Harness, short: Harness, abbr: HRN, zone: serving }
+  - { id: apps, label: Apps, short: Apps, abbr: APP, zone: serving }
 # Size tiers by valuation in USD billions: public market cap, last private valuation, or deal price.
 sizeTiers:
   - { id: large, label: Large, range: "$50B+", minB: 50 }
@@ -64,7 +63,7 @@ companies:
     note: "Hyperscale and AI campus developer with 51 campuses and over 6 GW of capacity."
     status:
       kind: acquired
-      label: "AIP consortium, 2026"
+      label: "AIP, 2026"
     source: https://www.datacenterdynamics.com/en/news/mgx-aip-and-blackrocks-gip-complete-40bn-acquisition-of-aligned-data-centers/
     valuation:
       usdB: 40
@@ -237,6 +236,7 @@ companies:
     primary: chips
     also: [inference]
     tags: []
+    featured: true
     note: "AI200 and AI250 datacenter inference cards; owns the Modular inference software since 2026."
     source: https://qualcomm.com
     valuation:
@@ -770,7 +770,6 @@ companies:
     valuation:
       usdB: null
       basis: parent
-      display: "part of Alibaba"
       asOf: "2026-10"
       source: https://companiesmarketcap.com/alibaba/marketcap/
   - id: moonshot-ai
@@ -958,12 +957,11 @@ companies:
     primary: pretraining
     also: [apps]
     tags: [video, image]
-    note: "Trains the Seedance video and Seedream image models, used in CapCut."
+    note: "Trains the Seedance video and Seedream image models, used in CapCut; part of ByteDance."
     source: https://seed.bytedance.com
     valuation:
       usdB: null
       basis: parent
-      display: "part of ByteDance"
       asOf: "2026-02"
       source: https://whbl.com/2026/02/25/exclusive-bytedance-valued-at-550-billion-in-proposed-share-sale-by-general-atlantic-sources-say/
   - id: elevenlabs
@@ -1002,7 +1000,7 @@ companies:
     note: "Emotionally expressive speech models; Google DeepMind licensed its tech and hired its CEO."
     status:
       kind: licensed
-      label: "Google DeepMind, 2026"
+      label: "Google, 2026"
     source: https://techcrunch.com/2026/01/22/google-reportedly-snags-up-team-behind-ai-voice-startup-hume-ai
     valuation:
       usdB: null
@@ -1235,10 +1233,10 @@ companies:
     name: "Modal"
     domain: modal.com
     primary: inference
-    also: [cloud, harness]
+    also: [cloud, post-training, harness]
     tags: []
     featured: true
-    note: "Serverless GPU compute for inference, training and agent sandboxes."
+    note: "Serverless GPU compute for inference, fine-tuning and agent sandboxes."
     source: https://modal.com
     valuation:
       usdB: 4.65
@@ -1276,11 +1274,12 @@ companies:
     primary: inference
     also: [post-training]
     tags: []
+    featured: true
     note: "Run and fine-tune community models through one API; now part of Cloudflare Workers AI."
     status:
       kind: acquired
       label: "Cloudflare, 2025"
-    source: https://www.sec.gov/Archives/edgar/data/0001477333/000147733326000038/cloud-20260331.htm
+    source: https://www.cloudflare.com/en-gb/press/press-releases/2025/cloudflare-to-acquire-replicate-to-build-the-most-seamless-ai-cloud-for-developers/
     valuation:
       usdB: null
       basis: undisclosed
@@ -1291,6 +1290,7 @@ companies:
     primary: inference
     also: [control, harness, data]
     tags: []
+    featured: true
     note: "Workers AI edge inference, AI Gateway, sandboxes and the Human Native data marketplace."
     source: https://cloudflare.com
     valuation:
@@ -1359,6 +1359,7 @@ companies:
     primary: inference
     also: [chips]
     tags: []
+    featured: true
     note: "MAX hardware-agnostic inference engine and the Mojo language."
     status:
       kind: acquired
@@ -1441,7 +1442,7 @@ companies:
     note: "AI gateway with routing, fallbacks, guardrails and spend controls."
     status:
       kind: acquired
-      label: "Palo Alto Networks, 2026"
+      label: "Palo Alto, 2026"
     source: https://paloaltonetworks.com/company/press/2026/palo-alto-networks-completes-acquisition-of-portkey-to-secure-ai-agents
     valuation:
       usdB: 0.117
@@ -1954,12 +1955,11 @@ companies:
     primary: apps
     also: []
     tags: []
-    note: "Home of GitHub Copilot, the IDE assistant and cloud coding agent."
+    note: "Home of GitHub Copilot, the IDE assistant and cloud coding agent; part of Microsoft."
     source: https://github.com/features/copilot
     valuation:
       usdB: null
       basis: parent
-      display: "part of Microsoft"
       asOf: "2026-10"
       source: https://companiesmarketcap.com/microsoft/marketcap/
   - id: sierra
