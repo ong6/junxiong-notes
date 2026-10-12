@@ -226,15 +226,15 @@ file under `content/data/` without its extension; the caption rule above still a
 ai-stack
 ```
 
-```stack Ten layers, bottom-up, each with the number that shows its constraint. | Source: the figures are sourced in each layer's section below.
+```stack Ten layers, bottom-up, each with what it runs short of. Choose a layer to jump to its section.
 ai-stack-layers
 ```
 ````
 
 | Fence | Component | Data file |
 |---|---|---|
-| `span` | `SpanChart`: companies as rows, layers as columns, filters by layer and size | `content/data/<name>.yaml` with `layers`, `zones`, `sizeTiers`, `unsizedTier`, `companies` (the header comment documents every field) |
-| `stack` | `LayerStack`: the layers bottom-up, each opening to a self-test question and a link to its section | `content/data/<name>.yaml` with `zones` (optional `note`), `layers`, `rails`, `brackets` |
+| `span` | `SpanChart`: rows (companies, harnesses…) against layers as columns, with search and filters by layer and size | `content/data/<name>.yaml` with `layers`, `zones`, optional `sizeTiers` and `unsizedTier`, optional `labels`, and the rows under `companies` or `items` (each file's header comment documents its fields) |
+| `stack` | `LayerStack`: the layers bottom-up, each one a link to its section, with rails for what runs beside them | `content/data/<name>.yaml` with `zones` (optional `note`), `layers`, `rails`, `brackets`, and optional `sectionHeads` |
 
 `npm run diagrams` (and so `prebuild`) runs `scripts/render-charts.tsx`, which loads the YAML, maps it
 onto the component's props, renders it with `renderToStaticMarkup` and writes
@@ -253,9 +253,17 @@ palette onto the `--uipack-*` properties in `app/globals.css` (`.fig-html`), and
 `valuation.usdB`, the size tier is the first `sizeTiers` entry whose `minB` it reaches (with no
 figure, `usdB: null`, the row goes in `unsizedTier`, the last chip), and the label is
 `valuation.display` if set (such as "part of Microsoft" or ">$1B"), else `$4.3T`, `$17.5B`, `$60B` or
-`$350M`, else `—`. Layers pass their `short` label through and stack zones their `note`. Any company
-with a `status` other than `shutdown` counts toward the chart's "Deals" filter, and tags are
-explained in the legend as "model type". The date in the footer is the file's `asOf`.
+`$350M`, else the row's `valueLabel` (a plain label for charts whose value is not money, such as a
+licence), else `—`. Layers pass their `short` label through and stack zones their `note`. Any company
+with a `status` other than `shutdown` counts toward the chart's "Deals" filter. The key explains tags
+as "model type" and values as "market cap or valuation" unless the file's `labels` says otherwise;
+`labels` also renames the row noun (`company: Harness`, `find: Find a harness`). The date in the
+footer is the file's `asOf`.
+
+**Mapping (`stack`).** The diagram shows layers only: a layer's `metric` never reaches it. With
+`sectionHeads: true`, every layer and rail must link to its own heading, and the build puts a
+header strip (uipack/article `LayerHead`: the layer's number, its zone, its `metric` and a "↑ Map"
+link back to the diagram) just above that heading. It fails if a linked heading is missing.
 
 **The build fails** on YAML syntax errors, an unknown field (it suggests the nearest real one, so
 `feautred` is caught), a wrong type, anything the component rejects (unknown layer or tier, duplicate
@@ -268,6 +276,33 @@ a `domain` and no logo yet, verifies it (PNG or JPEG signature and dimensions, a
 least 24px, not the service's generic globe) and writes it to `public/logos/<id>.png` or `.jpg`.
 Look at every new file before committing it; delete any that is wrong or unreadable at 20px and add
 its id to `content/data/logo-rejects.txt` so the next run skips it.
+
+### ```notes — clusters of the site's own articles
+
+A fence that lists the site's own articles renders as a cluster of link cards (uipack/article
+`NoteCluster`): title, description, date and reading time come from each article's frontmatter, the
+text after the colon is the card's kicker (the layer or topic), and the caption is the cluster's
+label. Three or more cards take the 56rem figure slot in three columns; fewer stay in the text column.
+A draft renders as a dashed "Coming next" card with no link until it is published. An unknown slug
+fails the build.
+
+````
+```notes My notes on serving and product
+prefill-vs-decode: Inference
+context-engineering-for-coding-agents: Harness
+```
+````
+
+Group links to your own articles in one cluster where a section or zone ends, rather than scattering
+them through "Go deeper" lines; mention one inline only where the prose relies on it.
+
+### Labelled paragraphs
+
+`lib/rehype-article-parts.js` turns four bold labels into uipack/article blocks, so the Markdown stays
+plain: `**Learn:** a · b · c` becomes square term tags, `**What changed:**` a ruled note,
+`**Self-test:**` a question callout, and `**Go deeper:** a; b; c` link rows with their domains (an item
+holding exactly one link becomes a row; anything else stays inline below the rows). The site maps its
+palette for these on `.prose`, and `app/[slug]/page.js` imports `uipack/article.css`.
 
 ### Adding a company
 

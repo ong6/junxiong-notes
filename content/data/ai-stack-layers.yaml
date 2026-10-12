@@ -1,5 +1,9 @@
 # Layer-stack diagram for /ai-stack-roadmap. Layers are listed bottom-up (first = bottom).
-# Each layer's numbers are sourced in its article section; `href` is that section's anchor.
+# Each band links to its article section (`href`). `metric` is the layer's key number: the diagram leaves it
+# out, and the section's header strip shows it, beside the prose that sources it.
+# sectionHeads: each section the diagram links to gets a header strip (index, zone,
+# metric, a link back to the map), via scripts/render-charts.tsx.
+sectionHeads: true
 zones:
   - { id: infrastructure, label: Infrastructure, note: shared by building and serving }
   - { id: models, label: Models, note: built once per model }
@@ -10,72 +14,62 @@ layers:
     zone: infrastructure
     summary: Steady power at one site, on a schedule
     metric: { value: "5+ yrs", label: "grid hookup in Virginia" }
-    detail: Why would a new AI campus build its own gas turbines when the grid is next door?
     href: "#power-and-sites"
   - id: chips
     label: Chips and memory
     zone: infrastructure
     summary: Compute has outrun memory bandwidth
     metric: { value: "1,400:1", label: FLOPs per HBM byte }
-    detail: Why doesn't a chip with twice the FLOPs generate tokens twice as fast?
     href: "#chips-and-memory"
   - id: systems
     label: Racks and networks
     zone: infrastructure
     summary: Bandwidth drops at every boundary a byte crosses
     metric: { value: "8 → 0.1", label: "TB/s, HBM to next rack" }
-    detail: Why can one 72-GPU rack serve a large mixture-of-experts model more cheaply than nine 8-GPU servers?
     href: "#racks-and-networks"
   - id: cloud
     label: Cloud and capital
     zone: infrastructure
     summary: A GPU is a fast-depreciating asset bought with debt
     metric: { value: "$35–40B", label: capex per gigawatt }
-    detail: Why would a GPU cloud take a three-year contract at a lower price over renting by the hour?
     href: "#cloud-and-capital"
   - id: data
     label: Data
     zone: models
     summary: Good human text is finite; the next token is bought or built
     metric: { value: "~300T", label: tokens of quality text }
-    detail: Why would a lab pay $2,000 for a single task when the web is free?
     href: "#data"
   - id: pretraining
     label: Pretraining
     zone: models
     summary: Each equal gain costs multiplicatively more compute
     metric: { value: "6·N·D", label: "FLOPs to train (N active params, D tokens)" }
-    detail: Why is a 1.6T-parameter MoE cheap to train per token but expensive to serve?
     href: "#pretraining"
   - id: post-training
     label: Post-training
     zone: models
     summary: Each rollout is a whole answer that earns a few bits
-    metric: { value: "~30×", label: "cheaper to distil than keep fine-tuning" }
-    detail: Why does GRPO learn nothing from a task the model always passes?
+    metric: { value: "9–30×", label: "cheaper to distil than keep fine-tuning" }
     href: "#post-training"
   - id: inference
     label: Inference
     zone: serving
     summary: Every token re-reads the weights and the conversation's cache
     metric: { value: "~10 GB", label: cache per 32k chat }
-    detail: Why does one 32k-token conversation reduce how many users a GPU can serve at once?
     href: "#inference"
   - id: harness
     label: Harness
     zone: serving
     summary: Context is finite, so the harness picks what goes in
     metric: { value: "150k → 2k", label: "tokens when tools load on demand" }
-    detail: Why can giving an agent more tools make it worse at its task?
     href: "#harness"
   - id: apps
     label: Apps
     zone: serving
     summary: Output is worth something only once it is checked
     metric: { value: ">50%", label: of OpenRouter tokens are code }
-    detail: Why did coding agents break out before legal or finance agents?
     href: "#apps"
 rails:
   - { id: evals, label: Evals, from: post-training, to: apps, summary: "A score is tasks × grader × budget", href: "#evals" }
   - { id: control, label: Gateways and observability, short: Gateways, from: inference, to: apps, summary: "Cost is decided call by call", href: "#gateways-and-observability" }
-  - { id: safety, label: Safety, from: power, to: apps, summary: "Risk is likelihood × blast radius", href: "#safety-across-all-of-it" }
+  - { id: safety, label: Safety, from: power, to: apps, summary: "Risk is likelihood × blast radius", href: "#safety" }

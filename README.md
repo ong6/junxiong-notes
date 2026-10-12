@@ -23,6 +23,10 @@ Optional `project: { name, href, detail }` names the one page an article is abou
 URL, usually on junxiong.dev). It renders as a large framed link under the title, so the related
 project never hides as a small inline link.
 
+Optional `toc: false` drops the contents list that long articles get under the title. Use it when the
+article opens with its own map, such as a ```` ```stack ```` figure with `sectionHeads` (see
+`docs-figures.md`), so the page does not carry two contents lists in opposite orders.
+
 Body starts at `##` — the `<h1>` comes from `title`. Files starting with `_` are ignored, and
 so is anything with `draft: true`.
 

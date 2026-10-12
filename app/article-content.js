@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { enhanceSpanChart } from "uipack/charts";
+import { enhanceLayerStack, enhanceSpanChart } from "uipack/charts";
 
 function setPaused(figure, paused) {
 	for (const svg of figure.querySelectorAll("svg")) {
@@ -53,9 +53,13 @@ export default function ArticleContent({ html }) {
 		return () => observer.disconnect();
 	}, [html]);
 	useEffect(() => {
-		// ```span charts work without JavaScript (radios, a checkbox, <details>).
-		// This only adds repeat-to-clear, Escape and a live count announcement.
-		const cleanups = [...root.current.querySelectorAll(".uipack-span")].map((el) => enhanceSpanChart(el));
+		// ```span and ```stack charts work without JavaScript (radios, a checkbox,
+		// <details>, plain anchors). This adds search, repeat-to-clear, Escape, live
+		// counts and, for the stack, a smooth jump that respects reduced motion.
+		const cleanups = [
+			...[...root.current.querySelectorAll(".uipack-span")].map((el) => enhanceSpanChart(el)),
+			...[...root.current.querySelectorAll(".uipack-stack")].map((el) => enhanceLayerStack(el)),
+		];
 		return () => cleanups.forEach((cleanup) => cleanup());
 	}, [html]);
 	function onClick(event) {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 // Styles for ```span and ```stack charts (uipack/charts). Imported here rather
 // than in the layout so pages without articles skip it.
 import "uipack/charts.css";
+import "uipack/article.css";
 import ArticleContent from "../article-content";
 import {
 	allArticles,
@@ -63,8 +64,12 @@ export default async function Article({ params }) {
 	const { meta, body } = a;
 	const html = await renderMarkdown(body);
 	const toc = tableOfContents(body);
+	// Articles already shown as cards in one of this article's ```notes clusters.
+	const clustered = new Set(
+		[...body.matchAll(/^```notes[^\n]*\n([\s\S]*?)^```/gm)].flatMap((m) => m[1].split("\n").map((line) => line.split(":")[0].trim()).filter(Boolean)),
+	);
 	const related = allArticles()
-		.filter((p) => p.slug !== slug)
+		.filter((p) => p.slug !== slug && !clustered.has(p.slug))
 		.map((p) => ({
 			...p,
 			overlap: (p.tags ?? []).filter((t) => (meta.tags ?? []).includes(t)).length,
@@ -118,7 +123,9 @@ export default async function Article({ params }) {
 					) : null}
 				</header>
 
-				{toc.length > 2 ? (
+				{/* `toc: false` in frontmatter: an article whose opening figure is its own
+				    map (a ```stack with sectionHeads) needs no second contents list. */}
+				{toc.length > 2 && meta.toc !== false ? (
 					<nav className="toc" aria-label="Table of contents">
 						<p>Contents</p>
 						<ul>

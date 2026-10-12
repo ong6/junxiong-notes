@@ -96,7 +96,7 @@ article header { margin-bottom: 2rem; }
 article h1 { font-size: 2.1rem; line-height: 1.2; letter-spacing: -.02em; margin: .4rem 0 .6rem; }
 .dek { color: var(--muted); font-size: 1.12rem; line-height: 1.55; margin: 0 0 1rem; }
 .prose h2 { font-size: 1.45rem; margin: 2.4rem 0 .8rem; letter-spacing: -.01em; line-height: 1.3; }
-.prose h3 { font-size: 1.15rem; margin: 1.9rem 0 .6rem; line-height: 1.4; }
+.prose h3 { font-size: 1.3rem; margin: 1.9rem 0 .6rem; line-height: 1.35; }
 .prose h2 a, .prose h3 a { color: inherit; text-decoration: none; }
 .prose h2 a:hover::after, .prose h3 a:hover::after { content: " #"; color: var(--muted); font-weight: 400; }
 .prose p { margin: 1.15rem 0; }
@@ -221,8 +221,11 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 /* uipack/charts.css (imported once, in app/[slug]/page.js) styles the components,
    including their own resets against .prose; the site only maps its palette. The
    tokens below already switch with the theme (data-theme or the OS), so no dark
-   block is needed. Both charts use the standard 56rem figure slot. */
-.fig-html {
+   block is needed. Both charts use the standard 56rem figure slot. The article
+   parts (uipack/article: note cards, layer heads, self-tests) sit in the prose
+   itself, so the same mapping covers .prose. */
+.fig-html,
+.prose {
 	--uipack-fg: var(--text);
 	--uipack-muted: var(--muted);
 	--uipack-bg: var(--bg);
@@ -233,7 +236,15 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 	--uipack-token-change: var(--fig-change);
 	--uipack-sans: var(--sans);
 	--uipack-mono: var(--mono);
+	/* Uppercase labels read as sans, like the diagrams' (see .fig-diagram text). */
+	--uipack-label-font: var(--sans);
 }
+/* A section with a header strip (a ```stack with sectionHeads) is reached through its
+   heading's id; leave room for the strip above the heading, which is taller on phones
+   where the key number wraps under the zone. */
+/* (html's scroll-padding-top already adds 1.5rem.) */
+.prose .uipack-layerhead + :is(h2, h3) { scroll-margin-top: 3.25rem; }
+@media (max-width: 559px) { .prose .uipack-layerhead + :is(h2, h3) { scroll-margin-top: 5rem; } }
 
 /* ---------- code highlighting (highlight.js classes, site palette) ---------- */
 .hljs { color: var(--text); }

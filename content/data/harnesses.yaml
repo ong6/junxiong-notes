@@ -1,0 +1,125 @@
+# Harness coverage span chart for /agent-harnesses. Hand-editable; asOf is the date the placements were checked.
+# Research and sources: the store's research/industry-map/harnesses.md (2026-10-13).
+#
+# Each row is one harness:
+#   id          kebab-case, unique, stable (the logo file is named after it)
+#   domain      the product's real domain, for logo lookup and the row link (leave out if unsure)
+#   primary     the layer where it is strongest (a judgement call)
+#   also        other layers it covers natively; a layer it reaches only through a plugin or a third party is left out
+#   tags        kind: coding | assistant | library | hosted | general
+#   valueLabel  its licence (Closed for proprietary), shown where the AI stack map shows a valuation
+#   note        one plain sentence, under ~110 characters
+#   source      one URL that supports the placement
+asOf: 2026-10-13
+labels:
+  company: Harness
+  find: Find a harness
+  noMatch: "No harness matches “{q}”"
+  keyType: Tag
+  tagLegend: what the harness is built for
+  valueLegend: licence
+zones:
+  - { id: run, label: Runs the model }
+  - { id: sees, label: What it sees }
+  - { id: may, label: What it may touch }
+  - { id: reach, label: Where it runs }
+layers:
+  - { id: adapter, label: Model adapter, short: Models, abbr: MOD, zone: run }
+  - { id: loop, label: Agent loop, short: Loop, abbr: LOP, zone: run }
+  - { id: tools, label: Tools and MCP, short: Tools, abbr: TLS, zone: run }
+  - { id: context, label: Context, short: Context, abbr: CTX, zone: sees }
+  - { id: memory, label: Memory and state, short: Memory, abbr: MEM, zone: sees }
+  - { id: permissions, label: Permissions and sandbox, short: Sandbox, abbr: SBX, zone: may }
+  - { id: subagents, label: Subagents, short: Subagents, abbr: SUB, zone: may }
+  - { id: surfaces, label: Surfaces and channels, short: Surfaces, abbr: SRF, zone: reach }
+  - { id: schedule, label: Schedule and always-on, short: Schedule, abbr: SCH, zone: reach }
+items:
+  - id: claude-code
+    name: Claude Code
+    domain: claude.com
+    primary: context
+    also: [loop, tools, memory, permissions, subagents, surfaces, schedule]
+    tags: [coding]
+    valueLabel: Closed
+    note: "Claude only; skills, hooks and tool search for context; starts in auto mode."
+    source: https://code.claude.com/docs/en/how-claude-code-works
+  - id: claude-agent-sdk
+    name: Claude Agent SDK
+    domain: anthropic.com
+    primary: loop
+    also: [tools, context, permissions, subagents]
+    tags: [library]
+    valueLabel: Mixed
+    note: "Claude Code's loop as a Python and TypeScript library; you bring the surface."
+    source: https://code.claude.com/docs/en/agent-sdk/overview
+  - id: claude-managed-agents
+    name: Managed Agents
+    domain: claude.com
+    primary: memory
+    also: [loop, tools, permissions, subagents, schedule]
+    tags: [hosted]
+    valueLabel: Hosted
+    note: "Anthropic's hosted harness; the session is an append-only log; $0.08 per session-hour."
+    source: https://www.anthropic.com/engineering/managed-agents
+  - id: codex
+    name: Codex
+    domain: openai.com
+    primary: permissions
+    also: [adapter, loop, tools, context, memory, subagents, surfaces, schedule]
+    tags: [coding]
+    valueLabel: Apache-2.0
+    note: "OS sandbox on by default; models trained on its tools; CLI, desktop app and cloud."
+    source: https://learn.chatgpt.com/docs/sandboxing
+  - id: deepseek-harness
+    name: DeepSeek Harness
+    domain: deepseek.com
+    primary: loop
+    also: [adapter, tools, permissions, subagents, surfaces, schedule]
+    tags: [coding]
+    valueLabel: MIT
+    note: "DeepSeek's own harness since August 2026, from one bash tool to agent teams; alpha."
+    source: https://github.com/deepseek-ai/deepseek-harness
+  - id: hermes-agent
+    name: Hermes Agent
+    domain: nousresearch.com
+    primary: memory
+    also: [adapter, loop, tools, context, permissions, subagents, surfaces, schedule]
+    tags: [assistant]
+    valueLabel: MIT
+    note: "Any model; writes its own skills and memory; 20+ chat platforms and cron."
+    source: https://github.com/NousResearch/hermes-agent
+  - id: openclaw
+    name: OpenClaw
+    domain: openclaw.ai
+    primary: surfaces
+    also: [adapter, loop, tools, context, memory, permissions, subagents, schedule]
+    tags: [assistant]
+    valueLabel: MIT
+    note: "Always-on gateway to 34 channels with a 30-minute heartbeat; sandbox off by default."
+    source: https://github.com/openclaw/openclaw
+  - id: pi
+    name: pi
+    primary: loop
+    also: [adapter, tools, context]
+    tags: [coding]
+    valueLabel: MIT
+    note: "Four tools and a prompt under 1,000 tokens; no permission prompts or subagents by design."
+    source: https://mariozechner.at/posts/2025-11-30-pi-coding-agent/
+  - id: opencode
+    name: OpenCode
+    domain: opencode.ai
+    primary: adapter
+    also: [loop, tools, context, permissions, subagents, surfaces]
+    tags: [coding]
+    valueLabel: MIT
+    note: "75+ model providers; terminal, desktop app, web and a server API."
+    source: https://opencode.ai/docs/providers/
+  - id: goose
+    name: Goose
+    domain: goose-docs.ai
+    primary: tools
+    also: [adapter, loop, context, memory, permissions, subagents, surfaces, schedule]
+    tags: [general]
+    valueLabel: Apache-2.0
+    note: "Every extension is an MCP server, and ACP is its default interface."
+    source: https://github.com/aaif-goose/goose

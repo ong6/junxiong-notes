@@ -4,7 +4,7 @@
 // fetches; render-charts.tsx only links logos already on disk, and a company
 // without one gets a monogram tile.
 //
-//   npm run logos                 every content/data/*.yaml with `companies:`
+//   npm run logos                 every content/data/*.yaml with `companies:` or `items:`
 //   npm run logos -- ai-stack     one data file
 //   npm run logos -- --force      re-fetch logos that already exist
 //
@@ -89,8 +89,9 @@ function companies() {
 		const name = file.replace(/\.yaml$/, "");
 		if (names.length && !names.includes(name)) continue;
 		const data = parse(fs.readFileSync(path.join(DATA, file), "utf8"));
-		if (!Array.isArray(data?.companies)) continue;
-		for (const c of data.companies) {
+		const rows = data?.companies ?? data?.items;
+		if (!Array.isArray(rows)) continue;
+		for (const c of rows) {
 			if (typeof c?.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(c.id)) throw new Error(`${file}: company id ${JSON.stringify(c?.id)} is not kebab-case`);
 			if (typeof c.domain !== "string" || !/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(c.domain)) continue;
 			out.push({ id: c.id, name: c.name, domain: c.domain.toLowerCase() });

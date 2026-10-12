@@ -146,7 +146,8 @@ function vlConfig(mode) {
 		axisY: { labelLimit: 0, labelFont: SANS, labelFontSize: 14, labelColor: ink, labelPadding: 10 },
 		axisX: { labelLimit: 0 },
 		text: { color: ink, font: SANS, fontSize: 14 },
-		bar: { cornerRadiusEnd: 3, height: 30 },
+		// Flat ends, like the span chart and the diagrams' square marks.
+		bar: { cornerRadiusEnd: 0, height: 30 },
 		point: { size: 70, filled: true },
 		line: { strokeWidth: 2 },
 	};
@@ -201,7 +202,7 @@ async function renderVegaLite(spec, mode) {
 }
 
 /* ---------- walk ---------- */
-const FENCE = /^```(d2|vega-lite|uipack|span|stack)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
+const FENCE = /^```(d2|vega-lite|uipack|span|stack|notes)(?:[ \t]+([^\n]*))?\n([\s\S]*?)^```/gm;
 const figureJobs = [];
 const chartJobs = [];
 const seen = new Set();
@@ -214,8 +215,16 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 	// A chart's id is its data file's name, and ids must be unique on a page.
 	const chartNames = new Set();
 	for (const m of text.matchAll(FENCE)) {
-		const [, lang, , body] = m;
+		const [, lang, meta, body] = m;
 		const id = hash(lang + body);
+		if (lang === "notes") {
+			// A cluster of note cards: the label is the fence's caption, each body line is
+			// `slug: kicker`. Always rendered, because titles and descriptions come from
+			// the linked articles' frontmatter, which the hash cannot see.
+			seen.add(`${id}.html`);
+			chartJobs.push({ id, kind: "notes", label: (meta ?? "").trim(), body });
+			continue;
+		}
 		if (lang === "span" || lang === "stack") {
 			// The body names a data file under content/data/; scripts/render-charts.tsx
 			// renders it to responsive HTML (uipack/charts) after the walk. Always
@@ -224,6 +233,9 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 			if (chartNames.has(name)) throw new Error(`${file}: two chart fences name "${name}"; each data file can appear once per article`);
 			chartNames.add(name);
 			seen.add(`${id}.html`);
+			// A stack whose data sets `sectionHeads` also writes one header strip per
+			// section it links to (empty for other stacks).
+			if (lang === "stack") seen.add(`${id}.heads.json`);
 			chartJobs.push({ id, kind: lang, name });
 			continue;
 		}
@@ -281,7 +293,7 @@ if (chartJobs.length) {
 
 // Drop files whose source fence is gone, so the directory never accumulates orphans.
 let pruned = 0;
-for (const f of fs.readdirSync(OUT).filter((f) => f.endsWith(".svg") || f.endsWith(".html"))) {
+for (const f of fs.readdirSync(OUT).filter((f) => f.endsWith(".svg") || f.endsWith(".html") || f.endsWith(".heads.json"))) {
 	if (!seen.has(f)) { fs.unlinkSync(path.join(OUT, f)); pruned++; }
 }
 
