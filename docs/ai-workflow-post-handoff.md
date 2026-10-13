@@ -5,8 +5,8 @@ while preparing it, so a later session can pick it up cold.
 
 ## The post
 
-For notes.junxiong.dev, written with the `write-a-blog` skill (now linked into this repo on the
-company Mac). Follow the frontmatter of the existing articles in `content/articles/`.
+For notes.junxiong.dev, written with the `write-a-blog` skill. Skills load only in the
+personal-data-store, so start the drafting session there and edit this repo from it. Follow the frontmatter of the existing articles in `content/articles/`.
 
 Working title: "Most of my prompts are spoken". The one arguable sentence: most of what I send
 coding agents is dictated, and a second model rewrites it into a prompt before the agent sees it,
@@ -73,16 +73,16 @@ All of these are in the store under `life/tech/mac-setup/muesli/` and reach ever
 `./sync-muesli.py`.
 
 - **Mishearings split between prompt and dictionary.** `vocabulary.md` now has an *Always replace*
-  table (27 heard forms, such as Grumplane, datancy, Telenex and "death harness") that the sync
-  writes into Muesli's `custom_words` at a 0.95 threshold. Each was checked against
-  `/usr/share/dict/words` and every past dictation, with no false matches. Context-dependent fixes
-  stay in the prompt. The prompt went from 10,760 to 10,149 characters. Dictionary words added in
+  table (17 heard forms, such as Grumplane, datancy, Telenex and "death harness") that the sync
+  writes into Muesli's `custom_words` at a 0.95 threshold. The dictionary replaces every time, even
+  in "transcribe as is", so only forms I would never mean literally go there. Anything I might say
+  on purpose (a log doc, a write option, IRM, P16) stays in the prompt, where the model judges it
+  from context. Each dictionary form was checked against `/usr/share/dict/words` and every past
+  dictation, with no false matches. Dictionary words added in
   the app survive syncs: the store's entries have ids derived from the word, and only those are
   replaced.
-- **Skills linked into this repo on the company Mac.** Its profile in `life/tech/machines.json` was
-  project scope with the store as the only repo, so sessions here had none of the writing skills.
-  `junxiong-notes` is now in its repo list, and the links are kept out of git by
-  `.git/info/exclude`. The M4 Pro already uses user scope, so it was unaffected.
+- **Skills stay in the store only.** Linking them into this repo was tried and reverted the same
+  day: I want skills to load only in the personal-data-store.
 - **Dropped:** a lighter ChatGPT-specific prompt. Those dictations go to the Codex app, so the
   agent format is right for them. Muesli passes the target app to the model as `<APP-CONTEXT>`, so
   a per-app rule is possible later if dictation into chat or Lark grows.
