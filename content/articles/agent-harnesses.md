@@ -5,7 +5,7 @@ date: 2026-10-13
 updated: 2026-10-13
 category: AI systems
 tags: [harness, agents, claude-code, hermes, deepseek, evals]
-draft: true
+draft: false
 ---
 
 DeepSeek held one checkpoint of V4.1-Flash fixed and ran it through eight harnesses, changing nothing but the loop around the model. Its DeepSWE score moved from 65.5 in OpenCode to 74.2 in mini-SWE, a loop with a single bash tool, and Claude Code, Codex and pi all landed in between ([DeepSeek](https://arxiv.org/abs/2609.19969)). The same paper puts Opus 5 at 74.0 and Kimi K3 at 67.5 on that benchmark, so swapping the harness moved one model further than the gap between two frontier models. DeepSeek's own conclusion is that "scaffold choice matters at least as much as the effort tier".
