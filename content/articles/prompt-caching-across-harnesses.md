@@ -2,7 +2,7 @@
 title: Why the same prompt can cost more on the next request
 description: How prefix caching actually bills, what silently breaks it, and a worked cost example across Claude Code, Codex, Cursor and the raw API.
 date: 2026-08-29
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [prompt-caching, cost, agents, inference]
 ---
@@ -13,7 +13,7 @@ When I look at caching, I start with what changes between turns and where that c
 
 ## The prefix has to match
 
-A transformer's prefill computes key/value tensors for every input token. Prompt caching stores those tensors and reuses them when a new request starts with byte-identical text. OpenAI's cookbook puts the mechanism plainly: the model "reuses the cached tensors and only computes attention for the new tokens" ([Prompt Caching 201](https://developers.openai.com/cookbook/examples/prompt_caching_201)).
+A transformer's [prefill](/prefill-vs-decode) computes key/value tensors for every input token. Prompt caching stores those tensors and reuses them when a new request starts with byte-identical text. OpenAI's cookbook puts the mechanism plainly: the model "reuses the cached tensors and only computes attention for the new tokens" ([Prompt Caching 201](https://developers.openai.com/cookbook/examples/prompt_caching_201)).
 
 The consequence is that a cache hit needs an **exact prefix match**, not a similar one, and not a fuzzy one. Change something near the start of a long prompt and the text after that change loses its matching prefix. There is no per-file, per-section, or per-document caching underneath. Anthropic's Claude Code docs say it in one sentence: "The match is exact, so a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching" ([code.claude.com](https://code.claude.com/docs/en/prompt-caching)).
 

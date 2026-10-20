@@ -2,7 +2,7 @@
 title: Four predictions for how software teams will change
 description: Smaller teams but more of them, internal tools that compete with SaaS, more self-hosted models, and engineers who own product decisions.
 date: 2026-09-24
-updated: 2026-09-25
+updated: 2026-10-20
 category: Career
 tags: [predictions, engineering-teams, saas, self-hosting, local-llm]
 draft: false
@@ -22,7 +22,7 @@ engineers a quarter, you hired three engineers. With coding agents, one engineer
 of that implementation, so the headcount a feature needs goes down.
 
 Coordination cost does not go down. Every extra person adds another opinion to reconcile, another
-review to wait on and another calendar to fit around. When the implementation hours shrink,
+[review to wait on](/improving-team-efficiency-with-ai#checking-the-work-sets-the-pace) and another calendar to fit around. When the implementation hours shrink,
 coordination becomes a larger share of the work, and the cheapest way to cut it is a smaller team. A
 team of three that can agree on a Tuesday afternoon will beat a team of eight that needs a planning
 meeting.

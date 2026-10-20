@@ -2,7 +2,7 @@
 title: The AI stack, one constraint per layer
 description: A roadmap of AI from power to product, covering what each layer runs short of, what to learn there, and how image, voice and world models differ.
 date: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-20
 category: AI systems
 toc: false
 tags: [roadmap, ai-stack, hardware, inference, post-training, evals, agents]
@@ -180,6 +180,7 @@ context-engineering-for-coding-agents: Harness
 agent-integrations-in-large-orgs: Harness
 agent-harnesses: Harness
 four-predictions-for-software-teams: Apps
+anthropic-verification-layers: Apps
 ```
 
 ## Beside the stack

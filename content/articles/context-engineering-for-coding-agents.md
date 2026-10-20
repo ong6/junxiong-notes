@@ -2,7 +2,7 @@
 title: Where your tokens actually go in a coding agent
 description: How files and tool output fill a coding agent's context, what long-context studies show, and how I would keep a session focused.
 date: 2026-09-01
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [agents, context, coding-agents, cost, productivity]
 ---
@@ -55,7 +55,7 @@ The fix is to give the agent a way to *search* rather than a pile to read. A gre
 npm test 2>&1 | grep -E -A5 '(FAIL|✕|Error:)' | head -100
 ```
 
-Claude Code's docs suggest [doing this in a `PreToolUse` hook](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills) so the agent never sees the raw output at all. Any harness with command interception can do the same thing. On a self-hosted model the cost of a long context is memory rather than money, since the KV cache competes with the weights for VRAM — see [local inference hardware](/local-inference-hardware) and [what quantization costs](/quantization-what-it-costs). Either way, the re-sent history is prefill work, which is the cheap-per-token but latency-dominant half of the equation ([prefill vs decode](/prefill-vs-decode)).
+Claude Code's docs suggest [doing this in a `PreToolUse` hook](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills) so the agent never sees the raw output at all. Any [harness](/agent-harnesses) with command interception can do the same thing. On a self-hosted model the cost of a long context is memory rather than money, since the KV cache competes with the weights for VRAM — see [local inference hardware](/local-inference-hardware) and [what quantization costs](/quantization-what-it-costs). Either way, the re-sent history is prefill work, which is the cheap-per-token but latency-dominant half of the equation ([prefill vs decode](/prefill-vs-decode)).
 
 ## How much context can the model use well?
 
@@ -169,7 +169,7 @@ The Stack Overflow 2025 survey found [66% of developers naming "AI solutions tha
 
 **Commit often.** Checkpoints are how you throw away a bad direction without throwing away the session. A Git checkpoint lets you recover the code; conversation rewind is a separate operation that may also let the harness reuse a cached prefix.
 
-**Write the test first.** For a behaviour change, a failing test gives the agent a concrete target and gives me a way to check its work.
+**Write the test first.** For a behaviour change, a failing test gives the agent a concrete target and gives me [a way to check its work](/anthropic-verification-layers#1-the-agent-checks-its-own-work).
 
 ## Measuring it at all
 

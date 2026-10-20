@@ -37,7 +37,7 @@ The practical work is unglamorous:
 
 - Make the test suite fast enough that an agent can run it on every change.
 - Have agents write tests, and have humans review the tests more carefully than the code, because the tests are what the next change will be trusted against.
-- Split changes into risk tiers. A copy edit or dependency bump that passes checks can merge with a light review; a change to payments or permissions keeps a full one.
+- Split changes into [risk tiers](/anthropic-verification-layers#5-human-approval-scaled-by-risk). A copy edit or dependency bump that passes checks can merge with a light review; a change to payments or permissions keeps a full one.
 
 Every check you add lets you remove a human step without losing confidence. That trade is where most of the time goes.
 
@@ -47,7 +47,7 @@ A team harness is the context and capability every agent in a repo starts with: 
 
 The common worry is that a shared harness will force one workflow on people who work differently. It does if you put workflow in it. It doesn't if it holds only what is true no matter who runs the agent.
 
-Harnesses already separate these layers. Claude Code, for example, loads a personal `~/.claude/CLAUDE.md` with "personal preferences for all projects" alongside the project file. Its docs say the project file should hold "build and test commands, coding standards, architectural decisions" and focus on "project-level standards rather than personal preferences" ([Claude Code docs](https://code.claude.com/docs/en/memory)). Most other agent tools have a similar user-level and project-level split.
+[Harnesses](/agent-harnesses) already separate these layers. Claude Code, for example, loads a personal `~/.claude/CLAUDE.md` with "personal preferences for all projects" alongside the project file. Its docs say the project file should hold "build and test commands, coding standards, architectural decisions" and focus on "project-level standards rather than personal preferences" ([Claude Code docs](https://code.claude.com/docs/en/memory)). Most other agent tools have a similar user-level and project-level split.
 
 | Team layer: facts about the repo | Personal layer: how you like to work |
 |---|---|
@@ -59,7 +59,7 @@ Harnesses already separate these layers. Claude Code, for example, loads a perso
 
 Skills make the split easier. A Skill's body "loads only when it's used" ([Claude Code docs](https://code.claude.com/docs/en/skills)), so a team Skill library adds options without adding rules. Someone who never uses the release Skill never pays for it.
 
-My test for whether a line belongs in the team file: would a new hire need it on their first day, whatever their habits? If yes, it goes in. If it describes how to work rather than what is true, it goes in a Skill or a personal file. Then keep the file small. Prune lines the agents ignore, and lines that have gone stale, because a long instruction file is followed less reliably than a short one.
+My test for whether a line belongs in the team file: would a new hire need it on their first day, whatever their habits? If yes, it goes in. If it describes how to work rather than what is true, it goes in a Skill or a personal file. Then keep the file small. Prune lines the agents ignore, and lines that have gone stale, because [a long instruction file is followed less reliably than a short one](/context-engineering-for-coding-agents#how-i-would-organise-a-session).
 
 ## Environments
 

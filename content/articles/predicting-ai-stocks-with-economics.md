@@ -2,7 +2,7 @@
 title: Predicting the future of AI stocks with economics
 description: People adopted AI faster than the internet, but only about 2% of households pay for it. Where the money flows, and how I would position for the bull case.
 date: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-20
 category: Trading
 tags: [ai-economics, investing, semiconductors, power, memory]
 draft: false
@@ -95,7 +95,7 @@ are booked years ahead. GE Vernova's
 [gas turbine backlog and slot reservations reached 100 GW](https://www.industrialinfo.com/iirenergy/industry-news/article/ge-vernovas-global-natural-gas-turbine-reservations-and-order-backlog-grows-to-100-gw--356705)
 in the first quarter of 2026, in a quarter when it shipped 4 GW.
 
-**Memory.** AI accelerators need high-bandwidth memory (HBM), which only three companies make. SK
+**Memory.** AI accelerators need [high-bandwidth memory (HBM)](/ai-stack-roadmap#chips-and-memory), which only three companies make. SK
 Hynix's chief executive
 [told Reuters](https://www.gadgetreview.com/2027-could-be-memorys-worst-supply-year-yet-sk-hynix-ceo-warns)
 that 2027 will be "the worst year in the industry's history from the supply perspective". Not

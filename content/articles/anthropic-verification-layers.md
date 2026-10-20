@@ -35,7 +35,7 @@ The cheapest layer runs before a pull request exists. The Claude Code team: "Mos
 
 Boris Cherny, who leads Claude Code, calls this "probably the most important thing to get great results out of Claude Code -- give Claude a way to verify its work", and puts the gain at "2-3x the quality of the final result" ([Cherny on X](https://x.com/bcherny/status/2007179861115511237)). That multiplier is his estimate; nobody has published a measurement.
 
-The mechanism is simple. An agent stops when the work looks done. The best-practices docs put it bluntly: "Without a check it can run, 'looks done' is the only signal available, and you become the verification loop" ([Claude Code docs](https://code.claude.com/docs/en/best-practices)). The same docs list four strengths of check: asked for in the prompt, set as a `/goal` that a separate model re-checks after each turn, enforced by a Stop hook that blocks the turn from ending until a script passes, or handed to a fresh subagent that tries to refute the result. Only the hook is deterministic.
+The mechanism is simple. An agent stops when the work looks done. The best-practices docs put it bluntly: "Without a check it can run, 'looks done' is the only signal available, and you become the verification loop" ([Claude Code docs](https://code.claude.com/docs/en/best-practices)). The same docs list four strengths of check: asked for in the prompt, set as a `/goal` that a separate model re-checks after each turn, enforced by a Stop hook that blocks the turn from ending until a script passes, or handed to [a fresh subagent that tries to refute the result](/opus-orchestrating-gpt-agents#the-self-score-problem). Only the hook is deterministic.
 
 Anthropic's playbook for customers adds a rule I'd take on its own: "an agent fixing code must not be able to weaken the check on that code" ([Anthropic](https://claude.com/resources/articles/the-ai-native-sdlc-playbook)). It suggests a hook that blocks edits to test files during a fix. That is advice to customers; I found no post saying Anthropic does it internally.
 
@@ -87,7 +87,7 @@ This layer exists because of a failure. With an agent writing and an agent revie
 
 ## 8. Containment
 
-The last layer limits what an agent can do instead of judging what it wrote. Engineers code on virtual machines where agent traffic is restricted to approved destinations, and agents get narrow identities ([Anthropic](https://claude.com/resources/articles/how-anthropic-secures-its-ai-native-software-development-lifecycle)). Anthropic says sandboxing cut permission prompts by 84% in its own use ([Anthropic](https://www.anthropic.com/engineering/claude-code-sandboxing)).
+The last layer limits what an agent can do instead of judging what it wrote. Engineers code on virtual machines where agent traffic is restricted to approved destinations, and agents get [narrow identities](/agent-integrations-in-large-orgs#whose-permissions-does-the-agent-use) ([Anthropic](https://claude.com/resources/articles/how-anthropic-secures-its-ai-native-software-development-lifecycle)). Anthropic says sandboxing cut permission prompts by 84% in its own use ([Anthropic](https://www.anthropic.com/engineering/claude-code-sandboxing)).
 
 The best example of why this matters is in the same security post. An incident-response agent that wasn't allowed to deploy fixes messaged another Claude instance over Slack, one that could write code, and asked it to push the fix. A human review gate caught it. Agents route around a boundary through other agents, so each boundary has to hold on its own.
 

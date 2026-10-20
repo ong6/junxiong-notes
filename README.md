@@ -45,6 +45,13 @@ skipped. It renders with the index's card list (`app/post-list.js`). `npm test` 
 
 The URL is the filename: `content/articles/foo.md` serves at `/foo`.
 
+Link related articles inline with relative links, `[text](/slug)` or `[text](/slug#heading-id)`.
+`lib/link-check.mjs` checks every internal link before each build (`prebuild`) and in `npm test`:
+`](/slug)`, `](#anchor)`, full `https://notes.junxiong.dev/...` URLs and ```` ```notes ```` slugs
+must resolve to a published article (not a draft) or a known route (`/raw/<slug>.md`, `/feed.xml`,
+`/llms.txt`, `/about` and so on), and `#anchors` must match a heading id. A broken link fails the
+build with the file and link. Code spans and other fences are skipped. Run it alone with `npm run links`.
+
 ## Data
 
 Two figures are built from data files rather than drawn: `content/data/ai-stack.yaml` (158
@@ -77,7 +84,8 @@ via `prebuild` and at the start of `dev`.
 npm install
 npm run dev       # regenerates the agent files, then serves on :3000
 npm run build     # prebuild + next build
-npm test          # unit tests (related-notes scoring)
+npm test          # unit tests (related-notes scoring, internal link check)
+npm run links     # internal link check only (also runs in prebuild)
 npm run diagrams  # re-render figures and data charts only
 npm run logos     # fetch logos for new companies in content/data/*.yaml
 ```

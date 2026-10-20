@@ -2,7 +2,7 @@
 title: Opus orchestrated, GPT agents built, and nobody graded their own work
 description: How Claude Opus ran GPT-5.6 coding agents through a nine-hour build, and why the quality came from reviewers, not from the workers' self-scores.
 date: 2026-10-03
-updated: 2026-10-03
+updated: 2026-10-20
 category: AI systems
 tags: [agents, orchestration, coding-agents, code-review, multi-agent]
 project:
@@ -64,7 +64,7 @@ The reviewers worked because of how they were briefed, not because they were sma
 
 ## Keeping long sessions alive
 
-Long agent sessions fail quietly. A watchdog checked each session every minute. It interrupted one model call that had been silent for eight minutes and one command that had hung for 101 minutes, and nudged idle sessions that still had open work. When a session fell to about 20% of its context, the watchdog had it commit its work and write a handoff file of at most 80 lines. A fresh session started from that file. Every new round also started a fresh session, so no worker carried stale goals or old decisions forward.
+Long agent sessions fail quietly. A watchdog checked each session every minute. It interrupted one model call that had been silent for eight minutes and one command that had hung for 101 minutes, and nudged idle sessions that still had open work. When a session fell to about 20% of [its context](/context-engineering-for-coding-agents#what-compaction-changes), the watchdog had it commit its work and write a handoff file of at most 80 lines. A fresh session started from that file. Every new round also started a fresh session, so no worker carried stale goals or old decisions forward.
 
 ## Where the orchestrator was wrong
 

@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "node scripts/render-diagrams.mjs && node scripts/generate-agent-files.mjs",
+    "prebuild": "node scripts/check-links.mjs && node scripts/render-diagrams.mjs && node scripts/generate-agent-files.mjs",
     "dev": "node scripts/render-diagrams.mjs && node scripts/generate-agent-files.mjs && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "links": "node scripts/check-links.mjs",
     "diagrams": "node scripts/render-diagrams.mjs",
     "logos": "node scripts/fetch-logos.mjs",
     "test": "node --test test/*.test.mjs"
