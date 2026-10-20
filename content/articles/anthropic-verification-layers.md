@@ -8,6 +8,10 @@ tags: [verification, code-review, agents, claude-code, ci]
 draft: false
 ---
 
+```uipack Each layer stops some defects and misses others, so few slip past all six, rollback handles the rest, and containment bounds every step; the packet counts are illustrative, not to scale. | Sources: Claude Code team, Solving code review at Anthropic (the layers; merged PRs and reverted share, Claude Code repo, Jun–Sep 2026); Anthropic, Recursive self-improvement (AI review would have caught roughly a third of past incident bugs, a retrospective estimate).
+verification-sieve
+```
+
 In May 2026 Anthropic merged about 2,500 code changes a day into its monorepo. By September it was merging more than 30,000 ([Anthropic](https://www.anthropic.com/engineering/redesigning-source-control)). More than 80% of the lines merged to production are attributed to Claude ([Anthropic](https://www.anthropic.com/institute/recursive-self-improvement)). Nobody reads 30,000 changes a day, so the interesting question is what replaced reading.
 
 The Claude Code team's own answer is "Layers, not one gate… Each layer catches some problems and misses others. Few get through all of them, and rollback handles the rest" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). I read their public record as a stack of cheap, imperfect checks, with human review as the last and rarest layer, scaled by risk. That stack is the part of their process worth copying. The volume is not.

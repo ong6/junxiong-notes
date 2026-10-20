@@ -8,6 +8,10 @@ tags: [teams, harness, agents, verification, adoption]
 draft: false
 ---
 
+```uipack An agent writes changes faster than people can check and review them, so work queues at review and the team ships at reviewer speed; a team harness, fast checks and risk tiers are what widen those steps.
+review-bottleneck
+```
+
 Giving every engineer an AI coding tool makes individuals faster and usually leaves the team about as fast as it was. The code an agent writes still has to be understood, checked, reviewed and shipped, and those steps were sized for human-speed output. If an agent writes a change in minutes and a reviewer needs an hour to trust it, the team ships at reviewer speed. I think most of the efficiency a team can get from AI sits in those later steps, not in the model or the prompt.
 
 When people plan AI adoption they tend to name two levels: their own workflow, and shared tooling such as MCP servers that connect agents to internal systems. Both matter. They are also the two ends of a longer stack, and the levels in between are where teams stall.
