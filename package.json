@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "diagrams": "node scripts/render-diagrams.mjs",
-    "logos": "node scripts/fetch-logos.mjs"
+    "logos": "node scripts/fetch-logos.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "github-slugger": "^2.0.0",

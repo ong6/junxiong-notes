@@ -84,9 +84,9 @@ a:hover { text-decoration-thickness: 2px; }
 .post-list { list-style: none; padding: 0; margin: 0; }
 .post-list li { padding: 1.6rem 0; border-bottom: 1px solid var(--faint); }
 .post-list li:last-child { border-bottom: 0; }
-.post-list h2 { font-size: 1.3rem; margin: 0 0 .3rem; line-height: 1.35; letter-spacing: -.01em; }
-.post-list h2 a { color: var(--text); text-decoration: none; }
-.post-list h2 a:hover { color: var(--accent); }
+.post-list :is(h2, h3) { font-size: 1.3rem; margin: 0 0 .3rem; line-height: 1.35; letter-spacing: -.01em; }
+.post-list :is(h2, h3) a { color: var(--text); text-decoration: none; }
+.post-list :is(h2, h3) a:hover { color: var(--accent); }
 .post-list p { margin: .3rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
 .meta { font-family: var(--sans); font-size: .8rem; color: var(--muted); letter-spacing: .02em; }
 .meta time { font-variant-numeric: tabular-nums; }
@@ -312,8 +312,11 @@ footer .links { margin-left: -.55rem; gap: 0; }
 .post-category { font: .8rem var(--sans); color: var(--accent); display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; text-decoration: none; }
 .post-category:hover { text-decoration: underline; }
 .post-list li { padding: 1.25rem 0 1.6rem; }
-.post-list h2 { font-size: 1.45rem; }
-.post-list h2 a { display: block; min-height: 44px; padding: .15rem 0; }
+.post-list :is(h2, h3) { font-size: 1.45rem; }
+/* Padding, not min-height alone, makes the 44px target: a one-line title then sits
+   as close to its description as a two-line one. */
+.post-list :is(h2, h3) a { display: block; min-height: 44px; padding: .35rem 0; }
+.post-list :is(h2, h3) { margin-bottom: .1rem; }
 .post-list p { max-width: 65ch; }
 .post-taxonomy { display: flex; flex-wrap: wrap; gap: .1rem .5rem; margin: .7rem 0 0 -.5rem; font-family: var(--sans); font-size: .8rem; line-height: 1.5; }
 .post-taxonomy a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; padding: .4rem .5rem; color: var(--muted); text-decoration: none; overflow-wrap: anywhere; }
@@ -352,7 +355,7 @@ footer .links { margin-left: -.55rem; gap: 0; }
 	.category-filters a { flex: none; white-space: nowrap; font-size: .85rem; }
 	.topic-links { grid-template-columns: repeat(2,minmax(0,1fr)); }
 	.topic-panel { padding: .85rem; }
-	.post-list h2 { font-size: 1.35rem; }
+	.post-list :is(h2, h3) { font-size: 1.35rem; }
 	.post-meta { column-gap: .8rem; }
 	.post-meta .meta { column-gap: .8rem; font-size: .75rem; }
 	.post-list li { padding-top: 1rem; }
@@ -370,4 +373,58 @@ footer .links { margin-left: -.55rem; gap: 0; }
 
 @media (prefers-reduced-motion: reduce) {
 	.fig:not([data-user-play="true"]) [data-uipack="packet"] { visibility: hidden; }
+}
+
+/* ---------- related notes (under each article) ---------- */
+/* The index's article list (app/post-list.js) under a small sans label, on the
+   same column as the article. The label row borrows the index's divider row. */
+.related-notes { margin-top: 3rem; }
+.related-notes > h2 { margin: 0; padding-bottom: .6rem; border-bottom: 1px solid var(--faint); font: 600 .9rem/1.4 var(--sans); letter-spacing: 0; color: var(--muted); }
+
+/* ---------- ```notes clusters inside an article ---------- */
+/* uipack's NoteCluster draws in the diagrams' language (dashed box, mono meta,
+   green accent) and its wide variant breaks out to the 56rem figure slot. On
+   this site a cluster is a reading aid, not a figure: it stays on the text
+   column and uses the site's card language - the contents box (surface fill,
+   faint border, 6px radius), serif titles like the index, sans meta, and the
+   link accent on hover and focus. */
+.prose { --uipack-article-wide: 100%; }
+.prose .uipack-cluster.uipack-cluster {
+	--uipack-accent: var(--accent);
+	margin: 2rem 0; padding: 1rem 1.2rem 1.2rem;
+	background: var(--surface); border: 1px solid var(--faint); border-radius: 6px;
+	font-family: var(--sans);
+}
+.prose .uipack-cluster .uipack-cluster__head { margin-bottom: .75rem; gap: .1rem .6rem; }
+.prose .uipack-cluster .uipack-cluster__label { font: 600 .9rem/1.4 var(--sans); letter-spacing: 0; text-transform: none; color: var(--muted); }
+.prose .uipack-cluster .uipack-cluster__count { font: .8rem/1.4 var(--sans); color: var(--muted); }
+.prose .uipack-notecard.uipack-notecard { gap: .3rem; padding: .85rem 1rem .8rem; background: var(--bg); border: 1px solid var(--faint); border-radius: 6px; }
+.prose .uipack-notecard .uipack-notecard__kicker { font: 600 .72rem/1.4 var(--sans); letter-spacing: .06em; color: var(--muted); }
+.prose .uipack-notecard .uipack-notecard__title { font: 700 1.05rem/1.35 var(--serif); letter-spacing: -.01em; color: var(--text); }
+.prose .uipack-notecard .uipack-notecard__desc { font: .92rem/1.5 var(--serif); color: var(--muted); }
+.prose .uipack-notecard .uipack-notecard__meta { font: .75rem/1.4 var(--sans); letter-spacing: .02em; color: var(--muted); }
+.prose .uipack-notecard .uipack-notecard__go { font: 1rem/1 var(--sans); color: var(--muted); }
+@media (max-width: 600px) {
+	.prose .uipack-cluster.uipack-cluster { padding: .85rem .75rem .75rem; }
+	.related-notes { margin-top: 2.5rem; }
+}
+
+/* ---------- tables on phones ---------- */
+/* Tighter cells and wrapping headers let a two- or three-column table fit a
+   phone instead of overflowing by a few pixels and clipping its last column.
+   A table that is still too wide scrolls in .table-scroll, and soft edge
+   shadows (they scroll away with the content, background-attachment: local)
+   show that more of it sits off to the side. */
+.table-scroll {
+	--edge: color-mix(in srgb, var(--text) 24%, transparent);
+	background:
+		linear-gradient(to right, var(--bg) 40%, transparent) left / 1.5rem 100% no-repeat local,
+		linear-gradient(to left, var(--bg) 40%, transparent) right / 1.5rem 100% no-repeat local,
+		radial-gradient(farthest-side at 0 50%, var(--edge), transparent) left / .6rem 100% no-repeat scroll,
+		radial-gradient(farthest-side at 100% 50%, var(--edge), transparent) right / .6rem 100% no-repeat scroll;
+}
+@media (max-width: 600px) {
+	.prose table { font-size: .8125rem; }
+	.prose th, .prose td { padding: .5rem; }
+	.prose th { white-space: normal; }
 }

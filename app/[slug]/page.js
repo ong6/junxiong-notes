@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import "uipack/charts.css";
 import "uipack/article.css";
 import ArticleContent from "../article-content";
+import { PostList } from "../post-list";
 import {
 	allArticles,
 	articleSlugs,
@@ -11,6 +12,7 @@ import {
 	renderMarkdown,
 	tableOfContents,
 	readingTime,
+	relatedFor,
 } from "../../lib/articles";
 import { SITE } from "../../lib/site.mjs";
 
@@ -64,19 +66,9 @@ export default async function Article({ params }) {
 	const { meta, body } = a;
 	const html = await renderMarkdown(body);
 	const toc = tableOfContents(body);
-	// Articles already shown as cards in one of this article's ```notes clusters.
-	const clustered = new Set(
-		[...body.matchAll(/^```notes[^\n]*\n([\s\S]*?)^```/gm)].flatMap((m) => m[1].split("\n").map((line) => line.split(":")[0].trim()).filter(Boolean)),
-	);
-	const related = allArticles()
-		.filter((p) => p.slug !== slug && !clustered.has(p.slug))
-		.map((p) => ({
-			...p,
-			overlap: (p.tags ?? []).filter((t) => (meta.tags ?? []).includes(t)).length,
-		}))
-		.sort((x, y) => y.overlap - x.overlap)
-		.slice(0, 3)
-		.filter((p) => p.overlap > 0);
+	// Top 4 by shared tags, links and category (lib/related.mjs), minus any
+	// article this one already shows in its own ```notes cluster.
+	const related = relatedFor(slug);
 
 	const jsonLd = {
 		"@context": "https://schema.org",
@@ -151,18 +143,9 @@ export default async function Article({ params }) {
 			</article>
 
 			{related.length ? (
-				<section>
-					<h2 style={{ fontSize: "1.1rem", marginTop: "2.5rem" }}>Related</h2>
-					<ul className="post-list">
-						{related.map((p) => (
-							<li key={p.slug}>
-								<h2>
-									<a href={`/${p.slug}`}>{p.title}</a>
-								</h2>
-								<p>{p.description}</p>
-							</li>
-						))}
-					</ul>
+				<section className="related-notes" aria-labelledby="related-notes-heading">
+					<h2 id="related-notes-heading">Related notes</h2>
+					<PostList posts={related} headingLevel={3} />
 				</section>
 			) : null}
 

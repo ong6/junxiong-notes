@@ -266,8 +266,8 @@ function noteCluster(label: string, body: string): string {
       return { href: `/${slug}`, title: meta.title, description: meta.description, date: meta.date, minutes: readingTime(text), kicker };
     });
   if (!notes.length) throw new DataError(`${where}: list at least one article`);
-  // Three or more cards take the figure slot (three columns); fewer stay in the
-  // text column, where two fill a row without an empty third column.
+  // `wide` asks uipack for the 56rem figure slot; app/globals.css keeps every
+  // cluster on the text column instead, so the article column has one edge.
   return renderToStaticMarkup(<NoteCluster label={label} notes={notes} wide={notes.length >= 3} />);
 }
 

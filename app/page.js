@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import ArticleBrowser, { PostList } from "./article-browser";
+import ArticleBrowser from "./article-browser";
+import { PostList } from "./post-list";
 import { allArticles } from "../lib/articles";
 import { SITE } from "../lib/site.mjs";
 

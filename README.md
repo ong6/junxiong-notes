@@ -36,6 +36,13 @@ cards and article pages. The index filters by category and tag together, keeps n
 order, and saves the selection in the URL (for example `/?category=AI+systems&tag=agents`).
 Missing categories fall back to `Uncategorized`; drafts never appear in filters or public article routes.
 
+Every article page ends with **Related notes**: the top four other articles, computed at build time
+by `lib/related.mjs`. Shared tags score by rarity (IDF, `ln(N / articles with the tag)`), a link
+between the two articles in either direction adds 2, and the same category adds 0.5; ties go to
+the newer article. If fewer than four share a tag or a link, the list is filled from the same
+category, newest first. Articles already shown in the page's own ```` ```notes ```` clusters are
+skipped. It renders with the index's card list (`app/post-list.js`). `npm test` covers the scoring.
+
 The URL is the filename: `content/articles/foo.md` serves at `/foo`.
 
 ## Data
@@ -70,6 +77,7 @@ via `prebuild` and at the start of `dev`.
 npm install
 npm run dev       # regenerates the agent files, then serves on :3000
 npm run build     # prebuild + next build
+npm test          # unit tests (related-notes scoring)
 npm run diagrams  # re-render figures and data charts only
 npm run logos     # fetch logos for new companies in content/data/*.yaml
 ```

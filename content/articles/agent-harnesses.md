@@ -106,11 +106,3 @@ Three caveats keep this honest. DeepSeek itself reads the table as evidence that
 ## What I would do
 
 Choose the shape by what you need to change. If you want a model and a harness built around the same tools and don't need to swap either, a closed loop like Claude Code is the strongest default for coding. If you need to recompose the loop itself, its tools, its prompt and how tools are presented, a plugin kernel like DeepSeek Harness is the only shape where all of that is a YAML edit, at the price of alpha software. If you need an agent that lives on your phone and runs on a schedule, use a gateway daemon, and let it host a coding loop instead of competing with one. Whichever you pick, measure the composition rather than the brand: the same harness moved 5 points with a different plugin list.
-
-```notes My notes on the harness layer
-ai-stack-roadmap: The whole stack
-context-engineering-for-coding-agents: Context
-prompt-caching-across-harnesses: Model adapter
-opus-orchestrating-gpt-agents: Subagents
-agent-integrations-in-large-orgs: Tools and MCP
-```

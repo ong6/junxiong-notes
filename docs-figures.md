@@ -282,7 +282,8 @@ its id to `content/data/logo-rejects.txt` so the next run skips it.
 A fence that lists the site's own articles renders as a cluster of link cards (uipack/article
 `NoteCluster`): title, description, date and reading time come from each article's frontmatter, the
 text after the colon is the card's kicker (the layer or topic), and the caption is the cluster's
-label. Three or more cards take the 56rem figure slot in three columns; fewer stay in the text column.
+label. Clusters stay on the text column (the site overrides uipack's wide 56rem slot) and use the
+site's card look: the contents box's surface and border, serif titles, sans meta.
 A draft renders as a dashed "Coming next" card with no link until it is published. An unknown slug
 fails the build.
 
@@ -294,7 +295,9 @@ context-engineering-for-coding-agents: Harness
 ````
 
 Group links to your own articles in one cluster where a section or zone ends, rather than scattering
-them through "Go deeper" lines; mention one inline only where the prose relies on it.
+them through "Go deeper" lines; mention one inline only where the prose relies on it. Don't end an
+article with a cluster that is only a related list: every article page gets an automatic "Related
+notes" list (see README), and it skips any article already shown in one of the page's clusters.
 
 ### Labelled paragraphs
 

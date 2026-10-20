@@ -99,10 +99,3 @@ Pick one workflow the team runs often and knows well: small feature requests, fa
 4. Package what worked, the harness, the Skills and the checks, as tooling other teams can copy.
 
 That order gives you a result you can show before you ask anyone to adopt anything. Starting with the platform asks teams to believe it will help; starting with one workflow lets them see it.
-
-```notes My notes on the harness layer
-agent-harnesses: How harnesses are built
-context-engineering-for-coding-agents: Context
-agent-integrations-in-large-orgs: Tools and MCP
-four-predictions-for-software-teams: Where teams are heading
-```
