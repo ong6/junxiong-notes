@@ -2,7 +2,7 @@
 title: Prefill and decode want different machines
 description: LLM inference has two phases with opposite bottlenecks. Which one you care about decides what hardware to buy.
 date: 2026-08-30
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [inference, gpu, memory-bandwidth, serving, kv-cache]
 ---
@@ -66,7 +66,7 @@ The same arithmetic explains why [quantization](/quantization-what-it-costs) buy
 
 ## Why big-FLOPs, small-bandwidth boxes disappoint
 
-NVIDIA's DGX Spark is the cleanest illustration currently shipping. NVIDIA [claims](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) 1 petaFLOP of sparse FP4 on the GB10 superchip, with 128 GB of unified LPDDR5X at **273 GB/s**. The compute figure alone does not tell you how quickly it will generate tokens.
+NVIDIA's DGX Spark is the cleanest illustration shipping at the time of writing. NVIDIA [claims](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) 1 petaFLOP of sparse FP4 on the GB10 superchip, with 128 GB of unified LPDDR5X at **273 GB/s**. The compute figure alone does not tell you how quickly it will generate tokens.
 
 Measured on `gpt-oss-120b` MXFP4 in the [llama.cpp DGX Spark thread](https://github.com/ggml-org/llama.cpp/discussions/16578): **1,956 tok/s prompt processing, 60.57 tok/s generation**. A 32× gap between the two phases on one box, from one set of weights. The two measurements illustrate why the advertised compute figure cannot stand in for a decode benchmark.
 
@@ -125,9 +125,9 @@ Prompt caching is the third lever, and it attacks prefill instead — see [promp
 
 Running prefill and decode on the same GPU means they fight. A long prefill occupying the GPU stalls every in-flight decode, and users see the stream freeze.
 
-**Chunked prefill** splits a prompt into fixed-size chunks and slots decode steps in alongside them. [Sarathi-Serve](https://arxiv.org/abs/2403.02310) introduced this as "stall-free scheduling". It is now on by default in vLLM V1, whose [scheduler](https://docs.vllm.ai/en/latest/configuration/optimization.html) batches all pending decodes first, then fills the remaining token budget with prefill chunks. The docs are explicit about why: it gets "better GPU utilization by locating compute-bound (prefill) and memory-bound (decode) requests to the same batch." `max_num_batched_tokens` is the dial — around 2048 favours inter-token latency, above 8192 favours TTFT and raw throughput.
+**Chunked prefill** splits a prompt into fixed-size chunks and slots decode steps in alongside them. [Sarathi-Serve](https://arxiv.org/abs/2403.02310) introduced this as "stall-free scheduling". It is on by default in vLLM V1 (checked 2026-10-20), whose [scheduler](https://docs.vllm.ai/en/latest/configuration/optimization.html) batches all pending decodes first, then fills the remaining token budget with prefill chunks. The docs are explicit about why: it gets "better GPU utilization by locating compute-bound (prefill) and memory-bound (decode) requests to the same batch." `max_num_batched_tokens` is the dial — around 2048 favours inter-token latency, above 8192 favours TTFT and raw throughput.
 
-**Disaggregation** goes further and puts the two phases on different machines. [DistServe](https://arxiv.org/abs/2401.09670) made the case that prefill/decode interference costs enough goodput to justify separate GPU pools. Every major stack now ships it: [vLLM](https://docs.vllm.ai/en/latest/features/disagg_prefill/) with KV connectors under `vllm/distributed/kv_transfer`, [SGLang](https://docs.sglang.ai/advanced_features/pd_disaggregation.html) with separate prefill and decode pools, and [TensorRT-LLM](https://nvidia.github.io/TensorRT-LLM/features/disagg-serving.html) under NVIDIA Dynamo. The prefill pool runs high tensor parallelism to chew through matmuls; the decode pool runs lower TP with more replicas for concurrency. KV cache moves between them over RDMA.
+**Disaggregation** goes further and puts the two phases on different machines. [DistServe](https://arxiv.org/abs/2401.09670) made the case that prefill/decode interference costs enough goodput to justify separate GPU pools. At the time of writing, every major stack ships it: [vLLM](https://docs.vllm.ai/en/latest/features/disagg_prefill/) with KV connectors under `vllm/distributed/kv_transfer`, [SGLang](https://docs.sglang.ai/advanced_features/pd_disaggregation.html) with separate prefill and decode pools, and [TensorRT-LLM](https://nvidia.github.io/TensorRT-LLM/features/disagg-serving.html) under NVIDIA Dynamo. The prefill pool runs high tensor parallelism to chew through matmuls; the decode pool runs lower TP with more replicas for concurrency. KV cache moves between them over RDMA.
 
 For hardware selection, I take this as a reason to measure both phases against the intended workload. A configuration chosen for a busy serving pool may be a poor fit for one local conversation.
 

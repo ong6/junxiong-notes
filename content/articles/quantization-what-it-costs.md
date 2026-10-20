@@ -2,7 +2,7 @@
 title: What changes when you quantize a model
 description: How quantization changes model size, speed and answers, and why weight memory and KV-cache memory need separate budgets.
 date: 2026-08-28
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [quantization, open-weights, local-llm, inference]
 ---
@@ -63,7 +63,7 @@ Three numbers get used, and they do not measure the same thing.
 
 **Perplexity** is the one everyone quotes, and it understates the damage. Its failure mode is that per-token differences from the reference cancel out in the average. [Accuracy is Not All You Need](https://arxiv.org/abs/2407.09141) (Microsoft Research, 2024) documents this: quantized models produce large numbers of *flips*, answers changing from right to wrong and wrong to right in roughly equal proportion, so the aggregate score barely moves while the model's actual behaviour has shifted. Flips correlate with KL-divergence at Spearman 0.981 on MMLU, and with perplexity much less well.
 
-**KL-divergence against the fp16 reference** is the metric I'd use if I could only have one. It measures distributional distance per token, so cancellation is not possible, and it is what the credible quant publishers now report.
+**KL-divergence against the fp16 reference** is the metric I'd use if I could only have one. It measures distributional distance per token, so cancellation is not possible, and it is what the credible quant publishers report at the time of writing.
 
 **Task benchmarks** are the ground truth, and they show the damage is not evenly distributed. From [a unified llama.cpp evaluation on Llama-3.1-8B-Instruct](https://arxiv.org/abs/2601.14277) (Kurt, January 2026):
 
@@ -168,7 +168,7 @@ The serving stack decides this more than quality does.
 | vLLM on Turing | GPTQ (AWQ needs Turing+, Marlin has gaps) | FP8, which needs Ada or newer |
 | MLX on Apple Silicon | MLX 4-bit or 6-bit community builds; mixed-precision variants where published | GGUF, unless you specifically want llama.cpp |
 
-vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing: AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
+vLLM's [hardware compatibility matrix](https://docs.vllm.ai/en/latest/features/quantization/) is worth reading before you download 200 GB of the wrong thing. As of 2026-10-20, AWQ needs Turing or newer, llm-compressor FP8 needs Ada or Hopper, and bitsandbytes works nearly everywhere while being the wrong choice for serving nearly everywhere.
 
 ```uipack Two questions decide the download, and neither is about quality: which runtime you serve on, then which GPU generation it sits on. | Source: vLLM quantization compatibility matrix.
 quant-decision

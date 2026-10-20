@@ -2,7 +2,7 @@
 title: How agent integrations get built inside large organisations
 description: Registries, auth brokering, generated tool schemas and the org failure modes that stall internal agent platforms — grounded in public specs.
 date: 2026-09-02
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [agents, mcp, integrations, platform-engineering, auth]
 ---
@@ -32,7 +32,7 @@ broker-paths
 
 The prior art is not from the agent world. Backstage's software catalogue does this for services: teams commit a metadata YAML alongside the code, the catalogue harvests it, and the stated goal is that "no more orphan software" hides in dark corners of the org ([Backstage docs](https://backstage.io/docs/features/software-catalog/)). The service team owns its entry, and everyone searches the same index. I would use that split for an agent tool registry too.
 
-MCP encodes the same split at the protocol level. A server declares a `tools` capability and answers `tools/list`; a client discovers what exists at connect time rather than at build time. Servers that declare `listChanged` push a `notifications/tools/list_changed` when the set changes, so the catalogue is live rather than a checked-in manifest ([MCP tools spec](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)).
+MCP encodes the same split at the protocol level. (The MCP references in this article are to the 2026-07-28 revision, the current one when I re-checked on 2026-10-20.) A server declares a `tools` capability and answers `tools/list`; a client discovers what exists at run time rather than at build time. Servers that declare `listChanged` push a `notifications/tools/list_changed` to subscribed clients when the set changes, so the catalogue is live rather than a checked-in manifest ([MCP tools spec](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)).
 
 The registry also needs an owner who keeps entries current. Otherwise teams will eventually stop trusting the catalogue and go back to asking around.
 
@@ -58,9 +58,9 @@ token-exchange
 
 An agent reads text and then acts on it. That text can contain instructions. This turns a classic confused-deputy problem into a routine one.
 
-MCP's security best practices document spells out the specific version: a proxy server with a static client ID to a third-party auth server, plus dynamic client registration, plus a consent cookie set on first authorisation, equals an attacker who can register a client with their own `redirect_uri` and have the auth server skip the consent screen entirely because the cookie is already there ([MCP security best practices](https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices)). Required mitigations: per-client consent stored server-side and checked *before* forwarding, exact-string `redirect_uri` matching with no wildcards, and single-use `state` values stored only after consent is approved.
+MCP's security best practices document spells out the specific version: a proxy server with a static client ID to a third-party auth server, plus dynamic client registration, plus a consent cookie set on first authorisation, equals an attacker who can register a client with their own `redirect_uri` and have the auth server skip the consent screen entirely because the cookie is already there ([MCP security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)). The current revision deprecates dynamic client registration in favour of Client ID Metadata Documents, but still describes this attack. Required mitigations: per-client consent stored server-side and checked *before* forwarding, exact-string `redirect_uri` matching with no wildcards, and single-use `state` values stored only after consent is approved.
 
-The related rule is short enough to memorise. **Token passthrough is forbidden.** An MCP server "MUST NOT accept any tokens that were not explicitly issued for the MCP server," and if it calls an upstream API it must obtain a separate token rather than forwarding the one it received. The enforcement mechanism is [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html) resource indicators: clients MUST send `resource` on authorisation and token requests, servers MUST validate they are the intended audience ([MCP authorization spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization)).
+The related rule is short enough to memorise. **Token passthrough is forbidden.** An MCP server "MUST NOT accept any tokens that were not explicitly issued for the MCP server" ([MCP security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices#token-passthrough)), and if it calls an upstream API it must obtain a separate token rather than forwarding the one it received. The enforcement mechanism is [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html) resource indicators: clients MUST send `resource` on authorisation and token requests, servers MUST validate they are the intended audience ([MCP authorization spec](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)).
 
 If your internal broker forwards the caller's token to the downstream service unchanged, you have built the anti-pattern. A successful API call alone would not reveal that mistake.
 
@@ -68,7 +68,7 @@ If your internal broker forwards the caller's token to the downstream service un
 
 Hand-written tool schemas drift. The API adds a required field, the schema does not, and the agent starts failing in a way that looks like a model problem for the two days it takes anyone to check the spec.
 
-Generate them. FastMCP's `from_openapi()` turns every endpoint in a spec into a tool by default, deriving names from `operationId`, with `RouteMap` rules that can mark internal or admin routes as `EXCLUDE` ([FastMCP OpenAPI docs](https://gofastmcp.com/integrations/openapi)). Protobuf service definitions work the same way. Generating schemas from the API definition reduces drift, provided the generation step runs when the API changes.
+Generate them. FastMCP's `from_openapi()` turns every endpoint in a spec into a tool by default, deriving names from `operationId`, with `RouteMap` rules that can mark internal or admin routes as `EXCLUDE` ([FastMCP OpenAPI docs](https://gofastmcp.com/integrations/openapi), checked 2026-10-20). The same docs now warn that curated servers perform significantly better than auto-converted ones, which is the point of the next paragraph. Protobuf service definitions work the same way. Generating schemas from the API definition reduces drift, provided the generation step runs when the API changes.
 
 Descriptions still need editorial attention. An API spec may describe an endpoint without explaining when an agent should choose it.
 
@@ -93,7 +93,7 @@ A generic example of a description doing real work:
 
 Three details in this example need more than a parameter schema: when *not* to use it, what the cheaper alternative is, and that results are silently filtered by the caller's permissions. All three are the difference between a working agent and a confusing one. Write them by hand, keep them next to the generator config, and diff them in review like code.
 
-This also affects caching. Tool definitions sit **first** in the cacheable prefix (the order is `tools`, `system`, then `messages`) and modifying tool definitions "invalidates the entire cache" at every level ([prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)). A registry that returns tools in nondeterministic order destroys the cache on every request. Sort the list. See [prompt caching across harnesses](/prompt-caching-across-harnesses) for what that costs, and [prefill vs decode](/prefill-vs-decode) for why a 40k-token tool prefix is a prefill bill you pay on every turn.
+This also affects caching. At the time of writing, tool definitions sit **first** in the cacheable prefix (the order is `tools`, `system`, then `messages`) and modifying tool definitions "invalidates the entire cache" at every level ([prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)). A registry that returns tools in nondeterministic order destroys the cache on every request. Sort the list; the 2026-07-28 MCP revision now asks servers to return tools in a deterministic order for this reason. See [prompt caching across harnesses](/prompt-caching-across-harnesses) for what that costs, and [prefill vs decode](/prefill-vs-decode) for why a 40k-token tool prefix is a prefill bill you pay on every turn.
 
 ## Shipping it
 
@@ -113,7 +113,7 @@ The protocol leaves several organisational problems unresolved:
 
 **Nobody owns the registry.** It gets built by whichever team needed it first, then that team reorgs. Entries rot. New teams route around it because the thing they need is not in it, which makes it less complete, which makes more teams route around it.
 
-**Tool sprawl.** This one has numbers now. GitHub cut Copilot's default toolset to 13 core tools and grouped the rest into four virtual categories, reporting a 2–5 percentage point improvement in success rate on SWE-Lancer and SWE-bench Verified across GPT-5 and Sonnet 4.5, plus roughly 400ms lower response latency in online A/B testing ([GitHub blog](https://github.blog/ai-and-ml/github-copilot/how-were-making-github-copilot-smarter-with-fewer-tools/)). A registry with 200 entries and no selection layer is worse than one with 15. Treat it as a [context engineering](/context-engineering-for-coding-agents) problem, because that is what it is: filter to a task-relevant subset before the request, or accept the degradation.
+**Tool sprawl.** This one has numbers now. In November 2025 GitHub cut Copilot's default toolset in VS Code from about 40 tools to 13 core tools and grouped the rest into four virtual categories, reporting a 2–5 percentage point improvement in success rate on SWE-Lancer and SWE-bench Verified across GPT-5 and Sonnet 4.5, plus roughly 400ms lower response latency in online A/B testing ([GitHub blog](https://github.blog/ai-and-ml/github-copilot/how-were-making-github-copilot-smarter-with-fewer-tools/)). A registry with 200 entries and no selection layer is worse than one with 15. Treat it as a [context engineering](/context-engineering-for-coding-agents) problem, because that is what it is: filter to a task-relevant subset before the request, or accept the degradation.
 
 **The long tail has no API.** A meaningful fraction of internal systems expose a web UI, a shared spreadsheet, or a nightly CSV drop. There is no clean connector for these. Someone will propose browser automation. Budget for it being flaky and scope it to read-only.
 

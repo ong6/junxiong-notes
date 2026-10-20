@@ -1521,9 +1521,9 @@ companies:
     featured: true
     note: "Enterprise eval and observability platform, plus the open-source Phoenix tracer."
     status:
-      kind: pending
+      kind: acquired
       label: "Dynatrace, 2026"
-    source: https://www.dynatrace.com/news/press-release/dynatrace-to-acquire-arize/
+    source: https://www.dynatrace.com/news/press-release/dynatrace-completes-acquisition-of-arize/
     valuation:
       usdB: 0.915
       basis: deal
@@ -1538,7 +1538,7 @@ companies:
     featured: true
     note: "Agent evals and guardrails built on small evaluator models."
     status:
-      kind: pending
+      kind: acquired
       label: "Cisco, 2026"
     source: https://blogs.cisco.com/news/cisco-announces-the-intent-to-acquire-galileo
     valuation:

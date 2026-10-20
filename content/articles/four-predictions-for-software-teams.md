@@ -33,7 +33,7 @@ product line that would take a full team to try. When a small team can take on o
 company can start it. So I expect the same headcount to be spread across more teams, each owning a
 narrower thing.
 
-Where I work, the first signs are already visible. Dedicated QA roles are being cut, and engineers own
+Where I work, the first signs were already visible when I wrote this in September 2026. Dedicated QA roles are being cut, and engineers own
 testing for what they ship. Teams are also being restructured so that one team owns a scope from end
 to end, across the frontend, the backend and the data pipelines, instead of one team per layer. Both
 changes remove a hand-off. A layer team has to wait for the layer beside it; a scope team does not.
@@ -78,7 +78,7 @@ for a quarter's planning now gets built because someone needed it that week.
 
 ## More companies self-host models
 
-Open-weight models are now good enough for a large share of everyday tasks: classification,
+As of September 2026, open-weight models are good enough for a large share of everyday tasks: classification,
 extraction, summarising internal documents, embeddings and search. Those tasks run constantly, at
 predictable volume, and often touch data a company would rather not send to a third party.
 
@@ -88,11 +88,11 @@ enough that a useful model no longer needs a data centre; I went through the num
 [how I think about hardware for local models](/local-inference-hardware) and
 [what changes when you quantize a model](/quantization-what-it-costs).
 
-The demand for that hardware is already showing up. Orders for Apple's new M5 Ultra Mac Studio have
+The demand for that hardware is already showing up. In late September 2026, orders for Apple's new M5 Ultra Mac Studio had
 delivery dates as late as the end of January 2027, a wait of 16 to 18 weeks, which reporting puts
 down to high demand on top of a DRAM and NAND shortage
 ([eTeknix](https://www.eteknix.com/apple-mac-studio-m5-ultra-faces-delivery-delays-of-up-to-18-weeks-due-to-memory-shortage/)).
-A desktop whose main selling point is a large pool of unified memory is hard to buy right now. I
+A desktop whose main selling point is a large pool of unified memory was hard to buy at the time of writing. I
 read a good part of that demand as people who want to run large models on their own machines.
 
 I do not expect frontier APIs to lose their place. The hardest reasoning and coding work will still

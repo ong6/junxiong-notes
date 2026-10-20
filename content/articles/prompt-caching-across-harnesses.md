@@ -17,7 +17,7 @@ A transformer's [prefill](/prefill-vs-decode) computes key/value tensors for eve
 
 The consequence is that a cache hit needs an **exact prefix match**, not a similar one, and not a fuzzy one. Change something near the start of a long prompt and the text after that change loses its matching prefix. There is no per-file, per-section, or per-document caching underneath. Anthropic's Claude Code docs say it in one sentence: "The match is exact, so a change anywhere in the prefix recomputes everything after it. There is no per-file or per-segment caching" ([code.claude.com](https://code.claude.com/docs/en/prompt-caching)).
 
-```uipack The API matches from token 0. An exact prefix hit is read at 0.1x; an edit anywhere forces everything below it to be recomputed at full price.
+```uipack The API matches from token 0. An exact prefix hit is read at a tenth of the input price or less; an edit anywhere forces everything below it to be recomputed at full price.
 cache-hit-miss
 ```
 
@@ -33,21 +33,21 @@ Anything volatile placed above something stable destroys the cache for the stabl
 
 ## Three vendors, three interfaces to the same idea
 
-All three major APIs do prefix caching. They disagree about who places the breakpoint and who pays for the write. Checked 2026-08-28.
+All three major APIs do prefix caching. They disagree about who places the breakpoint and who pays for the write. Checked 2026-10-20.
 
 | | Anthropic | OpenAI | Google (Gemini) |
 |---|---|---|---|
-| How it turns on | Explicit `cache_control` breakpoints, or one top-level auto breakpoint | Implicit by default; explicit `prompt_cache_breakpoint` on GPT-5.6+ | Implicit by default on 2.5+; explicit cache objects available |
+| How it turns on | Explicit `cache_control` breakpoints, or one top-level auto breakpoint | Implicit by default; explicit `prompt_cache_breakpoint` on GPT-5.6+ | Implicit by default on 2.5+; explicit cache objects available (not on Gemini 4 Argon) |
 | Breakpoints | Max 4 per request | Auto at end of latest eligible message (5.6+) | n/a for implicit |
-| Minimum prefix | 512 tok (Opus 5, Fable 5), 1,024 (Opus 4.8, Sonnet 5), up to 4,096 (Opus 4.6, Haiku 4.5) | 1,024 visible input tokens (GPT-5.6+), 2,048 earlier | 2,048 (Gemini 2.5), 4,096 (3.x) |
-| Read price | 0.1x base input | 0.1x base input (GPT-5.6+) | 0.1x base input |
+| Minimum prefix | 512 tok (Opus and Sonnet 5.5, Opus 5, Fable 5 and 5.1), 1,024 (Opus 4.8, Sonnet 5), up to 4,096 (Opus 4.6, Haiku 4.5) | 1,024 visible input tokens (GPT-5.6+); varies by request settings on earlier models | 2,048 (Gemini 2.5), 4,096 (3.x and 4 Argon) |
+| Read price | 0.1x base input (0.05x on Opus and Sonnet 5.5; 0.025x on Fable and Mythos 5.1) | 0.1x base input on GPT-5.6+ (0.05x on GPT-6.1 Sol) | 0.1x base input (0.05x on Gemini 4 Argon) |
 | Write price | 1.25x (5m TTL), 2x (1h TTL) | 1.25x (GPT-5.6+); no write charge on earlier models | No write charge; hourly **storage** fee |
 | TTL | 5 min default, 1 hour opt-in | 30 min default on 5.6+; `in_memory` (~5-10 min) or `24h` on earlier | Implicit is opportunistic; explicit caches have a TTL |
 
 Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching), [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching), [Gemini caching](https://ai.google.dev/gemini-api/docs/caching), [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing).
 
-```vega-lite Every provider reads at a tenth of base input. They disagree only about what a write costs. | Sources: Anthropic pricing and prompt-caching docs; OpenAI prompt caching (GPT-5.6+); Gemini caching and pricing. Checked 2026-08-28.
-{"title":{"text":"What a cached input token costs, as a multiple of the base rate","subtitle":"Dashed line is uncached input at 1.0x. Google has no write bar: it charges no write premium and bills hourly storage instead. OpenAI models before GPT-5.6 also had no write charge."},
+```vega-lite Every provider's standard read rate is a tenth of base input; the newest flagships read cheaper still (0.05x on Claude Opus and Sonnet 5.5, GPT-6.1 Sol and Gemini 4 Argon; 0.025x on Claude Fable and Mythos 5.1). They disagree only about what a write costs. | Sources: Anthropic pricing and prompt-caching docs; OpenAI prompt caching (GPT-5.6+); Gemini caching and pricing. Checked 2026-10-20.
+{"title":{"text":"What a cached input token costs, as a multiple of the base rate","subtitle":"Standard rates. Dashed line is uncached input at 1.0x. Google has no write bar: it charges no write premium and bills hourly storage instead. OpenAI models before GPT-5.6 also had no write charge."},
  "height":{"step":28},
  "data":{"values":[
    {"tier":"Cache write, 1h TTL","provider":"Anthropic","v":2,"d":"2.0x"},
@@ -72,13 +72,13 @@ Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pr
 
 Two differences actually change how you write code.
 
-**Google bills storage, not writes.** Gemini's context caching charges the cached rate at 10% of input plus a per-hour storage fee, e.g. $1.00 per million tokens per hour on 3.5 Flash. That inverts the calculus: on Anthropic and OpenAI you worry about paying the write premium too often, on Google you worry about paying rent on a cache nobody reads.
+**Google bills storage, not writes.** Gemini's context caching charges the cached rate at 10% of input plus a per-hour storage fee, e.g. $1.00 per million tokens per hour on Gemini 3.5 Flash-Lite as of 2026-10-20. That inverts the calculus: on Anthropic and OpenAI you worry about paying the write premium too often, on Google you worry about paying rent on a cache nobody reads.
 
-**OpenAI has a routing problem the others don't expose.** Cache hits require your request to land on a machine that holds the prefix, so OpenAI gives you `prompt_cache_key` to pin related requests together. Their cookbook reports one customer going from 60% to 87% hit rate by setting it, and warns that a single prefix+key combination saturates at roughly 15 requests per minute before traffic spills to other machines and misses. For high-QPS traffic, I would check routing and hit rates before changing the prompt.
+**OpenAI has a routing problem the others don't expose.** On models before GPT-5.6, cache hits require your request to land on a machine that holds the prefix, so OpenAI gives you `prompt_cache_key` to pin related requests together. Their cookbook reports one customer going from 60% to 87% hit rate by setting it, and warns that a single prefix+key combination saturates at roughly 15 requests per minute before traffic spills to other machines and misses. For high-QPS traffic, I would check routing and hit rates before changing the prompt. From GPT-5.6, OpenAI routes cache traffic itself and says the key is no longer needed for hits (checked 2026-10-20), so this now applies to the older models.
 
 ## The arithmetic
 
-Take a plausible agent loop on Claude Opus 5 at the published rates ($5/MTok input, $0.50/MTok cache read, $6.25/MTok 5-minute cache write, $25/MTok output — [pricing page](https://platform.claude.com/docs/en/about-claude/pricing), checked 2026-08-28):
+Take a plausible agent loop on Claude Opus 5 at the published rates ($5/MTok input, $0.50/MTok cache read, $6.25/MTok 5-minute cache write, $25/MTok output — [pricing page](https://platform.claude.com/docs/en/about-claude/pricing), checked 2026-10-20):
 
 - 30,000-token stable prefix: system prompt, tool definitions, project context
 - 20 turns, each appending ~2,000 tokens of tool results and user input
@@ -95,11 +95,11 @@ Every turn resends everything before it, so total input across the session is 98
 
 That's 5.6x on input for a session that ran identical text through the model. Output cost ($0.25) is unchanged by caching, so the session total moves from $5.15 to $1.13.
 
-The 5.6x isn't the ceiling. Because reads bill at exactly one tenth of base input, the asymptote is 10x, approached as the stable prefix grows relative to per-turn additions. A 100-turn session against a 100K-token repo context gets much closer to it than this example does. I would track both the share of input served from cache and what those reads cost. The worked example shows why those percentages can be very different.
+The 5.6x isn't the ceiling. Because Opus 5 reads bill at exactly one tenth of base input, the asymptote is 10x, approached as the stable prefix grows relative to per-turn additions. A 100-turn session against a 100K-token repo context gets much closer to it than this example does. On Claude Opus 5.5, which reads at 0.05x ($4 input, $0.20 read, $5 write as of 2026-10-20), the same session's input falls from $3.92 to $0.52, 7.5x, and the asymptote is 20x. I would track both the share of input served from cache and what those reads cost. The worked example shows why those percentages can be very different.
 
 **A model switch on turn 11.** Same session, but you switch models on turn 11. The turn-11 request has 50,000 tokens of history and none of it hits, so it writes 50,000 tokens at $6.25/MTok = **$0.31 for one turn**, against $0.037 for a healthy turn 11. That single keystroke costs 8.5x a normal turn, and the session's input bill rises from $0.88 to $1.16, up 31%.
 
-```vega-lite Caching cuts input cost 5.6x on this workload. One model switch mid-session claws back a third of the saving. | Source: my arithmetic over Anthropic's published Claude Opus 5 rates, checked 2026-08-28.
+```vega-lite Caching cuts input cost 5.6x on this workload. One model switch mid-session claws back a third of the saving. | Source: my arithmetic over Anthropic's published Claude Opus 5 rates, checked 2026-10-20.
 {"title":{"text":"Input cost for the same 980,000-token modelled session","subtitle":"$5 input, $0.50 cache read, $6.25 5-minute cache write per MTok. The model switch happens at turn 11. Modelled token counts, not a measurement. Output cost excluded."},
  "height":{"step":46},
  "data":{"values":[
@@ -122,9 +122,9 @@ The 5.6x isn't the ceiling. Because reads bill at exactly one tenth of base inpu
 
 Every harness resends the full conversation on every turn. They differ in how carefully they preserve the prefix while doing it.
 
-**Claude Code** is the most explicit about this, and its docs are worth reading even if you use something else. It orders each request system prompt → project context → conversation, and publishes the full list of what invalidates each layer. The non-obvious entries:
+**Claude Code** is the most explicit about this, and its docs are worth reading even if you use something else. It orders each request system prompt → project context → conversation, and publishes the full list of what invalidates each layer. The non-obvious entries, as of October 2026:
 
-- `/model` and `/effort` both change the cache key, not the prompt text. Switching either re-reads the entire history with zero hits.
+- `/model` changes the cache key, not the prompt text, and so does `/effort` on most models. Switching either re-reads the entire history with zero hits. The exception: on Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1, through an API key or a subscription, an effort change keeps the cache.
 - Editing CLAUDE.md mid-session does *not* invalidate the cache, because it also doesn't apply. It's loaded once at session start and takes effect on the next `/clear`, `/compact`, or restart.
 - Skills, slash commands, `/recap` and plan mode all append as messages, so they're cache-safe by construction.
 - `/rewind` truncates back to a prefix that is already cached; `/compact` builds a new one. Given the choice, rewind.
@@ -134,13 +134,13 @@ TTL is configurable there via `promptCacheTtl` / `CLAUDE_CODE_PROMPT_CACHE_TTL`,
 
 **Codex CLI** takes the append-only route and pins `prompt_cache_key` to the thread, so turns in one session route to the same cached prefix. A [third-party writeup](https://codex.danielvaughan.com/2026/04/21/codex-cli-prompt-caching-maximise-cache-hits-cost-reduction/) measured 80-90% hit rates and 40-55% input cost reduction across sessions, and notes that `/compact` resets the cache because the prefix changes. Treat those as one person's numbers, not vendor-published ones. The actionable part is verifiable from OpenAI's own docs: dynamic content in AGENTS.md (generated line counts, timestamps) sits in the prefix and breaks it, and MCP servers connecting mid-session change the tool list.
 
-**Cursor** passes provider caching through and bills you for both halves. Its [pricing docs](https://cursor.com/docs/account/pricing) show a per-model Input / Cache write / Cache read table with cache writes at 1.25x and reads at 10% for Anthropic models. You have far less control here: Cursor owns the system prompt, decides what rules and MCP descriptions go into the prefix, and decides when to trim context. The lever you do have is not attaching and detaching things mid-conversation.
+**Cursor** passes provider caching through and bills you for both halves. Its [pricing docs](https://cursor.com/docs/account/pricing) show a per-model Input / Cache write / Cache read table at the provider's list rates: for Anthropic models, cache writes at 1.25x and reads at Anthropic's rate, 5% on Opus and Sonnet 5.5 as of 2026-10-20. You have far less control here: Cursor owns the system prompt, decides what rules and MCP descriptions go into the prefix, and decides when to trim context. The lever you do have is not attaching and detaching things mid-conversation.
 
 **Raw API** is the only place you control all of it, and the only place you can get it badly wrong. If you're building your own loop, the two things that matter more than breakpoint placement are keeping the system prompt frozen and serializing tool definitions deterministically (`sort_keys=True`, no set iteration).
 
 ## Changes that can break reuse
 
-**Prefix drift from injected state.** A date, a user ID, a feature flag, a "you have N credits remaining" line. Anything interpolated into the system prompt is at position 0 and costs you the entire prompt. On Claude Opus 5 and Opus 4.8 there's a clean fix: append `{"role": "system", "content": "..."}` to `messages[]` instead of editing top-level `system`. It sits after the cached history and invalidates nothing.
+**Prefix drift from injected state.** A date, a user ID, a feature flag, a "you have N credits remaining" line. Anything interpolated into the system prompt is at position 0 and costs you the entire prompt. On Claude Opus 5 and Opus 4.8, and on the 5.5 models and Fable 5.1 as of October 2026, there's a clean fix: append `{"role": "system", "content": "..."}` to `messages[]` instead of editing top-level `system`. It sits after the cached history and invalidates nothing.
 
 **Non-deterministic serialization.** `json.dumps()` without `sort_keys`, iterating a `set`, a library that reorders keys between versions. The prompt is logically identical and byte-different, which is the only thing the cache cares about.
 

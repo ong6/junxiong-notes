@@ -47,7 +47,7 @@ A team harness is the context and capability every agent in a repo starts with: 
 
 The common worry is that a shared harness will force one workflow on people who work differently. It does if you put workflow in it. It doesn't if it holds only what is true no matter who runs the agent.
 
-[Harnesses](/agent-harnesses) already separate these layers. Claude Code, for example, loads a personal `~/.claude/CLAUDE.md` with "personal preferences for all projects" alongside the project file. Its docs say the project file should hold "build and test commands, coding standards, architectural decisions" and focus on "project-level standards rather than personal preferences" ([Claude Code docs](https://code.claude.com/docs/en/memory)). Most other agent tools have a similar user-level and project-level split.
+[Harnesses](/agent-harnesses) already separate these layers. Claude Code, for example, as of October 2026, loads a personal `~/.claude/CLAUDE.md` with "personal preferences for all projects" alongside the project file. Its docs say the project file should hold "build and test commands, coding standards, architectural decisions" and focus on "project-level standards rather than personal preferences" ([Claude Code docs](https://code.claude.com/docs/en/memory)). Most other agent tools have a similar user-level and project-level split.
 
 | Team layer: facts about the repo | Personal layer: how you like to work |
 |---|---|

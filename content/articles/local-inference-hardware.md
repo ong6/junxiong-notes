@@ -2,7 +2,7 @@
 title: How I think about hardware for local models
 description: Bandwidth, capacity, KV cache and MoE active parameters — the four numbers that decide local inference hardware, with sources.
 date: 2026-08-31
-updated: 2026-09-23
+updated: 2026-10-20
 category: AI systems
 tags: [hardware, local-llm, apple-silicon, gpu, memory-bandwidth]
 ---
@@ -137,9 +137,11 @@ For the largest sparse models, finding enough memory to load the weights can be 
 
 ## Which capacity would I consider?
 
+Prices in this section are US prices as of September 2026 unless another date is given.
+
 **24–32GB.** I would consider a used 3090 or a reasonably priced 4090 here. This tier suits smaller models, with the context length limited by how much memory remains after loading the weights. It is easier to justify if I also use the card for games. An M4/M5 Pro laptop covers the same models portably.
 
-**64–128GB unified.** The sweet spot, and where I would point most people. An M5 Max Mac Studio starts at $2,499 ([Apple](https://www.apple.com/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/)) and 614 GB/s at 128GB runs a 120B-class sparse model with real context headroom. The 128GB LPDDR5x boxes (DGX Spark at $4,699, Strix Halo systems) hold the same models at 256–273 GB/s, roughly 2.4× slower on decode. Strix Halo's ~340 tok/s prompt processing on gpt-oss-120b makes long-context agent work unpleasant. Buy the Spark for CUDA compatibility, not for speed.
+**64–128GB unified.** The sweet spot, and where I would point most people. An M5 Max Mac Studio starts at $2,499 ([Apple](https://www.apple.com/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/)) and 614 GB/s at 128GB runs a 120B-class sparse model with real context headroom. The 128GB LPDDR5x boxes (DGX Spark at $6,950 since October 2026 ([The Register](https://www.theregister.com/systems/2026/10/02/nvidia-debuts-4999-dgx-spark-with-half-the-ram-and-storage-amid-memory-crunch/5300622)), Strix Halo systems) hold the same models at 256–273 GB/s, roughly 2.4× slower on decode. Strix Halo's ~340 tok/s prompt processing on gpt-oss-120b makes long-context agent work unpleasant. Buy the Spark for CUDA compatibility, not for speed.
 
 **256GB.** $5,499 for the base 96GB M5 Ultra plus $4,000 for the 256GB step ([Apple](https://www.apple.com/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/), [9to5Mac](https://9to5mac.com/2026/08/25/apple-unveils-next-generation-mac-studio-with-m5-max-and-m5-ultra/)). This tier exists to run 400–750B sparse models at aggressive quants. Justified only if you have a specific model in that class you need running privately and continuously.
 
@@ -149,8 +151,8 @@ For the largest sparse models, finding enough memory to load the weights can be 
 
 ## When I would use an API instead
 
-If your workload is intermittent inference on models that are already available as an API, the economics are not close. gpt-oss-120b runs at roughly $0.03/M input and $0.17/M output on OpenRouter ([OpenRouter](https://openrouter.ai/openai/gpt-oss-120b)). A $9,499 Mac Studio at 256GB buys, at that rate, on the order of 55 billion output tokens of the same model before the hardware has paid for itself — my arithmetic, ignoring electricity, which makes the comparison worse. At 50 tok/s of local generation you would need decades of continuous output to consume that.
+If your workload is intermittent inference on models that are already available as an API, the economics are not close. gpt-oss-120b runs at roughly $0.03/M input and $0.17/M output on OpenRouter, checked 2026-10-20 ([OpenRouter](https://openrouter.ai/openai/gpt-oss-120b)). A $9,499 Mac Studio at 256GB buys, at that rate, on the order of 55 billion output tokens of the same model before the hardware has paid for itself — my arithmetic, ignoring electricity, which makes the comparison worse. At 50 tok/s of local generation you would need decades of continuous output to consume that.
 
-Buy hardware when the driver is one of: data that legally cannot leave your machine, a workload running continuously enough that the box is never idle, or wanting a model no provider hosts. I would price those needs separately from the hope of saving on API calls, especially when the RTX 5090's $1,999 MSRP has become a [median street price near $4,700](https://tech-insider.org/gpu-prices-2026/) on GDDR7 shortage.
+Buy hardware when the driver is one of: data that legally cannot leave your machine, a workload running continuously enough that the box is never idle, or wanting a model no provider hosts. I would price those needs separately from the hope of saving on API calls, especially when the RTX 5090's $1,999 MSRP had become a [median street price near $4,700](https://tech-insider.org/gpu-prices-2026/) by August 2026 on GDDR7 shortage.
 
 One more thing to price in. Apple claims the M5 Ultra delivers "up to 4.3x the peak AI compute performance when compared to M3 Ultra" in the [Mac Studio announcement](https://www.apple.com/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/), and "up to 4.5x the peak GPU compute for AI compared to M3 Ultra" in the [chip announcement](https://www.apple.com/newsroom/2026/08/apple-introduces-m6-and-m5-ultra-for-a-big-leap-in-performance-and-ai-compute/) published the same month. I would want to see the workload behind each figure. For single-stream decode, the memory-bandwidth change is more useful to my estimate — bandwidth went up 50%, from 819 GB/s to 1.2 TB/s, and that is the number that moves generation speed. Treat AI-compute multipliers as marketing until someone measures tokens per second, which for prefill-heavy agent workloads may well vindicate them. See [/context-engineering-for-coding-agents](/context-engineering-for-coding-agents) for why prefill dominates that particular workload.

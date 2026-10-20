@@ -12,7 +12,7 @@ In May 2026 Anthropic merged about 2,500 code changes a day into its monorepo. B
 
 The Claude Code team's own answer is "Layers, not one gate… Each layer catches some problems and misses others. Few get through all of them, and rollback handles the rest" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). I read their public record as a stack of cheap, imperfect checks, with human review as the last and rarest layer, scaled by risk. That stack is the part of their process worth copying. The volume is not.
 
-Everything below comes from Anthropic describing its own process, mostly in posts that also sell the tools involved. There is no independent audit. Where a number is a guess rather than a measurement, I say so.
+Everything below is the process as Anthropic described it as of October 2026, mostly in posts that also sell the tools involved. There is no independent audit. Where a number is a guess rather than a measurement, I say so.
 
 ## The stack
 
@@ -49,7 +49,7 @@ The cost shows up in CI. Anthropic reports tests across its codebase grew 10x an
 
 ## 3. Multi-agent AI review
 
-Every pull request at Anthropic gets an automated Claude review. The current design: "Several agents look for bugs at the same time. Then a separate group votes on each finding, and it only gets posted if enough of them agree it's real. Findings that are only about style, diagnostics, or cleanup get dropped" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). Every finding must be answered: fixed, or closed with a reason.
+Every pull request at Anthropic gets an automated Claude review. The design as of October 2026: "Several agents look for bugs at the same time. Then a separate group votes on each finding, and it only gets posted if enough of them agree it's real. Findings that are only about style, diagnostics, or cleanup get dropped" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). Every finding must be answered: fixed, or closed with a reason.
 
 The voting step is what makes it usable. When Anthropic launched the product version, the share of its own pull requests getting substantive review comments went from 16% to 54%, and engineers marked less than 1% of findings incorrect ([Anthropic](https://claude.com/resources/articles/code-review)). The Deputy CISO credits the jump to "requiring the agents to write a proof that their finding is valid" ([Anthropic](https://claude.com/resources/articles/how-anthropic-secures-its-ai-native-software-development-lifecycle)). Looking back at past incidents, Anthropic estimates this review "would have caught roughly a third of the bugs behind past incidents on claude.ai" ([Anthropic](https://www.anthropic.com/institute/recursive-self-improvement)).
 
@@ -61,7 +61,7 @@ Security gets its own automated pass, and "a PR can't merge while any finding fr
 
 ## 5. Human approval, scaled by risk
 
-This is the layer that changed most over the year. In March 2026 Cherny said "there always has to be a person in the loop approving the change" ([Pragmatic Engineer podcast](https://www.youtube.com/watch?v=julbw1JuAz0)). By October the Claude Code team's target was for most pull requests to "merge with at most one human in the loop, who can be the author, with no increase in reverts or incidents" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). They get there with tiers:
+This is the layer that changed most over the year. In March 2026 Cherny said "there always has to be a person in the loop approving the change" ([Pragmatic Engineer podcast](https://www.youtube.com/watch?v=julbw1JuAz0)). By October 2026 the Claude Code team's target was for most pull requests to "merge with at most one human in the loop, who can be the author, with no increase in reverts or incidents" ([Claude Code team](https://claude.dev/blog/solving-code-review-at-anthropic/)). They get there with tiers:
 
 | Risk | Examples | Human approvals |
 |---|---|---|
@@ -99,7 +99,7 @@ The productivity figures are softer, and Anthropic says so. Engineers merged 8x 
 
 ## What a team can copy
 
-Most of these layers ship as tools or are a few lines of config. One thing surprised me reading the docs: none of Anthropic's review tools block a merge by default. The managed Code Review "never approves or blocks the pull request" ([Claude Code docs](https://code.claude.com/docs/en/code-review)). The gate is something you build.
+Most of these layers ship as tools or are a few lines of config. One thing surprised me reading the docs: as of October 2026, none of Anthropic's review tools block a merge by default. The managed Code Review "never approves or blocks the pull request" ([Claude Code docs](https://code.claude.com/docs/en/code-review)). The gate is something you build.
 
 | Layer | Starting point |
 |---|---|

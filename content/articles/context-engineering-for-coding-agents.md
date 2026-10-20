@@ -23,11 +23,11 @@ Anthropic publishes an interactive simulation of a Claude Code session filling i
 | **Total before you type** | **7,850** |
 | Your prompt | 45 |
 
-Source: [Explore the context window](https://code.claude.com/docs/en/context-window), Claude Code docs.
+Source: [Explore the context window](https://code.claude.com/docs/en/context-window), Claude Code docs, as of September 2026.
 
 In this example, the user writes 45 of the first 7,895 tokens. Most of the request is already instructions and environment information; file reads and tool output add more as the agent works.
 
-The 120-token line for MCP tools is the interesting one, and it is small only because tool schemas are deferred by default now. Load them eagerly and the number changes shape entirely: Anthropic measured 58 tools across five MCP servers at [roughly 55,000 tokens before the conversation starts](https://www.anthropic.com/engineering/advanced-tool-use), and a heavier catalog at [150,000 tokens, cut to 2,000 by loading on demand](https://www.anthropic.com/engineering/code-execution-with-mcp). If your harness or your org's platform hands every engineer the same twelve integrations by default, that is where your window went. I wrote about how that sprawl happens in [agent integrations in large orgs](/agent-integrations-in-large-orgs).
+The 120-token line for MCP tools is the interesting one, and it is small only because tool schemas are deferred by default (still true as of 2026-10-20). Load them eagerly and the number changes shape entirely: Anthropic measured 58 tools across five MCP servers at [roughly 55,000 tokens before the conversation starts](https://www.anthropic.com/engineering/advanced-tool-use), and a heavier catalog at [150,000 tokens, cut to 2,000 by loading on demand](https://www.anthropic.com/engineering/code-execution-with-mcp). If your harness or your org's platform hands every engineer the same twelve integrations by default, that is where your window went. I wrote about how that sprawl happens in [agent integrations in large orgs](/agent-integrations-in-large-orgs).
 
 ## Then the reads arrive
 
@@ -59,7 +59,7 @@ Claude Code's docs suggest [doing this in a `PreToolUse` hook](https://code.clau
 
 ## How much context can the model use well?
 
-I would not treat a 200k-token window as a target to fill. Accepting that much text and reliably using every part of it are different things. The studies below test that distinction on specific models and tasks.
+I would not treat a 200k-token window, or the 1M windows many current models offer, as a target to fill. Accepting that much text and reliably using every part of it are different things. The studies below test that distinction on specific models and tasks.
 
 The clearest evidence is **NoLiMa** ([arXiv:2502.05167](https://arxiv.org/abs/2502.05167)), which hides a fact in a long document and strips the literal word overlap between the question and the fact, so lexical matching cannot rescue the model. It defines a model's *effective length* as the longest tested context at which it still exceeds 85% of its base score, where the base is its best average across 250-, 500- and 1K-token inputs. Table 3 of the paper:
 
@@ -163,7 +163,7 @@ The Stack Overflow 2025 survey found [66% of developers naming "AI solutions tha
 
 **Search, don't dump.** Name the exact file when you know it. When you don't, let the agent grep. Never paste a file you haven't read yourself.
 
-**Keep the instruction file small and stable.** Anthropic's guidance is to [aim for under 200 lines](https://code.claude.com/docs/en/costs#move-instructions-from-claude-md-to-skills). More instructions also mean more material competing for attention. Move workflow-specific instructions into on-demand skills so they cost nothing when you're doing something else. One mechanical trap: in Claude Code, `CLAUDE.md` is [read once at session start](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session), so a mid-session edit neither breaks the cache nor takes effect. A changed instruction file may need a new session to take effect.
+**Keep the instruction file small and stable.** Anthropic's guidance, as of October 2026, is to [aim for under 200 lines](https://code.claude.com/docs/en/costs#move-instructions-from-claude-md-to-skills). More instructions also mean more material competing for attention. Move workflow-specific instructions into on-demand skills so they cost nothing when you're doing something else. One mechanical trap: in Claude Code, `CLAUDE.md` is [read once at session start](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session), so a mid-session edit neither breaks the cache nor takes effect. A changed instruction file may need a new session to take effect.
 
 **Use sub-agents for exploration.** A sub-agent can read 40 files in its own window and return a paragraph. Given quadratic growth, every token kept out of the main thread is kept out of every later turn too. Don't overdo it: Anthropic's own [multi-agent post](https://www.anthropic.com/engineering/multi-agent-research-system) reports a 90.2% win on a *research* eval while conceding "most coding tasks involve fewer truly parallelizable tasks than research," and multi-agent setups use about 15x the tokens of a chat. Cognition argues the [other side from experience](https://cognition.com/blog/dont-build-multi-agents): split agents make conflicting implicit decisions and the merge is a mess. Both sides agree on the same line — parallelise reading, never parallelise editing shared files.
 
@@ -186,4 +186,4 @@ I would track:
 | Agent adoption % | Change failure rate |
 | Tokens spent | Share of PRs merged without a human rewrite |
 
-Cost is worth a glance but not a target. Claude Code's docs put enterprise usage at [around $13 per developer per active day](https://code.claude.com/docs/en/costs), under $30 for 90% of users. I would weigh that cost alongside review time and correctness. A cheaper session is useful only if the result is still worth using.
+Cost is worth a glance but not a target. Claude Code's docs put enterprise usage at [around $13 per developer per active day](https://code.claude.com/docs/en/costs), under $30 for 90% of users (checked 2026-10-20). I would weigh that cost alongside review time and correctness. A cheaper session is useful only if the result is still worth using.

@@ -9,7 +9,7 @@ draft: false
 ---
 
 If half of American households pay for AI by the mid-2030s, that alone will not justify what is
-being spent to build it. The four biggest cloud companies plan to spend
+being spent to build it. When I wrote this in October 2026, the four biggest cloud companies planned to spend
 [$725 billion on capex in 2026](https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion),
 and the households at the other end will pay a few tens of billions a year. I think the bull case
 for AI stocks is real, but it pays the companies selling scarce inputs to the build-out before it
@@ -54,7 +54,7 @@ more, looks like music, where many people never pay.
 The [Census Bureau](https://fred.stlouisfed.org/series/TTLHH) counts about 135 million US
 households. The arithmetic below is mine:
 
-| | Today | At 50% paying |
+| | Today (PNC, May 2026) | At 50% paying |
 |---|---|---|
 | Households paying | 2.2% × 135M ≈ 3M | 50% × 135M ≈ 67M |
 | Monthly spend | $31 | $25–35, as cheaper tiers spread |
@@ -88,7 +88,7 @@ profitable.
 ## Where the scarcity is
 
 A bull case for inputs needs the inputs to be scarce. If they were easy to make, prices would fall
-and the extra demand would go to the customer. Three are clearly scarce today.
+and the extra demand would go to the customer. Three are clearly scarce as of October 2026.
 
 **Power.** A data centre is useless until it is connected to power, and the turbines that power it
 are booked years ahead. GE Vernova's
@@ -109,7 +109,7 @@ main foundry and one company that makes the lithography machines.
 
 My core stays a global index fund, which already holds the large AI names. The bull case belongs
 in a satellite: a fixed share of new money, added steadily, not a lump sum. I would weight it
-towards power and chips, and keep memory small.
+towards power and chips, and keep memory small. The upsides and downsides in the table are as of October 2026.
 
 | Play | Examples | Upside | Downside |
 |---|---|---|---|

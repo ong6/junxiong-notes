@@ -2,7 +2,7 @@
 title: Why I optimize LinkedIn once a year
 description: What changed after I updated my LinkedIn profile, which fields I focus on, and why I leave it alone between annual reviews.
 date: 2026-09-20
-updated: 2026-09-23
+updated: 2026-10-20
 category: Career
 tags: [linkedin, job-search, career, recruiting]
 draft: false
@@ -15,8 +15,8 @@ for a software engineer in Singapore with a particular mix of backend and AI inf
 
 LinkedIn Recruiter is built for exactly this. Recruiters can filter by job title, skills and location,
 and the Keywords field searches the full profile. Its matching features also use titles, skills and
-location. [LinkedIn describes those surfaces publicly](https://business.linkedin.com/hire/recruiter/recruiter-features),
-although it does not publish a magic weighting formula for each field.
+location. [LinkedIn describes those surfaces publicly](https://business.linkedin.com/hire/recruiter/recruiter-features)
+(as of September 2026), although it does not publish a magic weighting formula for each field.
 
 That changes the starting point of a hiring process. A cold application asks a general queue to notice
 me. An inbound recruiter has already matched some part of my background to an open role. I still have
@@ -86,7 +86,7 @@ define the work. A recruiter is more likely to search for "Software Engineer" th
 **Location.** I use the place where I can actually work. Recruiters filter on it directly.
 
 **Open to Work.** I use recruiter-only mode and fill the available title slots with distinct roles I
-would accept, rather than five spellings of the same job. LinkedIn says it tries to hide this signal
+would accept, rather than five spellings of the same job. At the time of writing (September 2026), LinkedIn says it tries to hide this signal
 from recruiters at your current company, but [it cannot guarantee complete
 privacy](https://www.linkedin.com/help/linkedin/answer/a507508). That is a real tradeoff if you are
 employed.

@@ -2,7 +2,7 @@
 title: Why My Automated Trading Strategies Haven’t Earned Real Money
 description: What my trading engine's tests actually showed, why positive returns weren't enough, and the agentic paper experiment I'm building next.
 date: 2026-09-23
-updated: 2026-09-23
+updated: 2026-10-20
 category: Trading
 tags: [trading, backtesting, agents, systematic-trading]
 project:
@@ -72,6 +72,6 @@ The comparison is designed to give each arm the same admitted facts, starting ba
 
 The agent's authority stops at its assigned decision. Deterministic code owns data checks, sizing, risk limits, fills, accounting and halts. If the inputs or model identity fail the checks, the system should stop rather than improvise a trade.
 
-This comparison is still being built. The [checked-in registration](https://github.com/ong6/trading-engine/blob/96266fc85a283268de05089c261782ced907f106/server/p7-trial-registration.json) has no activation date or bound trial portfolios. There is no completed three-way performance result. The plan separates a 90-day operational pilot from a strategy comparison, which requires at least 12 paired monthly decisions. Neither automatically authorizes real capital.
+This comparison is still being built: the registration was still inactive when I re-checked on 2026-10-20. The [checked-in registration](https://github.com/ong6/trading-engine/blob/96266fc85a283268de05089c261782ced907f106/server/p7-trial-registration.json) has no activation date or bound trial portfolios. There is no completed three-way performance result. The plan separates a 90-day operational pilot from a strategy comparison, which requires at least 12 paired monthly decisions. Neither automatically authorizes real capital.
 
 I want the next experiment to answer one narrow question: does adding this decision-maker improve the result under the same constraints? If it doesn't, adding an agent has only made the system more complicated. That is a result I need to be willing to keep.
