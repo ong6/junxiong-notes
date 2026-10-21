@@ -1,6 +1,6 @@
 ---
-title: A decision skill that makes the agent say when to back out
-description: How my decide skill turns "should I X or Y" into one pick, the fact that would flip it and a tripwire, and what the model skipped without it.
+title: 'A skill for "should I take this job?" that answers with one pick and an exit plan'
+description: "decide is an agent skill for hard choices like job offers: one pick, the fact that would flip it and a tripwire, plus what the model skips without it."
 date: 2026-10-21
 updated: 2026-10-21
 category: AI systems
@@ -8,11 +8,33 @@ tags: [skills, agents, evals, decision-making, claude-code]
 draft: false
 ---
 
+`decide` is a skill for the questions you would normally take to a friend late at night: take the
+offer or stay, build it or buy it, move countries or not. You load it into Claude Code or any agent
+that reads skills and ask "should I...". You get back one answer, the fact that would change it, and
+the point at which you would back out.
+
+Here is the difference on the same question, as an illustrative and shortened exchange:
+
+> **You:** A startup offered me 20% more than my current job, but I'd be leaving somewhere stable.
+> Should I take it?
+>
+> **Without the skill:** "Take it. The pay rise and the learning outweigh the risk, as long as you're
+> comfortable with some uncertainty."
+>
+> **With the skill:** "Take it, but only if they have more than 18 months of runway. Ask before you
+> sign, because that is the fact that flips this. The bad case is the company folding within a year
+> and you job-hunting with a short stint on your resume; plan for three to six months of search.
+> Tripwire: if there is no new funding by month nine, start interviewing. First step today: email the
+> founder for runway and burn."
+
+Both answers pick. Only the second tells you how you would find out it was wrong and what you would
+do then. That second half is what I wrote the [`decide`
+skill](https://github.com/ong6/skills/tree/main/skills/decide) to add, and an eval showed the model
+leaves it out on its own.
+
 ```uipack The skill widens before it narrows. Sizing lets a cheap, reversible choice exit early; framing adds the options nobody listed (orange); inputs, numbers and the downside each knock one out; the survivor is pre-mortemed into one pick (green), and its tripwire loops back to reopen the decision. Which option falls at which wall is illustrative.
 decide-pipeline
 ```
-
-Ask a strong model "should I X or Y?" and, in my tests, it usually picks one. What it leaves out is how you would find out the pick was wrong: the bad branch priced, a story of how it failed, and a date on which you reverse. I wrote the [`decide` skill](https://github.com/ong6/skills/tree/main/skills/decide) to make an agent finish that part. Every reply ends with one recommendation, the single fact that would flip it, and a tripwire set before anything starts.
 
 The steps come from Nick Saraev's [five-hour course on thinking clearly](https://www.youtube.com/watch?v=QLLuZbuTIRc): expected value, the planning fallacy, opportunity cost, pre-mortems. I turned them into a skill to see whether they would make an agent better at hard choices, and then measured it against the same model without the skill.
 
