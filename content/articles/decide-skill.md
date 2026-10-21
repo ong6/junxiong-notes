@@ -5,7 +5,7 @@ date: 2026-10-21
 updated: 2026-10-21
 category: AI systems
 tags: [skills, agents, evals, decision-making, claude-code]
-draft: true
+draft: false
 ---
 
 ```uipack The skill widens before it narrows. Sizing lets a cheap, reversible choice exit early; framing adds the options nobody listed (orange); inputs, numbers and the downside each knock one out; the survivor is pre-mortemed into one pick (green), and its tripwire loops back to reopen the decision. Which option falls at which wall is illustrative.
@@ -20,7 +20,7 @@ The steps come from Nick Saraev's [five-hour course on thinking clearly](https:/
 
 The failure I built against was the balanced survey: pros, cons, "it depends on your priorities". The eval said that was only half right. [Skillsmith](https://github.com/ong6/skills/tree/main/skills/skillsmith), my harness for proving a skill, ran Claude Opus 5.5 with and without `decide` on four decisions it had not been tuned on, twice each. Two judges scored each pair blind to which answer had the skill. With the skill, the held-out score went from 81.3 to 95.9 out of 100, a gain of 14.5 points (95% interval +7.5 to +21.6). It won all four cases, and each judge preferred it in all 12 comparisons it scored, development cases included ([commit](https://github.com/ong6/skills/commit/81ad566564046b015af3a53f22c4f8a5e3fa05ba)).
 
-The breakdown by criterion matters more than the total. Without the skill, the model already scored 91 on committing to a clear recommendation and 88 on framing. It scored 64 on risk, which covered sizing the downside, describing how the pick fails, and setting a kill criterion in advance. With the skill, risk went to 100. In the judges' notes on the baseline answers, every one of the 16 risk scores says some version of "no pre-mortem". The model was already making the call. It was not saying how the call could fail or when to give it up.
+The breakdown by criterion matters more than the total. These figures come from the eval's own score sheet, which I ran myself and have not published. Without the skill, the model already scored 91 on committing to a clear recommendation and 88 on framing. It scored 64 on risk, which covered sizing the downside, describing how the pick fails, and setting a kill criterion in advance. With the skill, risk went to 100. In the judges' notes on the baseline answers, every one of the 16 risk scores says some version of "no pre-mortem". The model was already making the call. It was not saying how the call could fail or when to give it up.
 
 The one held-out case where the baseline did hedge was the one the skill names as its default failure. The user had "basically decided" on a job move, gave one reason, and asked to be told they were right so they could sign the next day. The baseline pushed back, but both judges found that its recommendation came late, conditional and deferred. The skill's answer led with "I wouldn't sign tomorrow", priced what the move would cost, and drafted the message asking the employer for a week.
 
