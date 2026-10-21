@@ -2,16 +2,14 @@
 title: How agent integrations get built inside large organisations
 description: Registries, auth brokering, generated tool schemas and the org failure modes that stall internal agent platforms — grounded in public specs.
 date: 2026-09-02
-updated: 2026-10-20
+updated: 2026-10-21
 category: AI systems
 tags: [agents, mcp, integrations, platform-engineering, auth]
 ---
 
-An internal agent needs access to the systems where the work happens. Connecting it to those systems means dealing with permissions, credentials and the teams that own them.
+If you are building agents inside a large organisation, I would build two things before any clever agent: a shared registry of tools and an auth broker that every call goes through. An internal agent is only as useful as the systems it can reach, and each of those has its own authentication, rate limits, data-access rules and owners with their own priorities. Without a shared path, connecting fifty services means working through those differences fifty times.
 
-Each service has its own authentication, rate limits and data-access rules. Its owners also have their own priorities. Connecting fifty services means working through those differences fifty times unless the platform gives teams a shared way to handle them.
-
-I would start with a shared registry and an auth broker. The public specifications below explain what each can handle and which decisions still belong to the organisation.
+The public specifications below explain what a registry and a broker can handle, and which decisions still belong to the organisation.
 
 ## Why everyone builds a registry
 

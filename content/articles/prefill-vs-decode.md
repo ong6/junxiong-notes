@@ -2,12 +2,12 @@
 title: Prefill and decode want different machines
 description: LLM inference has two phases with opposite bottlenecks. Which one you care about decides what hardware to buy.
 date: 2026-08-30
-updated: 2026-10-20
+updated: 2026-10-21
 category: AI systems
 tags: [inference, gpu, memory-bandwidth, serving, kv-cache]
 ---
 
-When comparing inference hardware, I want to know how long it takes to read the prompt and how quickly it writes the answer. Those are separate phases, and a machine can be good at one without being good at the other.
+On one NVIDIA DGX Spark running the same model, reading a prompt is about 32 times faster than writing the answer ([llama.cpp benchmarks](https://github.com/ggml-org/llama.cpp/discussions/16578)). Those are two phases with opposite bottlenecks, and a machine can be good at one without being good at the other. If you are comparing inference hardware, which phase you care about decides what to buy.
 
 **Prefill** takes your whole prompt and pushes it through the model in one shot. A 2,000-token prompt means the first matmul has a 2,000-row activation matrix against each weight matrix. Each weight is loaded from memory once and reused 2,000 times. That is a dense GEMM, it saturates tensor cores, and it sets **time-to-first-token**.
 

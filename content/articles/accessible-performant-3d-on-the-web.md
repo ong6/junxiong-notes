@@ -2,7 +2,7 @@
 title: How I build 3D that still behaves like a web page
 description: How junxiong.dev uses Three.js with native scroll, one active canvas, reduced motion and a readable fallback.
 date: 2026-09-19
-updated: 2026-09-23
+updated: 2026-10-21
 category: Web engineering
 tags: [threejs, webgl, accessibility, performance, frontend]
 project:
@@ -11,11 +11,13 @@ project:
   detail: The 3D scenes this article describes, as they are today, on my main site.
 ---
 
-This post describes the first version of the hobbies page on 19 September 2026. The scenes have since changed; the details below refer to that initial implementation.
+A 3D canvas on a content page can break most of what a web page is good at. It can erase the document structure, trap scrolling, ignore reduced-motion settings, burn the GPU below the fold and leave a blank rectangle when WebGL fails. This post is how I put a small 3D object beside each interest on my [hobbies page](https://junxiong.dev/hobbies) without any of that.
+
+It describes the first version of the page, from 19 September 2026. The scenes have since changed.
 
 ## Adding 3D to the hobbies page
 
-I added 3D to the [hobbies page on junxiong.dev](https://junxiong.dev/hobbies) because I wanted a small object for each interest. I still wanted the page to be easy to read and scroll. A canvas can erase the document structure, trap scrolling, ignore motion preferences, burn the GPU below the fold and leave a blank rectangle when WebGL fails.
+I wanted a small object for each interest, and I still wanted the page to be easy to read and scroll.
 
 My rule is that the article, controls and explanation remain ordinary HTML. The canvas is a visual rendering of the same idea, never the only copy of it. That makes the requirements concrete:
 

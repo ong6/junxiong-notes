@@ -8,15 +8,15 @@ tags: [job-search, interviews, recruiting, career]
 draft: true
 ---
 
+Over 13 weeks of job hunting I got seven offers, and every one started with a recruiter messaging me. My cold applications produced four interview processes and no offer yet. Here is the whole search in one picture.
+
 ```uipack All 109 leads, left to right, with each band as wide as its count. Every one of the seven offers began with a recruiter's message; the applications I sent produced four hiring processes and no offer yet. | Source: my own application tracker, as of 2026-10-21.
 job-search-sankey
 ```
 
-Getting into a hiring process was the hard part of my job search. Once I was in one, I passed most
-rounds. Over 13 weeks of records, from 24 July to 21 October 2026, 4 of my 36 decided applications
-reached a screen, test or interview. Of the 31 recruiter leads I took forward, 21 did. Across every
-route, I passed 38 of the 44 interview rounds that have a result. All seven offers came from
-conversations a recruiter started.
+Getting into a hiring process was the hard part. Once I was in one, I passed most rounds: 38 of the
+44 that have a result. Over the records, from 24 July to 21 October 2026, 4 of my 36 decided
+applications reached a screen, test or interview. Of the 31 recruiter leads I took forward, 21 did.
 
 Based on these numbers, recruiters gave me a far higher chance than my own applications did. I still
 think cold applications are fine to send. The numbers below show why I no longer expect them to carry

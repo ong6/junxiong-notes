@@ -2,10 +2,12 @@
 title: Where your tokens actually go in a coding agent
 description: How files and tool output fill a coding agent's context, what long-context studies show, and how I would keep a session focused.
 date: 2026-09-01
-updated: 2026-10-20
+updated: 2026-10-21
 category: AI systems
 tags: [agents, context, coding-agents, cost, productivity]
 ---
+
+In Anthropic's own example of a Claude Code session, 7,850 tokens are in the context before you type a word, and your prompt is under 1% of the first request. Then the agent starts reading files. If you use a coding agent and long sessions get worse or more expensive, this is where the tokens go, what long-context studies say it costs, and how I would keep a session focused.
 
 ## The context starts filling before you type
 
