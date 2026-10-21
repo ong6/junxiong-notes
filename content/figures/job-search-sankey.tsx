@@ -25,10 +25,10 @@ const MIDS: { id: Mid; n: number; label: string; short: string[] }[] = [
   { id: "decl", n: 40, label: "declined by me", short: ["declined by me"] },
 ];
 const OUTS: { id: Out; n: number; label: string; short: string[] }[] = [
-  { id: "offer", n: 6, label: "offers", short: ["offers"] },
+  { id: "offer", n: 7, label: "offers", short: ["offers"] },
   { id: "pend", n: 4, label: "still interviewing", short: ["still", "interviewing"] },
   { id: "lost", n: 7, label: "rejected in a round", short: ["rejected", "in a round"] },
-  { id: "quiet", n: 8, label: "went quiet or I stopped", short: ["went quiet", "or I stopped"] },
+  { id: "quiet", n: 7, label: "went quiet or I stopped", short: ["went quiet", "or I stopped"] },
 ];
 
 // Source -> first outcome, in the order bands leave each source node.
@@ -40,10 +40,10 @@ const L1: [Src, Mid, number][] = [
 ];
 // Inside a process -> result, split by where the lead started so the colour carries through.
 const L2: [Src, Out, number][] = [
-  ["inh", "offer", 3], ["agy", "offer", 3],
+  ["inh", "offer", 4], ["agy", "offer", 3],
   ["cold", "pend", 3], ["agy", "pend", 1],
   ["inh", "lost", 5], ["agy", "lost", 2],
-  ["cold", "quiet", 1], ["inh", "quiet", 3], ["agy", "quiet", 4],
+  ["cold", "quiet", 1], ["inh", "quiet", 2], ["agy", "quiet", 4],
 ];
 
 const colour = (s: Src) => (s === "cold" || s === "ref" ? "var(--uipack-token-request)" : "var(--uipack-token-response)");
@@ -163,7 +163,7 @@ const D: Layout = { k: 5, gap: 20, top: 56, bar: 12, xs: [232, 512, 792], midTop
 const M: Layout = { k: 6, gap: 16, top: 48, bar: 8, xs: [12, 172, 300], midTop: 48, leftTop: 58, rightTop: 48 };
 
 const ALT =
-  "A Sankey diagram of 109 job-search leads, band widths proportional to counts. Sources: 37 cold applications, 2 referrals, 19 in-house recruiter reach-outs and 51 agency recruiter reach-outs. First outcome: 25 reached a hiring process (4 from cold applications, 11 from in-house recruiters, 10 from agencies), 4 are still waiting, 2 were rejected before a process, 38 got no reply and 40 I declined. Inside a hiring process: 6 offers (3 from in-house recruiters, 3 from agencies, none from applications), 4 still interviewing, 7 rejected in a round, and 8 went quiet or I stopped.";
+  "A Sankey diagram of 109 job-search leads, band widths proportional to counts. Sources: 37 cold applications, 2 referrals, 19 in-house recruiter reach-outs and 51 agency recruiter reach-outs. First outcome: 25 reached a hiring process (4 from cold applications, 11 from in-house recruiters, 10 from agencies), 4 are still waiting, 2 were rejected before a process, 38 got no reply and 40 I declined. Inside a hiring process: 7 offers (4 from in-house recruiters, 3 from agencies, none from applications), 4 still interviewing, 7 rejected in a round, and 7 went quiet or I stopped.";
 
 export default define({
   alt: ALT,

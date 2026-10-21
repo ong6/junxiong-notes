@@ -1,6 +1,6 @@
 ---
 title: My job search in numbers, and where the interviews came from
-description: "Thirteen weeks of my own records: 39 applications, 70 recruiter reach-outs, pass rates by interview round, and which route produced six offers."
+description: "Thirteen weeks of my own records: 39 applications, 70 recruiter reach-outs, pass rates by interview round, and which route produced seven offers."
 date: 2026-10-21
 updated: 2026-10-21
 category: Career
@@ -8,14 +8,14 @@ tags: [job-search, interviews, recruiting, career]
 draft: true
 ---
 
-```uipack All 109 leads, left to right, with each band as wide as its count. Every one of the six offers began with a recruiter's message; the applications I sent produced four hiring processes and no offer yet. | Source: my own application tracker, as of 2026-10-21.
+```uipack All 109 leads, left to right, with each band as wide as its count. Every one of the seven offers began with a recruiter's message; the applications I sent produced four hiring processes and no offer yet. | Source: my own application tracker, as of 2026-10-21.
 job-search-sankey
 ```
 
 Getting into a hiring process was the hard part of my job search. Once I was in one, I passed most
 rounds. Over 13 weeks of records, from 24 July to 21 October 2026, 4 of my 36 decided applications
 reached a screen, test or interview. Of the 31 recruiter leads I took forward, 21 did. Across every
-route, I passed 36 of the 42 interview rounds that have a result. All six offers came from
+route, I passed 38 of the 44 interview rounds that have a result. All seven offers came from
 conversations a recruiter started.
 
 Based on these numbers, recruiters gave me a far higher chance than my own applications did. I still
@@ -93,7 +93,7 @@ Applications moved from zero of three to five replies from 36 decided sends.
 
 ## Once I was in a room
 
-The 42 rounds with a result include every route. Five more are pending and six ended with no result:
+The 44 rounds with a result include every route. Five more are pending and six ended with no result:
 four went silent after the round, and two closed for reasons outside the round itself. Neither group is
 in any rate below.
 
@@ -111,7 +111,7 @@ in any rate below.
       {"type":"AI-assisted coding or codebase","outcome":"Passed","n":5},
       {"type":"Design, case or take-home","outcome":"Passed","n":7},
       {"type":"Hiring manager or final","outcome":"Passed","n":7},
-      {"type":"Other or unrecorded technical","outcome":"Passed","n":3},
+      {"type":"Other or unrecorded technical","outcome":"Passed","n":5},
       {"type":"Other or unrecorded technical","outcome":"Failed","n":2}]},
     "mark":{"type":"bar"},
     "encoding":{
@@ -126,7 +126,7 @@ in any rate below.
       {"type":"AI-assisted coding or codebase","total":5,"label":"5 of 5"},
       {"type":"Design, case or take-home","total":7,"label":"7 of 7"},
       {"type":"Hiring manager or final","total":7,"label":"7 of 7"},
-      {"type":"Other or unrecorded technical","total":5,"label":"3 of 5"}]},
+      {"type":"Other or unrecorded technical","total":7,"label":"5 of 7"}]},
     "mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{
       "y":{"field":"type","type":"nominal","sort":["Recruiter screen","Online or written test","Live coding","AI-assisted coding or codebase","Design, case or take-home","Hiring manager or final","Other or unrecorded technical"]},
@@ -148,18 +148,18 @@ The chart merges some types to stay readable. The full split:
 | Take-home, with a demo where asked | 2 | 0 | 0 | 0 |
 | Hiring manager, behavioural or panel | 4 | 0 | 0 | 1 |
 | Final or CTO | 3 | 0 | 1 | 0 |
-| Other technical, mixed or format not recorded | 3 | 2 | 1 | 3 |
-| **Total** | **36** | **6** | **5** | **6** |
+| Other technical, mixed or format not recorded | 5 | 2 | 1 | 3 |
+| **Total** | **38** | **6** | **5** | **6** |
 
-The two pending AI-assisted coding rounds are first rounds at trading firms. Two processes also include
+The two pending AI-assisted coding rounds are first rounds at trading firms. One process also includes
 interviews I passed without my notes recording how many there were, so those rounds aren't in the
 table.
 
 The timing tells me more than the type does. Of the eight rounds I had sat by 7 September, four
-failed: two recruiter screens, an online test and a round that combined coding with design. Of the 34
-since, 32 passed. I don't have a clean cause. The later set holds more recruiter screens, manager rounds
-and final conversations, 13 of the 34, and those are the rounds I pass most easily. Leaving them out, I
-still passed 19 of the other 21 later rounds.
+failed: two recruiter screens, an online test and a round that combined coding with design. Of the 36
+since, 34 passed. I don't have a clean cause. The later set holds more recruiter screens, manager rounds
+and final conversations, 13 of the 36, and those are the rounds I pass most easily. Leaving them out, I
+still passed 21 of the other 23 later rounds.
 
 The two later failures have something in common. One was a coding question built up in four parts,
 where the interviewer gave no hints and I reached part two. My debrief's note on what broke is one word:
@@ -180,7 +180,7 @@ The per-round pass rates are anecdotes. Most types have five rounds or fewer, an
 says almost nothing. What I take from them is narrower: no round type has been a wall for me, and four
 of my six failures came by early September.
 
-There are six offers so far: three from in-house recruiters and three through agencies. None came
+There are seven offers so far: four from in-house recruiters and three through agencies. None came
 from an application yet. One process that began with an application is waiting on the result of its
 final round, and two more are still interviewing. I ended another after passing its interviews, at the
 pay conversation.
@@ -190,4 +190,4 @@ pay conversation.
 Based on these numbers, recruiters gave me a far higher chance than my own applications. Of the leads I
 took forward, 21 of 31 became a hiring process, against 4 of 36 applications. I still think cold
 applications are fine to send, and they did produce four processes. Recruiter-started conversations
-converted far better, and that is where all six offers began.
+converted far better, and that is where all seven offers began.
