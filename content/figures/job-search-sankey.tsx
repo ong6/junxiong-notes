@@ -44,8 +44,8 @@ const NODES: N[] = [
   { id: "cvno", col: 3, n: 2, wide: "resume rejected", narrow: ["resume", "rejected"], tone: "fail", place: "right" },
   { id: "wait", col: 3, n: 4, wide: "still waiting", narrow: ["waiting"], tone: "open", place: "right" },
   { id: "offer", col: 4, n: 7, wide: "offers", narrow: ["offers"], tone: "offer", place: "right" },
-  { id: "tech", col: 4, n: 4, wide: "failed a technical round", narrow: ["failed", "technical"], tone: "fail", place: "right" },
-  { id: "hr", col: 4, n: 2, wide: "failed a screen or HR round", narrow: ["failed HR", "or screen"], tone: "fail", place: "right" },
+  { id: "tech", col: 4, n: 3, wide: "failed a technical round", narrow: ["failed", "technical"], tone: "fail", place: "right" },
+  { id: "hr", col: 4, n: 3, wide: "failed HR or behavioural", narrow: ["failed HR or", "behavioural"], tone: "fail", place: "right" },
   { id: "unk", col: 4, n: 1, wide: "rejected, stage not recorded", narrow: ["rejected,", "stage unknown"], tone: "fail", place: "right" },
   { id: "quiet", col: 4, n: 7, wide: "went quiet or I withdrew", narrow: ["quiet or", "withdrew"], tone: "dead", place: "right" },
   { id: "intv", col: 4, n: 4, wide: "still interviewing", narrow: ["still", "interviewing"], tone: "open", place: "right" },
@@ -61,8 +61,8 @@ const LINKS: [string, string, number, Origin][] = [
   ["cold", "proc", 4, "app"], ["cold", "none", 28, "app"], ["cold", "cvno", 1, "app"], ["cold", "wait", 4, "app"],
   ["ref", "none", 2, "app"],
   ["proc", "offer", 7, "rec"],
-  ["proc", "tech", 4, "rec"],
-  ["proc", "hr", 2, "rec"],
+  ["proc", "tech", 3, "rec"],
+  ["proc", "hr", 3, "rec"],
   ["proc", "unk", 1, "rec"],
   ["proc", "quiet", 6, "rec"], ["proc", "quiet", 1, "app"],
   ["proc", "intv", 1, "rec"], ["proc", "intv", 3, "app"],
@@ -253,10 +253,10 @@ function sankey(s: Spec, heads: string[]): ReactNode {
 // Desktop: 5 px per lead. Columns with labels above their bars get 40 px gaps for the label.
 export const DESKTOP: Spec = { xs: [40, 232, 424, 616, 824], top: 72, k: 5, gaps: [0, 40, 40, 16, 22], bar: 6, size: 14, offerSize: 26, narrow: false, fromCol: 0, procGap: 0 };
 // Mobile: the "all leads" column is dropped (its total is in the header) to make room.
-export const MOBILE: Spec = { xs: [0, 0, 104, 222, 320], top: 112, k: 5, gaps: [0, 0, 24, 16, 30], bar: 5, size: 14, offerSize: 24, narrow: true, fromCol: 2, procGap: 90 };
+export const MOBILE: Spec = { xs: [0, 0, 104, 220, 314], top: 112, k: 5, gaps: [0, 0, 24, 16, 30], bar: 5, size: 14, offerSize: 24, narrow: true, fromCol: 2, procGap: 90 };
 
 const ALT =
-  "A Sankey diagram of all 109 leads in my job search, band widths proportional to counts. A recruiter reached out for 70 (19 in-house, 51 through agencies); I applied for 39 (37 cold, 2 with a referral). First outcome: 25 reached a hiring process (11 in-house, 10 agency, 4 cold), 40 I declined, 38 got no reply, 2 were resume rejections and 4 are still waiting. Inside a hiring process: 7 offers, all from recruiter-started leads; 4 failed a technical round; 2 failed an HR or recruiter screen; 1 was rejected at a stage I did not record; 7 went quiet or I withdrew; 4 are still interviewing.";
+  "A Sankey diagram of all 109 leads in my job search, band widths proportional to counts. A recruiter reached out for 70 (19 in-house, 51 through agencies); I applied for 39 (37 cold, 2 with a referral). First outcome: 25 reached a hiring process (11 in-house, 10 agency, 4 cold), 40 I declined, 38 got no reply, 2 were resume rejections and 4 are still waiting. Inside a hiring process: 7 offers, all from recruiter-started leads; 3 failed a technical round; 3 failed a behavioural, HR or recruiter-screen round; 1 was rejected at a stage I did not record; 7 went quiet or I withdrew; 4 are still interviewing.";
 
 export default define({
   alt: ALT,

@@ -10,7 +10,7 @@ draft: false
 
 Over 13 weeks of job hunting I got seven offers, and every one started with a recruiter messaging me. My cold applications produced four interview processes and no offer yet. Here is the whole search in one picture.
 
-```uipack All 109 leads, left to right: who started each one, the route, the first outcome and the result inside a hiring process. Each band is as wide as its count; green began with a recruiter's message, blue with my own application. All seven offers sit on the green side, and my applications produced four hiring processes and no offer yet. | Source: my own application tracker, as of 2026-10-21.
+```uipack All 109 leads, left to right: who started each one, the route, the first outcome and the result inside a hiring process. Each band is as wide as its count; green began with a recruiter's message, blue with my own application. All seven offers sit on the green side, and my applications produced four hiring processes and no offer yet. Of the processes that ended in a rejection, three failed on a technical round, three on a behavioural or HR round, and one at a stage I didn't record. | Source: my own application tracker, as of 2026-10-21.
 job-search-sankey
 ```
 
@@ -111,8 +111,9 @@ in any rate below.
       {"type":"AI-assisted coding or codebase","outcome":"Passed","n":5},
       {"type":"Design, case or take-home","outcome":"Passed","n":7},
       {"type":"Hiring manager or final","outcome":"Passed","n":7},
+      {"type":"Hiring manager or final","outcome":"Failed","n":1},
       {"type":"Other or unrecorded technical","outcome":"Passed","n":5},
-      {"type":"Other or unrecorded technical","outcome":"Failed","n":2}]},
+      {"type":"Other or unrecorded technical","outcome":"Failed","n":1}]},
     "mark":{"type":"bar"},
     "encoding":{
       "y":{"field":"type","type":"nominal","title":null,"sort":["Recruiter screen","Online or written test","Live coding","AI-assisted coding or codebase","Design, case or take-home","Hiring manager or final","Other or unrecorded technical"]},
@@ -125,8 +126,8 @@ in any rate below.
       {"type":"Live coding","total":4,"label":"3 of 4"},
       {"type":"AI-assisted coding or codebase","total":5,"label":"5 of 5"},
       {"type":"Design, case or take-home","total":7,"label":"7 of 7"},
-      {"type":"Hiring manager or final","total":7,"label":"7 of 7"},
-      {"type":"Other or unrecorded technical","total":7,"label":"5 of 7"}]},
+      {"type":"Hiring manager or final","total":8,"label":"7 of 8"},
+      {"type":"Other or unrecorded technical","total":6,"label":"5 of 6"}]},
     "mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},
     "encoding":{
       "y":{"field":"type","type":"nominal","sort":["Recruiter screen","Online or written test","Live coding","AI-assisted coding or codebase","Design, case or take-home","Hiring manager or final","Other or unrecorded technical"]},
@@ -140,9 +141,9 @@ groups failures:
 | Kind | Round type | Passed | Failed | Pending | Ended with no result |
 |---|---|---:|---:|---:|---:|
 | Screen, HR or behavioural | Recruiter screen | 8 | 2 | 1 | 0 |
-| | Hiring manager, behavioural or panel | 4 | 0 | 0 | 1 |
+| | Hiring manager, behavioural or panel | 4 | 1 | 0 | 1 |
 | | Final or CTO conversation | 3 | 0 | 1 | 0 |
-| | *Subtotal* | *15* | *2* | *2* | *1* |
+| | *Subtotal* | *15* | *3* | *2* | *1* |
 | Technical | Online or written test | 3 | 1 | 0 | 2 |
 | | Live coding | 3 | 1 | 0 | 0 |
 | | AI-assisted coding | 3 | 0 | 2 | 0 |
@@ -150,12 +151,13 @@ groups failures:
 | | System design | 4 | 0 | 0 | 0 |
 | | Functional or case | 1 | 0 | 0 | 0 |
 | | Take-home, with a demo where asked | 2 | 0 | 0 | 0 |
-| | Other technical, mixed or format not recorded | 5 | 2 | 1 | 3 |
-| | *Subtotal* | *23* | *4* | *3* | *5* |
+| | Other technical, mixed or format not recorded | 5 | 1 | 1 | 3 |
+| | *Subtotal* | *23* | *3* | *3* | *5* |
 | **Total** | | **38** | **6** | **5** | **6** |
 
-Counted by process rather than by round, seven hiring processes ended in a rejection: four on a
-technical round, two on a recruiter or HR screen, and one at a stage my notes don't record. Those are
+Counted by process rather than by round, seven hiring processes ended in a rejection: three on a
+technical round, three on a behavioural, HR or recruiter-screen round, and one at a stage my notes
+don't record. Those are
 the three failure nodes at the right of the diagram.
 
 The two pending AI-assisted coding rounds are first rounds at trading firms. One process also includes
@@ -165,12 +167,14 @@ table.
 The timing tells me more than the type does. Of the eight rounds I had sat by 7 September, four
 failed: two recruiter screens, an online test and a round that combined coding with design. Of the 36
 since, 34 passed. I don't have a clean cause. The later set holds more recruiter screens, manager rounds
-and final conversations, 13 of the 36, and those are the rounds I pass most easily. Leaving them out, I
-still passed 21 of the other 23 later rounds.
+and final conversations, 14 of the 36. Leaving them out, I still passed 21 of the other 22 later
+rounds.
 
-The two later failures have something in common. One was a coding question built up in four parts,
-where the interviewer gave no hints and I reached part two. My debrief's note on what broke is one word:
-pace. The other was a technical conversation about evaluation work, which my debrief doesn't explain.
+The two later failures were different kinds. One was a coding question built up in four parts, where
+the interviewer gave no hints and I reached part two. My debrief's note on what broke is one word: pace.
+In the other, I passed the technical screen and was then turned down because I didn't have the
+background the role needed. I still find it odd that I was put through the interview at all if that
+was going to decide it.
 The earlier design-and-coding round has a clearer lesson. The coding part went fine, but I never raised
 the distributed-transaction pattern the design needed, even though I had listed it in my prep.
 
