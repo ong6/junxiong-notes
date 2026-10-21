@@ -5,7 +5,7 @@ date: 2026-10-21
 updated: 2026-10-21
 category: Career
 tags: [job-search, interviews, recruiting, career]
-draft: true
+draft: false
 ---
 
 Over 13 weeks of job hunting I got seven offers, and every one started with a recruiter messaging me. My cold applications produced four interview processes and no offer yet. Here is the whole search in one picture.

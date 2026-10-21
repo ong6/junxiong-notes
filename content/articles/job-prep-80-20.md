@@ -5,7 +5,7 @@ date: 2026-10-21
 updated: 2026-10-21
 category: Career
 tags: [job-search, interviews, career, linkedin, system-design]
-draft: true
+draft: false
 ---
 
 ```uipack The cheap steps come first because each one gates the next: the role decides the profile, the profile and resume get you the call, and the opening and close frame every round. The technical rounds below are ordered by how much they decide an offer, and each one is trained differently. Ordering is my read, not a measurement.
@@ -45,7 +45,8 @@ technologies that define it, and make the rest of the profile prove the headline
 
 I wrote up the full process separately: [why I optimize LinkedIn once a year](/linkedin-optimization).
 The short version is that a profile keeps working while you are busy, and an inbound recruiter has
-already matched you to an open role before the first message arrives.
+already matched you to an open role before the first message arrives. In my own search, every offer
+started with a recruiter's message; [the numbers are here](/job-search-numbers).
 
 ## 3. Write the resume for that role
 

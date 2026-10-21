@@ -201,4 +201,5 @@ practise for the interview. Two books have been useful for that:
   and follow-up. It is direct and practical.
 
 Once the profile is current, I would spend the next hour preparing for a real conversation rather
-than rewriting the headline again.
+than rewriting the headline again. [How I prepare for the interviews themselves](/job-prep-80-20) is a
+separate note.

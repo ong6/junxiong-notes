@@ -1,5 +1,5 @@
 ---
-title: 'A skill for "should I take this job?" that answers with one pick and an exit plan'
+title: Make decisions with the /decide skill
 description: "decide is an agent skill for hard choices like job offers: one pick, the fact that would flip it and a tripwire, plus what the model skips without it."
 date: 2026-10-21
 updated: 2026-10-21
