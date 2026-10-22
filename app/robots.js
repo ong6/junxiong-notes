@@ -3,8 +3,8 @@ import { SITE } from "../lib/site.mjs";
 // Everything here is public and written to be read and cited, so every crawler
 // is welcome. The named groups make that stance explicit for the search,
 // answer-engine and training crawlers that check for their own token
-// (OpenAI, Anthropic, Perplexity, Google-Extended, Common Crawl), rather than
-// leaving it implied by `*`. To opt out of one later, flip its group to
+// (OpenAI, Anthropic, Perplexity, Google-Extended, Applebot-Extended, Common
+// Crawl), rather than leaving it implied by `*`. To opt out of one later, flip its group to
 // `disallow: "/"`; the others are unaffected.
 const AI_CRAWLERS = [
 	"OAI-SearchBot",
@@ -16,6 +16,7 @@ const AI_CRAWLERS = [
 	"PerplexityBot",
 	"Perplexity-User",
 	"Google-Extended",
+	"Applebot-Extended",
 	"CCBot",
 ];
 
