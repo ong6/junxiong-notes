@@ -1,6 +1,8 @@
 import { OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
-const description = `About ${SITE.title} — what these notes are, how they are maintained, and how to read them as an agent.`;
+// The page's own wording: the tagline's subjects, "dated" and "revised in place", and the agent section.
+const description =
+	"What these notes on software, AI and careers are, how they are dated and revised in place, and how to read them as an agent.";
 
 export const metadata = {
 	title: "About",
