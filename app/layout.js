@@ -1,7 +1,7 @@
 import Link from "next/link";
 import SiteNavigation from "./site-navigation";
 import "./globals.css";
-import { OPEN_GRAPH, SITE } from "../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../lib/site.mjs";
 
 export const metadata = {
 	metadataBase: new URL(SITE.url),
@@ -36,12 +36,7 @@ export default function RootLayout({ children }) {
 		description: SITE.description,
 		url: SITE.url,
 		inLanguage: "en",
-		author: {
-			"@type": "Person",
-			name: SITE.author,
-			url: SITE.authorUrl,
-			sameAs: [SITE.authorUrl, SITE.github],
-		},
+		author: AUTHOR_LD,
 	};
 	return (
 		<html lang="en" suppressHydrationWarning>

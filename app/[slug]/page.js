@@ -14,7 +14,7 @@ import {
 	readingTime,
 	relatedFor,
 } from "../../lib/articles";
-import { OPEN_GRAPH, SITE } from "../../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
 export function generateStaticParams() {
 	return allArticles().map(({ slug }) => ({ slug }));
@@ -75,21 +75,38 @@ export default async function Article({ params }) {
 	// article this one already shows in its own ```notes cluster.
 	const related = relatedFor(slug);
 
-	const jsonLd = {
-		"@context": "https://schema.org",
-		"@type": "TechArticle",
-		headline: meta.title,
-		description: meta.description,
-		datePublished: meta.date,
-		dateModified: meta.updated ?? meta.date,
-		author: { "@type": "Person", name: SITE.author, url: SITE.authorUrl },
-		publisher: { "@type": "Person", name: SITE.author, url: SITE.authorUrl },
-		mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE.url}/${slug}` },
-		inLanguage: "en",
-		keywords: (meta.tags ?? []).join(", "),
-		articleSection: meta.category,
-		isPartOf: { "@id": `${SITE.url}#blog` },
-	};
+	const url = `${SITE.url}/${slug}`;
+	const jsonLd = [
+		{
+			"@context": "https://schema.org",
+			"@type": "TechArticle",
+			"@id": `${url}#article`,
+			url,
+			headline: meta.title,
+			description: meta.description,
+			// The build-time social card (app/[slug]/opengraph-image.js), 1200×630.
+			image: `${url}/opengraph-image`,
+			datePublished: meta.date,
+			dateModified: meta.updated ?? meta.date,
+			author: AUTHOR_LD,
+			publisher: AUTHOR_LD,
+			mainEntityOfPage: { "@type": "WebPage", "@id": url },
+			inLanguage: "en",
+			keywords: (meta.tags ?? []).join(", "),
+			articleSection: meta.category,
+			isPartOf: { "@id": `${SITE.url}#blog` },
+			// The markdown source agents are pointed at (see llms.txt).
+			encoding: { "@type": "MediaObject", encodingFormat: "text/markdown", contentUrl: `${SITE.url}/raw/${slug}.md` },
+		},
+		{
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			itemListElement: [
+				{ "@type": "ListItem", position: 1, name: "Notes", item: `${SITE.url}/` },
+				{ "@type": "ListItem", position: 2, name: meta.title, item: url },
+			],
+		},
+	];
 
 	return (
 		<main id="main-content" tabIndex={-1}>
