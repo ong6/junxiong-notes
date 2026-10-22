@@ -1,11 +1,11 @@
 import Link from "next/link";
 import SiteNavigation from "./site-navigation";
 import "./globals.css";
-import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE, TITLE_SUFFIX } from "../lib/site.mjs";
 
 export const metadata = {
 	metadataBase: new URL(SITE.url),
-	title: { default: SITE.title, template: `%s — ${SITE.name}` },
+	title: { default: SITE.title, template: `%s${TITLE_SUFFIX}` },
 	description: SITE.description,
 	authors: [{ name: SITE.author, url: SITE.authorUrl }],
 	alternates: {

@@ -78,13 +78,20 @@ version cannot drift:
 `scripts/generate-agent-files.mjs` writes the first three at build time. It runs automatically
 via `prebuild` and at the start of `dev`.
 
+The index's head links `/llms.txt` as its `text/markdown` alternate (as each article links its
+`/raw/<slug>.md`) and as `describedby`. `/about` publishes a ProfilePage whose `mainEntity` is the
+junxiong.dev Person (`AUTHOR_LD` in `lib/site.mjs`: same `@id` and `sameAs`). An article's
+`<title>` gets the " — notes.junxiong.dev" suffix only while the whole stays within 60 characters
+(`pageTitle` in `lib/site.mjs`); longer titles go out bare so results do not truncate them.
+`og:title` is always the bare title.
+
 ## Commands
 
 ```bash
 npm install
 npm run dev       # regenerates the agent files, then serves on :3000
 npm run build     # prebuild + next build
-npm test          # unit tests (related-notes scoring, internal link check)
+npm test          # unit tests (related-notes scoring, internal link check, title length)
 npm run links     # internal link check only (also runs in prebuild)
 npm run diagrams  # re-render figures and data charts only
 npm run logos     # fetch logos for new companies in content/data/*.yaml

@@ -1,4 +1,4 @@
-import { OPEN_GRAPH, SITE } from "../../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
 // The page's own wording: the tagline's subjects, "dated" and "revised in place", and the agent section.
 const description =
@@ -12,9 +12,24 @@ export const metadata = {
 	twitter: { card: "summary_large_image", title: "About these notes", description },
 };
 
+// The page about the author and the notes, as a ProfilePage whose main entity is the same Person
+// (same @id and sameAs) that junxiong.dev publishes and every article names as its author.
+const profileLd = {
+	"@context": "https://schema.org",
+	"@type": "ProfilePage",
+	"@id": `${SITE.url}/about#profilepage`,
+	url: `${SITE.url}/about`,
+	name: "About these notes",
+	description,
+	inLanguage: "en",
+	isPartOf: { "@id": `${SITE.url}#blog` },
+	mainEntity: AUTHOR_LD,
+};
+
 export default function About() {
 	return (
 		<main id="main-content" tabIndex={-1}>
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(profileLd) }} />
 			<article>
 				<header>
 					<h1>About these notes</h1>

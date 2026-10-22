@@ -15,7 +15,7 @@ import {
 	relatedFor,
 } from "../../lib/articles";
 import { OG_SIZE } from "../../lib/og-card";
-import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE, pageTitle } from "../../lib/site.mjs";
 
 // Only published articles exist. An unknown slug gets the prerendered 404 page
 // (full layout, lang, links back) instead of an empty client-rendered shell.
@@ -44,7 +44,8 @@ export async function generateMetadata({ params }) {
 		alt: `"${meta.title}" by ${SITE.author}, on ${SITE.name}`,
 	};
 	return {
-		title: meta.title,
+		// og:title and twitter:title below stay the bare title.
+		title: pageTitle(meta.title),
 		description: meta.description,
 		alternates: {
 			canonical: `/${slug}`,

@@ -6,7 +6,11 @@ import { OPEN_GRAPH, SITE } from "../lib/site.mjs";
 
 export const metadata = {
 	title: { absolute: SITE.title },
-	alternates: { canonical: "/" },
+	alternates: {
+		canonical: "/",
+		// The index as markdown, the same relation articles use for /raw/<slug>.md.
+		types: { "text/markdown": "/llms.txt" },
+	},
 	openGraph: {
 		...OPEN_GRAPH,
 		type: "website",
