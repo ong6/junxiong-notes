@@ -54,6 +54,11 @@ article's frontmatter; articles are revised in place rather than reposted.
 ## Articles
 
 ${articles.map(line).join("\n")}
+
+## Optional
+
+- [${SITE.author}](${SITE.authorUrl}/llms.txt): the author's own llms.txt, with his projects, résumé and contact
+- [RSS feed](${SITE.url}/feed.xml): every article, newest first
 `,
 	"utf8",
 );

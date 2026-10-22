@@ -3,7 +3,10 @@ import { SITE } from "../lib/site.mjs";
 
 export default function sitemap() {
 	const posts = allArticles();
-	const newest = posts[0]?.updated ?? posts[0]?.date ?? "2026-08-28";
+	// The index changes whenever any article does, so its lastmod is the latest
+	// revision, not the newest article's publish date.
+	const newest =
+		posts.map((p) => p.updated ?? p.date).filter(Boolean).sort().at(-1) ?? "2026-08-28";
 	return [
 		{ url: `${SITE.url}/`, lastModified: newest, changeFrequency: "weekly", priority: 1 },
 		{ url: `${SITE.url}/about`, lastModified: newest, changeFrequency: "yearly", priority: 0.5 },
