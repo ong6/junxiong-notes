@@ -16,6 +16,10 @@ import {
 } from "../../lib/articles";
 import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
+// Only published articles exist. An unknown slug gets the prerendered 404 page
+// (full layout, lang, links back) instead of an empty client-rendered shell.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
 	return allArticles().map(({ slug }) => ({ slug }));
 }
