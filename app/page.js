@@ -2,11 +2,18 @@ import { Suspense } from "react";
 import ArticleBrowser from "./article-browser";
 import { PostList } from "./post-list";
 import { allArticles } from "../lib/articles";
-import { SITE } from "../lib/site.mjs";
+import { OPEN_GRAPH, SITE } from "../lib/site.mjs";
 
 export const metadata = {
 	title: { absolute: SITE.title },
 	alternates: { canonical: "/" },
+	openGraph: {
+		...OPEN_GRAPH,
+		type: "website",
+		url: "/",
+		title: SITE.title,
+		description: SITE.description,
+	},
 };
 
 export default function Home() {

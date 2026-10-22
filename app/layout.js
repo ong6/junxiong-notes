@@ -1,7 +1,7 @@
 import Link from "next/link";
 import SiteNavigation from "./site-navigation";
 import "./globals.css";
-import { SITE } from "../lib/site.mjs";
+import { OPEN_GRAPH, SITE } from "../lib/site.mjs";
 
 export const metadata = {
 	metadataBase: new URL(SITE.url),
@@ -11,15 +11,14 @@ export const metadata = {
 	alternates: {
 		types: { "application/rss+xml": `${SITE.url}/feed.xml` },
 	},
+	// No og:url here: a page that inherited it would claim to be the index.
 	openGraph: {
+		...OPEN_GRAPH,
 		type: "website",
-		siteName: SITE.title,
-		url: SITE.url,
 		title: SITE.title,
 		description: SITE.description,
-		locale: "en_SG",
 	},
-	twitter: { card: "summary", title: SITE.title, description: SITE.description },
+	twitter: { card: "summary_large_image", title: SITE.title, description: SITE.description },
 	robots: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
 };
 
@@ -49,6 +48,8 @@ export default function RootLayout({ children }) {
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
 				<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
+				{/* The agent index that covers every page here (llmstxt.org link relations). */}
+				<link rel="describedby" type="text/markdown" href="/llms.txt" />
 				<script
 					type="application/ld+json"
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

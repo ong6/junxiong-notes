@@ -1,9 +1,13 @@
-import { SITE } from "../../lib/site.mjs";
+import { OPEN_GRAPH, SITE } from "../../lib/site.mjs";
+
+const description = `About ${SITE.title} — what these notes are, how they are maintained, and how to read them as an agent.`;
 
 export const metadata = {
 	title: "About",
-	description: `About ${SITE.title} — what these notes are, how they are maintained, and how to read them as an agent.`,
+	description,
 	alternates: { canonical: "/about" },
+	openGraph: { ...OPEN_GRAPH, type: "website", url: "/about", title: "About these notes", description },
+	twitter: { card: "summary_large_image", title: "About these notes", description },
 };
 
 export default function About() {

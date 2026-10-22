@@ -14,7 +14,7 @@ import {
 	readingTime,
 	relatedFor,
 } from "../../lib/articles";
-import { SITE } from "../../lib/site.mjs";
+import { OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
 export function generateStaticParams() {
 	return allArticles().map(({ slug }) => ({ slug }));
@@ -34,8 +34,13 @@ export async function generateMetadata({ params }) {
 	return {
 		title: meta.title,
 		description: meta.description,
-		alternates: { canonical: `/${slug}` },
+		alternates: {
+			canonical: `/${slug}`,
+			// The article's markdown source, per llmstxt.org's link-relation proposal.
+			types: { "text/markdown": `/raw/${slug}.md` },
+		},
 		openGraph: {
+			...OPEN_GRAPH,
 			type: "article",
 			title: meta.title,
 			description: meta.description,
@@ -45,7 +50,7 @@ export async function generateMetadata({ params }) {
 			authors: [SITE.author],
 			tags: meta.tags ?? [],
 		},
-		twitter: { card: "summary", title: meta.title, description: meta.description },
+		twitter: { card: "summary_large_image", title: meta.title, description: meta.description },
 	};
 }
 
