@@ -14,6 +14,7 @@ import {
 	readingTime,
 	relatedFor,
 } from "../../lib/articles";
+import { OG_SIZE } from "../../lib/og-card";
 import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
 
 // Only published articles exist. An unknown slug gets the prerendered 404 page
@@ -35,6 +36,13 @@ export async function generateMetadata({ params }) {
 	const a = load(slug);
 	if (!a) return {};
 	const { meta } = a;
+	// The social card (./opengraph-image/route.js), described by what it shows.
+	const image = {
+		url: `/${slug}/opengraph-image`,
+		...OG_SIZE,
+		type: "image/png",
+		alt: `"${meta.title}" by ${SITE.author}, on ${SITE.name}`,
+	};
 	return {
 		title: meta.title,
 		description: meta.description,
@@ -53,8 +61,9 @@ export async function generateMetadata({ params }) {
 			modifiedTime: meta.updated ?? meta.date,
 			authors: [SITE.author],
 			tags: meta.tags ?? [],
+			images: [image],
 		},
-		twitter: { card: "summary_large_image", title: meta.title, description: meta.description },
+		twitter: { card: "summary_large_image", title: meta.title, description: meta.description, images: [image] },
 	};
 }
 
@@ -88,7 +97,7 @@ export default async function Article({ params }) {
 			url,
 			headline: meta.title,
 			description: meta.description,
-			// The build-time social card (app/[slug]/opengraph-image.js), 1200×630.
+			// The build-time social card (app/[slug]/opengraph-image/route.js), 1200×630.
 			image: `${url}/opengraph-image`,
 			datePublished: meta.date,
 			dateModified: meta.updated ?? meta.date,
