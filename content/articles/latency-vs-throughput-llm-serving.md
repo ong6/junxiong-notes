@@ -5,7 +5,7 @@ date: 2026-11-04
 updated: 2026-11-04
 category: AI systems
 tags: [inference, serving, batching, latency, kv-cache]
-draft: true
+draft: false
 ---
 
 Anthropic charges [half price](https://docs.anthropic.com/en/docs/build-with-claude/batch-processing) for the same model if you are willing to wait up to 24 hours for the answer. That discount is the latency–throughput trade with a price on it. An LLM server has one basic dial: how many requests share each forward pass. Turn it up and every user's tokens arrive more slowly, while the GPU produces far more tokens in total and each one costs less. Almost every serving technique either moves you along that curve or pushes the curve outward.
@@ -37,6 +37,10 @@ That is not free, because each sequence also has a KV cache, and decode reads al
 step time ≈ max( (weights + B × KV per sequence) ÷ bandwidth,  2 × params × B ÷ FLOPS )
 ```
 
+```uipack One decode step, drawn to scale. The weights are read once no matter how many users share the step, but every sequence adds its own KV cache to the read. At batch 64 the cache is already more than half the traffic. | Numbers: my roofline arithmetic for Llama 3.1 8B (BF16, 2,048-token contexts) on an H100 SXM at 3.35 TB/s.
+gpu-batch
+```
+
 | Batch | Step time | Per-user tok/s | GPU tok/s | Per-user speed vs batch 1 | GPU output vs batch 1 |
 |---|---|---|---|---|---|
 | 1 | 4.9 ms | 205 | 205 | 1.0× | 1× |
@@ -48,7 +52,28 @@ step time ≈ max( (weights + B × KV per sequence) ÷ bandwidth,  2 × params �
 
 This is my idealized roofline arithmetic, not a measurement. It ignores runtime overhead and attention compute, and real decode lands well under the bandwidth ceiling, so treat the absolute numbers as upper bounds. The shape is the point.
 
-Going from 1 to 64 users halves each user's speed and multiplies the GPU's output 31 times, which cuts cost per token by about the same factor. Past that, each extra user buys less total output and costs everyone more latency. The table also ends at 224 for a reason: 80 GB minus 16 GB of weights leaves room for about 238 such sequences. The KV cache, not compute, sets the ceiling. In this example the compute term never wins: even at batch 224 the matmuls need 3.6 ms against 22.7 ms of memory traffic. The textbook point where batching makes decode compute-bound sits beyond the memory the cache can fit.
+Going from 1 to 64 users halves each user's speed and multiplies the GPU's output 31 times, which cuts cost per token by about the same factor.
+
+```vega-lite Every batch size is a point on one curve. Moving right buys GPU output and cost per token; moving up buys each user speed. The scheduler picks the point. | Source: my idealized roofline arithmetic from the table above (Llama 3.1 8B BF16, 2,048-token contexts, H100 SXM 3.35 TB/s). Upper bounds, not measurements.
+{"title":{"text":"The latency–throughput curve for one GPU","subtitle":"Each point is a batch size. Per-user speed against total GPU output, tokens/sec."},
+ "width":720,"height":320,
+ "data":{"values":[
+   {"b":"batch 1","gpu":205,"user":205.2},
+   {"b":"batch 8","gpu":1472,"user":184},
+   {"b":"batch 32","gpu":4349,"user":135.9},
+   {"b":"batch 64","gpu":6450,"user":100.8},
+   {"b":"batch 128","gpu":8505,"user":66.4},
+   {"b":"batch 224 (KV full)","gpu":9849,"user":44}]},
+ "encoding":{
+   "x":{"field":"gpu","type":"quantitative","title":"GPU output (tokens/sec, all users)","scale":{"domain":[0,12000]},"axis":{"grid":true}},
+   "y":{"field":"user","type":"quantitative","title":"Per-user speed (tokens/sec)","scale":{"domain":[0,240]},"axis":{"grid":true}}},
+ "layer":[
+   {"mark":{"type":"line","strokeWidth":2.5}},
+   {"mark":{"type":"point","filled":true,"size":110}},
+   {"mark":{"type":"text","align":"left","dx":9,"dy":-10,"fontWeight":600},"encoding":{"text":{"field":"b"}}}]}
+```
+
+Past that, each extra user buys less total output and costs everyone more latency. The table also ends at 224 for a reason: 80 GB minus 16 GB of weights leaves room for about 238 such sequences. The KV cache, not compute, sets the ceiling. In this example the compute term never wins: even at batch 224 the matmuls need 3.6 ms against 22.7 ms of memory traffic. The textbook point where batching makes decode compute-bound sits beyond the memory the cache can fit.
 
 Longer contexts make every row worse. Double the context and the KV term doubles, so per-user speed falls faster and the capacity cap halves.
 
