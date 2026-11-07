@@ -209,3 +209,20 @@ A bump will need:
   diagram decision (finding 10) has to be made first.
 - Register the spec in uipack's `siteRegistry` (`playground/docs-manifest.ts`) as
   `junxiong-notes:STYLE.md` with the new pin.
+
+## Second pass (same day)
+
+Implemented on `site-ui-1` after the owner asked for as much improvement as possible:
+
+| Finding | What changed |
+| --- | --- |
+| 1. Charts cropped on phones | Every Vega-Lite chart gets a phone drawing from `scripts/render-diagrams.mjs`: category labels above the bars, values at the bar ends, legend one item per line, titles on the plot's left edge; the two-axis latency chart keeps its layout with right-half labels right-aligned. All 16 fit (14 on published pages, 2 in the draft); none needed the scroll fallback, which stays for any future chart that does not fit |
+| 8. Chart green | `#1baf7a` → `#0f7a55` (the diagrams' green) as the light third series and in job-search-numbers' two chart specs (hex only; no text or data). All chart SVGs re-rendered |
+| 2. Chrome before the article | On phones, article pages hide the tagline and the contents box starts closed (a `<details>` closed by an inline script as it is parsed, so nothing flashes); desktop unchanged |
+| 11 and spacing (13) | Margins and paddings on 8px steps; headings step by 1.2 (`h3` 1.425rem, `h2` 1.71rem, `h1` 2.1rem; phones 1.35 / 1.62 / 1.95rem). Both recorded in STYLE.md |
+
+Tier 1 on the second-pass build, with `uipack-grade.json`: all seven pages pass in all four views.
+Screenshots: `after-pass2/` in the evidence folder (reports in `after-pass2/grade-config/`).
+
+Still open: self-hosting a serif (finding 9) and the diagram palette (finding 10), both owner
+decisions; the uipack pin bump.
