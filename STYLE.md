@@ -101,8 +101,8 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-radius-pill` | `50%` (the appearance toggle) | `50%` |
 | `--ui-stroke` | TODO: figures inherit uipack's stroke; the site sets none | TODO: as light |
 | `--ui-rule-width` | `1px` | `1px` |
-| `--ui-density` | TODO: not expressed as a scalar; the rhythm is set per element in rem | TODO: as light |
-| `--ui-type-ratio` | TODO: not a ratio today (body 19px; h3 1.3rem, h2 1.45rem, h1 2.1rem); the owner chooses whether to adopt one | TODO: as light |
+| `--ui-density` | TODO: not expressed as a scalar; spacing uses 8px steps per element (see Density and rhythm) | TODO: as light |
+| `--ui-type-ratio` | `1.2` (body 19px; h3 1.425rem, h2 1.71rem, h1 2.1rem) | `1.2` |
 | `--ui-measure` | `44rem` column (`--max`), less 1.25rem padding a side | `44rem` |
 | `--ui-ease-settle` | `ease` (the project link's 150ms hover) | `ease` |
 | `--ui-ease-travel` | TODO: nothing travels outside the figures | TODO: as light |
@@ -154,16 +154,18 @@ on the code ground; they are not contract roles and live only in `app/globals.cs
 - **Self-hosting.** None. The core rule asks for self-hosted faces with metric-matched fallbacks;
   TODO: the owner decides whether to self-host a serif (which one, and its weight files) or keep
   the system stacks and accept that the serif differs by platform.
-- **Steps.** Article `h1` 2.1rem (1.7rem under 600px), `h2` 1.45rem, `h3` 1.3rem, dek 1.12rem,
-  index title 1.45rem (1.35rem under 600px). Meta and captions .8–.86rem sans, table text .875rem.
+- **Steps.** A 1.2 ratio over the body: `h3` 1.425rem, `h2` 1.71rem, article `h1` 2.1rem (under
+  600px, over the 18px body: 1.35 / 1.62 / 1.95rem). Dek 1.12rem, index title 1.45rem (1.35rem
+  under 600px). Meta and captions .8–.86rem sans, table text .875rem.
 - **Preload.** None (no web fonts).
 
 ## Density and rhythm
 
-A loose, bookish rhythm: 19px body at 1.7 line height, paragraphs 1.15rem apart, `h2` 2.4rem
-above, figures 2.6rem above and below, index items 1.25–1.6rem of padding with a rule between.
-Spacing is in rem and not yet on uipack's 8px base unit (for example `.45rem`, `1.15rem`); TODO:
-the owner decides whether to re-base the rhythm on 8px steps or keep it.
+A loose, bookish rhythm on uipack's 8px base unit: 19px body at 1.7 line height, paragraphs
+1.5rem (24px) apart, `h2` 3rem above and 1rem below, `h3` 2.5rem above and .5rem below (2.5 /
+2rem on phones), figures 2.5rem above and below, index items 1.25–1.5rem of padding with a rule
+between, panels 1rem by 1.5rem of padding. Every margin and padding is a multiple of 8px; 4px
+(.25rem) and 12px (.75rem) appear only inside a part (a cell, a caption rule, a label gap).
 
 The measure is a 44rem column with 1.25rem gutters; figures break out to a 60rem (960px) slot
 (`min(60rem, 100vw − 2.5rem)`), so prose keeps a short line while a drawing gets room.
@@ -215,7 +217,8 @@ scrolls sideways.
 - **Header order:** date and reading time, `h1`, dek, category and tags, then the project link
   when the article names one (`project:` frontmatter).
 - **Contents box** under the header when an article has three or more headings (`toc: false`
-  drops it).
+  drops it): a disclosure, open on desktop and closed on phones, so the first paragraph is in the
+  first screen. Article pages also hide the masthead's tagline on phones.
 - **Parts used:** `LayerHead`, `TermList`, `ChangeNote`, `Callout` (self-test), `LinkList` and
   `NoteCluster`, emitted from bold-label paragraphs and fences by `lib/rehype-article-parts.js`
   and `lib/rehype-chart.js`, only where an article writes them (the two AI-stack articles).
@@ -223,7 +226,9 @@ scrolls sideways.
   contents box's card language.
 - **Figures** may not lead the page; they sit where the prose refers to them, with a caption and a
   separate source line. On phones a figure shows its authored narrow drawing, or scrolls inside
-  its frame under a swipe hint.
+  its frame under a swipe hint. Every Vega-Lite chart has a phone drawing made by
+  `scripts/render-diagrams.mjs`: category labels above the bars, values at the bar ends, the
+  legend one item per line.
 - **End matter:** the dated revision line, Related notes (the index's list, four items), the
   markdown-source note.
 
@@ -271,9 +276,7 @@ the nav label "Main site ↗" points back to junxiong.dev.
   `--ui-node` and whether the `--uipack-*` mapping stays.
 - Faces: self-host a serif (and which) or keep system stacks; decides the font rows' first family
   and a preload.
-- Rhythm: re-base spacing on uipack's 8px unit or keep the current rem steps; decides
-  `--ui-density`.
-- Type ratio: adopt a ratio for `h3` / `h2` / `h1` or keep the hand-set steps.
+- Density: express the 8px rhythm as a `--ui-density` scalar if uipack ever renders this look.
 - Unused roles (raised surface, third ink, soft line, accent-tone and inverted sets, signed data,
   alerts, deck faces, buttons): set when a page first needs one.
 - Registry: add this spec to uipack's `siteRegistry` (`playground/docs-manifest.ts`) as
