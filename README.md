@@ -117,3 +117,5 @@ because canonicals, JSON-LD, the sitemap and both llms files all read from it.
 ## Reading and navigation design
 
 Keep the index focused on titles: category navigation is underlined text, topics are disclosed on demand, and tags remain available on article pages. Use at least 44px targets for standalone controls and preserve URL filter state. Audit the whole notes site at phone and desktop widths in both appearances when shared navigation or article styling changes. See [the UX review](docs/notes-ux-review.md) for the design rationale and validation scope.
+
+[STYLE.md](STYLE.md) is the site's UiPack style spec: palette, faces, layouts, writing style and the open design decisions. Grade a page with uipack's tier-1 grader from a uipack checkout: `npm run grade -- check <url> --spec <this repo>/uipack-grade.json`. The latest review is [docs/ui-review-2026-11.md](docs/ui-review-2026-11.md).

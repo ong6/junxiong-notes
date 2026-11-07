@@ -165,8 +165,8 @@ above, figures 2.6rem above and below, index items 1.25–1.6rem of padding with
 Spacing is in rem and not yet on uipack's 8px base unit (for example `.45rem`, `1.15rem`); TODO:
 the owner decides whether to re-base the rhythm on 8px steps or keep it.
 
-The measure is a 44rem column with 1.25rem gutters; figures break out to a 56rem slot
-(`min(56rem, 100vw − 2.5rem)`), so prose keeps a short line while a drawing gets room.
+The measure is a 44rem column with 1.25rem gutters; figures break out to a 60rem (960px) slot
+(`min(60rem, 100vw − 2.5rem)`), so prose keeps a short line while a drawing gets room.
 
 ## Ornaments
 
@@ -210,7 +210,7 @@ scrolls sideways.
 ### Article
 
 `layer-article`, extended. Kept: one text column at the measure, figures breaking out to the
-56rem slot, the title and one-sentence dek as the only hero. Changed:
+60rem slot, the title and one-sentence dek as the only hero. Changed:
 
 - **Header order:** date and reading time, `h1`, dek, category and tags, then the project link
   when the article names one (`project:` frontmatter).
