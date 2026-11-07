@@ -28,7 +28,9 @@ const INK = { light: "#14110d", dark: "#ece7de" };
 const MUTED = { light: "#6b6459", dark: "#9d9488" };
 const FAINT = { light: "#d9d2c5", dark: "#3a352f" };
 const SERIES = {
-	light: ["#2a78d6", "#eb6834", "#1baf7a"],
+	// The light green is the diagrams' green (--fig-accent): #1baf7a was 2.77:1
+	// on the paper, under the 3:1 a mark needs; #0f7a55 is 5.25:1.
+	light: ["#2a78d6", "#eb6834", "#0f7a55"],
 	dark: ["#3987e5", "#d95926", "#199e70"],
 };
 const SERIES_SOFT = {
@@ -173,18 +175,162 @@ function wrapTitle(t, max) {
 	return lines;
 }
 
-async function renderVegaLite(spec, mode) {
+/* ---------- phone drawings of charts ---------- */
+/**
+ * Every chart also gets a phone drawing, laid out for the 350px column a 390px
+ * phone gives the article (lib/rehype-figures.js shows it at 600px and below),
+ * so nothing needs a sideways swipe. The data, marks and colours are the
+ * desktop spec's; only the layout changes:
+ *
+ * - Bar and dot charts with a category axis lose the label column: each
+ *   category's label sits above its bar (or group of bars), so the plot gets
+ *   the whole width, and the value stays at the bar's end.
+ * - Charts with two numeric axes keep their layout at the phone width; point
+ *   labels on the right half of the plot are set right-aligned so they stay
+ *   inside it.
+ * - Legends become one item per line, under the chart.
+ *
+ * A chart whose phone drawing still does not fit (see phoneFits) keeps the
+ * desktop drawing and scrolls sideways, as before.
+ */
+const PHONE = { width: 350, title: 34, subtitle: 48, label: 20, bar: 20, sub: 18, gap: 18 };
+
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const layersOf = (spec) => spec.layer ?? [spec];
+
+/** The category (y) field of a horizontal chart: nominal y, numeric x. */
+function categoryAxis(spec) {
+	for (const layer of [spec, ...(spec.layer ?? [])]) {
+		const enc = layer.encoding ?? {};
+		if (enc.y?.type === "nominal" && enc.y.field) return { y: enc.y, x: enc.x ?? spec.encoding?.x };
+	}
+	return null;
+}
+
+function phoneCategorySpec(spec, mode) {
+	const out = clone(spec);
+	const { y, x } = categoryAxis(out);
+	// "-x" / "x" sorts by the bar's value; the label layer has no x field, so it
+	// names the field to sort by instead.
+	const labelSort = typeof y.sort === "string" && /^-?x$/.test(y.sort) ? { field: x.field, op: "sum", order: y.sort.startsWith("-") ? "descending" : "ascending" } : (y.sort ?? null);
+	const enc = out.encoding ?? {};
+	// A grouped chart (yOffset) draws one bar per series inside each category.
+	const offset = [out, ...(out.layer ?? [])].map((l) => l.encoding?.yOffset).find((o) => o?.field);
+	const data = out.data?.values ?? out.layer?.flatMap((l) => l.data?.values ?? []) ?? [];
+	const groups = offset ? Math.max(1, new Set(data.map((d) => d[offset.field]).filter((v) => v !== undefined)).size) : 1;
+	const barsH = offset ? groups * PHONE.sub : PHONE.bar;
+	const step = PHONE.label + barsH + PHONE.gap;
+	const top = PHONE.label + 2; // where the bars start inside each band
+
+	// Bands with no padding; the label, the bars and a gap share each one.
+	const yScale = { ...(y.scale ?? {}), paddingInner: 0, paddingOuter: 0 };
+	for (const layer of [out, ...(out.layer ?? [])]) {
+		const e = layer.encoding;
+		if (e?.y && e.y.field === y.field) e.y = { ...e.y, axis: null, scale: yScale };
+		if (layer.mark && (layer.mark.type ?? layer.mark) === "bar") {
+			layer.mark = { ...(typeof layer.mark === "object" ? layer.mark : { type: "bar" }), height: offset ? PHONE.sub - 4 : PHONE.bar };
+		}
+	}
+	if (offset) {
+		// Bars of a group sit under the label, one per series.
+		const range = [top, top + barsH];
+		for (const layer of [out, ...(out.layer ?? [])]) {
+			const e = layer.encoding;
+			if (e?.yOffset?.field) e.yOffset = { ...e.yOffset, scale: { ...(e.yOffset.scale ?? {}), range, paddingInner: 0.15 } };
+		}
+	} else {
+		// One bar: centre it below the label, through a pixel offset on every mark
+		// that sits on the category axis (bars, values, dots).
+		const shift = top + PHONE.bar / 2 - step / 2;
+		for (const layer of [out, ...(out.layer ?? [])]) {
+			if (!layer.mark) continue;
+			layer.encoding = { ...(layer.encoding ?? {}), yOffset: { value: shift } };
+		}
+	}
+	// The category label above each band, at the plot's left edge.
+	const labelData = out.data ? undefined : { values: [...new Map(data.filter((d) => d[y.field] !== undefined).map((d) => [d[y.field], d])).values()] };
+	const label = {
+		...(labelData ? { data: labelData } : {}),
+		mark: { type: "text", align: "left", baseline: "top", fontSize: 14, fontWeight: 500, color: INK[mode] },
+		encoding: {
+			// Text sits on the band's centre (or, in a chart with a yOffset field, on
+			// the band's start); the offset moves it to the band's top.
+			yOffset: { value: offset ? 2 : 2 - step / 2 },
+			y: { field: y.field, type: "nominal", sort: labelSort, axis: null, scale: yScale },
+			x: { value: 0 },
+			text: { field: y.field, type: "nominal" },
+		},
+	};
+	const layers = out.layer ?? [{ mark: out.mark, encoding: {} }];
+	if (!out.layer) delete out.mark;
+	out.layer = [...layers, label];
+	// "for: position": with a yOffset the plain step would size each sub-bar instead.
+	out.height = { step, for: "position" };
+	if (enc.y) enc.y = { ...enc.y, axis: null, scale: yScale };
+	return out;
+}
+
+function phoneNumericSpec(spec) {
+	const out = clone(spec);
+	const x = out.encoding?.x;
+	const dom = x?.scale?.domain;
+	if (!out.layer || !Array.isArray(dom)) return out;
+	const mid = (dom[0] + dom[1]) / 2;
+	out.layer = out.layer.flatMap((layer) => {
+		const m = layer.mark;
+		if (typeof m !== "object" || m.type !== "text" || m.align !== "left") return [layer];
+		const right = { ...layer, mark: { ...m, align: "right", dx: -(m.dx ?? 0) }, transform: [...(layer.transform ?? []), { filter: `datum['${x.field}'] > ${mid}` }] };
+		const left = { ...layer, transform: [...(layer.transform ?? []), { filter: `datum['${x.field}'] <= ${mid}` }] };
+		return [left, right];
+	});
+	return out;
+}
+
+function phoneSpec(spec, mode) {
+	const out = categoryAxis(spec) ? phoneCategorySpec(spec, mode) : phoneNumericSpec(spec);
+	delete out.width;
+	return out;
+}
+
+/** A phone drawing must be phone-sized and keep at least 45% of the width for its plot. */
+function phoneFits(view, svg) {
+	const w = Number(svg.match(/<svg[^>]*\swidth="([\d.]+)"/)?.[1] ?? Infinity);
+	return w <= PHONE.width + 1 && view.width() >= PHONE.width * 0.45;
+}
+
+async function renderVegaLite(input, mode, phone = false) {
+	const spec = phone ? phoneSpec(input, mode) : input;
+	const wrap = phone ? PHONE : { title: 88, subtitle: 118 };
 	const title =
 		spec.title && typeof spec.title === "object"
-			? { ...spec.title, text: wrapTitle(spec.title.text, 88), subtitle: wrapTitle(spec.title.subtitle, 118) }
-			: wrapTitle(spec.title, 88);
+			? { ...spec.title, text: wrapTitle(spec.title.text, wrap.title), subtitle: wrapTitle(spec.title.subtitle, wrap.subtitle) }
+			: wrapTitle(spec.title, wrap.title);
+	const config = { ...vlConfig(mode), ...(spec.config ?? {}) };
+	// One legend item per line, so long series names never run off the phone.
+	// The title sits on the plot's left edge (frame "group"), the same edge as the
+	// category labels.
+	if (phone) {
+		config.legend = { ...config.legend, orient: "bottom", direction: "vertical", columns: 1 };
+		config.title = { ...config.title, frame: "group" };
+		// A long axis title starts at the plot's left edge instead of centring, so
+		// it never widens the chart past the plot.
+		config.axisX = { ...config.axisX, titleAnchor: "start", titleAlign: "left" };
+	}
 	const merged = {
-		width: 900,
+		width: phone ? PHONE.width : 900,
 		autosize: { type: "fit", contains: "padding" },
 		...spec,
+		...(phone ? { width: PHONE.width } : {}),
 		...(title ? { title } : {}),
-		config: { ...vlConfig(mode), ...(spec.config ?? {}) },
+		config,
 	};
+	if (phone) {
+		// Legends set on an encoding override the config; make those vertical too.
+		for (const layer of [merged, ...(merged.layer ?? [])]) {
+			const c = layer.encoding?.color;
+			if (c?.legend) c.legend = { ...c.legend, orient: "bottom", direction: "vertical", columns: 1 };
+		}
+	}
 	const vgSpec = compile(merged).spec;
 	const view = new vega.View(vega.parse(vgSpec), { renderer: "none" });
 	const svg = await view.toSVG();
@@ -193,11 +339,13 @@ async function renderVegaLite(spec, mode) {
 	const bars = svg.match(/aria-roledescription="bar"[^>]*/g) ?? [];
 	const flat = bars.filter((b) => /d="M0,0h0v[\d.]+h0Z"/.test(b));
 	if (bars.length && flat.length === bars.length) {
+		if (phone) return null;
 		throw new Error(
 			`Every bar rendered zero-width in "${spec.title?.text ?? spec.title ?? "untitled"}" (${mode}). ` +
 				`The plot area collapsed — usually a title or subtitle too long for the width budget.`,
 		);
 	}
+	if (phone && !phoneFits(view, svg)) return null;
 	return svg;
 }
 
@@ -262,9 +410,17 @@ for (const file of files.filter((f) => f.endsWith(".md") && !f.startsWith("_")))
 			for (const mode of ["light", "dark"]) {
 				const name = `${id}.${mode}.svg`;
 				seen.add(name);
-				if (fs.existsSync(path.join(OUT, name))) { cached++; continue; }
-				fs.writeFileSync(path.join(OUT, name), await renderVegaLite(spec, mode));
-				rendered++;
+				if (fs.existsSync(path.join(OUT, name))) cached++;
+				else { fs.writeFileSync(path.join(OUT, name), await renderVegaLite(spec, mode)); rendered++; }
+				// The phone drawing. A chart with none keeps scrolling on phones.
+				const phone = `${id}.mobile.${mode}.svg`;
+				seen.add(phone);
+				if (fs.existsSync(path.join(OUT, phone))) { cached++; continue; }
+				let svg = null;
+				try { svg = await renderVegaLite(spec, mode, true); }
+				catch (e) { console.warn(`diagrams: phone layout failed: ${e.message.split("\n")[0]}`); }
+				if (svg) { fs.writeFileSync(path.join(OUT, phone), svg); rendered++; }
+				else console.warn(`diagrams: no phone drawing for "${spec.title?.text ?? spec.title ?? id}" (${mode}); it scrolls on phones`);
 			}
 		}
 	}

@@ -56,7 +56,7 @@ I logged 70 recruiter reach-outs: 19 from in-house recruiters and 51 from agenci
    "y":{"field":"route","type":"nominal","sort":["In-house recruiter","Agency recruiter","Applied cold","Applied with a referral"],"title":null},
    "x":{"field":"pct","type":"quantitative","title":"% that reached a screen, test or interview","scale":{"domain":[0,100]},"axis":{"grid":true}}},
  "layer":[
-   {"mark":{"type":"bar"},"encoding":{"color":{"field":"kind","type":"nominal","scale":{"domain":["A recruiter reached out","I applied"],"range":["#1baf7a","#2a78d6"]},"legend":{"orient":"top","title":null}}}},
+   {"mark":{"type":"bar"},"encoding":{"color":{"field":"kind","type":"nominal","scale":{"domain":["A recruiter reached out","I applied"],"range":["#0f7a55","#2a78d6"]},"legend":{"orient":"top","title":null}}}},
    {"mark":{"type":"text","align":"left","dx":8,"fontWeight":600,"fontSize":13},"encoding":{"text":{"field":"label","type":"nominal"}}}]}
 ```
 
@@ -118,7 +118,7 @@ in any rate below.
     "encoding":{
       "y":{"field":"type","type":"nominal","title":null,"sort":["Recruiter screen","Online or written test","Live coding","AI-assisted coding or codebase","Design, case or take-home","Hiring manager or final","Other or unrecorded technical"]},
       "x":{"field":"n","type":"quantitative","stack":"zero","title":"rounds","axis":{"grid":true,"tickMinStep":1}},
-      "color":{"field":"outcome","type":"nominal","scale":{"domain":["Passed","Failed"],"range":["#1baf7a","#eb6834"]},"legend":{"orient":"top","title":null}},
+      "color":{"field":"outcome","type":"nominal","scale":{"domain":["Passed","Failed"],"range":["#0f7a55","#eb6834"]},"legend":{"orient":"top","title":null}},
       "order":{"field":"outcome","sort":"descending"}}},
    {"data":{"values":[
       {"type":"Recruiter screen","total":10,"label":"8 of 10"},
