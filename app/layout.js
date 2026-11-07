@@ -1,5 +1,5 @@
-import Link from "next/link";
 import SiteNavigation from "./site-navigation";
+import SiteTitle from "./site-title";
 import "./globals.css";
 import { AUTHOR_LD, OPEN_GRAPH, SITE, TITLE_SUFFIX } from "../lib/site.mjs";
 
@@ -54,9 +54,7 @@ export default function RootLayout({ children }) {
 				<a className="skip-link" href="#main-content">Skip to content</a>
 				<div className="wrap">
 					<header className="masthead">
-						<p className="site-title">
-							<Link href="/">{SITE.title}</Link>
-						</p>
+						<SiteTitle>{SITE.title}</SiteTitle>
 						<p>{SITE.tagline}</p>
 						<SiteNavigation />
 					</header>

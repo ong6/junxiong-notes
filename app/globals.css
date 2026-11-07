@@ -98,6 +98,9 @@ article h1 { font-size: 2.1rem; line-height: 1.2; letter-spacing: -.02em; margin
 .prose h2 { font-size: 1.45rem; margin: 2.4rem 0 .8rem; letter-spacing: -.01em; line-height: 1.3; }
 .prose h3 { font-size: 1.3rem; margin: 1.9rem 0 .6rem; line-height: 1.35; }
 .prose h2 a, .prose h3 a { color: inherit; text-decoration: none; }
+/* The heading's own link is a standalone control: pad it to a 44px target and
+   pull the padding back out, so the heading keeps its place and rhythm. */
+.prose :is(h2, h3) > a.heading-anchor { display: block; padding: .5rem 0; margin: -.5rem 0; }
 .prose h2 a:hover::after, .prose h3 a:hover::after { content: " #"; color: var(--muted); font-weight: 400; }
 .prose p { margin: 1.15rem 0; }
 .prose ul, .prose ol { padding-left: 1.4rem; }
@@ -157,15 +160,17 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 
 /* ---------- figures: diagrams and charts ---------- */
 /* .fig wraps a <figure> (drawing + caption) and its controls. Only the drawing
-   (.fig-media) breaks out wider than the 44rem text measure: prose wants a short
+   (.fig-media) breaks out wider than the 44rem text measure, to the 960px (60rem)
+   slot docs-figures.md sizes drawings for: prose wants a short
    line, a diagram wants room. One width for every drawing, so charts and
    diagrams share a left and right edge down the page. Caption and controls stay
    on the text column and share its edges. */
-.fig { --fig-w: min(56rem, calc(100vw - 2.5rem)); margin: 2.6rem 0; }
+.fig { --fig-w: min(60rem, calc(100vw - 2.5rem)); margin: 2.6rem 0; }
 .fig figure { margin: 0; }
 .fig-media { width: var(--fig-w); margin-left: calc(50% - var(--fig-w) / 2); }
 /* Fill the slot exactly. Natural widths sit in an 830-1140 band, so this scales
-   by 0.79-1.08 - close enough that type stays even across figures. */
+   by 0.84-1.16 - close enough that type stays even across figures, and a 13px
+   label in a 1080 viewBox lands at 11.6px, above the 11px figure floor. */
 .fig svg { width: 100%; height: auto; display: block; }
 
 .fig figcaption {
@@ -213,7 +218,7 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem;
 @media (max-width: 600px) {
 	.fig-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
 	.fig-scroll svg { width: var(--fig-phone-w, 100%); max-width: none; }
-	.fig .fig-swipe { display: block; margin-top: .5rem; font: 700 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+	.fig .fig-swipe { display: block; margin-top: .5rem; font: 700 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 	.fig[data-scrolls="false"] .fig-swipe { display: none; }
 }
 
@@ -273,7 +278,7 @@ main:focus { outline: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .skip-link { position: absolute; left: 1rem; top: -100px; padding: .7rem 1rem; background: var(--bg); z-index: 10; }
 .skip-link:focus { top: 1rem; }
-.masthead .site-title { font-family: var(--serif); font-size: 1.6rem; line-height: 1.4; color: var(--text); }
+.masthead .site-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; line-height: 1.4; color: var(--text); }
 .masthead .site-title a { display: inline-flex; align-items: center; min-height: 44px; }
 .masthead-navigation { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .8rem; }
 /* Nav and footer links: each target is the text plus .55rem a side (always
@@ -353,6 +358,12 @@ footer .links { margin-left: -.55rem; gap: 0; }
 	.category-filters { column-gap: 1.1rem; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
 	.category-filters::-webkit-scrollbar { display: none; }
 	.category-filters a { flex: none; white-space: nowrap; font-size: .85rem; }
+	/* The row scrolls, so it clips anything outside it: draw the focus ring
+	   inside each tab, with a little side padding so it clears the label. The
+	   gap and the row's offset absorb the padding, so labels do not move. */
+	.category-filters { column-gap: .6rem; margin-left: -.25rem; }
+	.category-filters a { padding-inline: .25rem; }
+	.category-filters a:focus-visible { outline-offset: -2px; border-radius: 4px; }
 	.topic-links { grid-template-columns: repeat(2,minmax(0,1fr)); }
 	.topic-panel { padding: .85rem; }
 	.post-list :is(h2, h3) { font-size: 1.35rem; }
@@ -399,7 +410,7 @@ footer .links { margin-left: -.55rem; gap: 0; }
 .prose .uipack-cluster .uipack-cluster__label { font: 600 .9rem/1.4 var(--sans); letter-spacing: 0; text-transform: none; color: var(--muted); }
 .prose .uipack-cluster .uipack-cluster__count { font: .8rem/1.4 var(--sans); color: var(--muted); }
 .prose .uipack-notecard.uipack-notecard { gap: .3rem; padding: .85rem 1rem .8rem; background: var(--bg); border: 1px solid var(--faint); border-radius: 6px; }
-.prose .uipack-notecard .uipack-notecard__kicker { font: 600 .72rem/1.4 var(--sans); letter-spacing: .06em; color: var(--muted); }
+.prose .uipack-notecard .uipack-notecard__kicker { font: 600 .75rem/1.4 var(--sans); letter-spacing: .06em; color: var(--muted); }
 .prose .uipack-notecard .uipack-notecard__title { font: 700 1.05rem/1.35 var(--serif); letter-spacing: -.01em; color: var(--text); }
 .prose .uipack-notecard .uipack-notecard__desc { font: .92rem/1.5 var(--serif); color: var(--muted); }
 .prose .uipack-notecard .uipack-notecard__meta { font: .75rem/1.4 var(--sans); letter-spacing: .02em; color: var(--muted); }
