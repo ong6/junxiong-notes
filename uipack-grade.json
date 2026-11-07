@@ -1,0 +1,15 @@
+{
+  "name": "notes.junxiong.dev",
+  "notes": "Tier-1 harness for this site (uipack docs/grading/tier-1.md). Run from a uipack checkout: npm run grade -- check <url> --spec <this repo>/uipack-grade.json. Faces: STYLE.md names system stacks (Iowan Old Style, ui-sans-serif, ui-monospace); the grader cannot map a CSS generic to the platform face it draws, so the faces macOS draws for them (.SF NS for ui-sans-serif and system-ui, SF Mono and Menlo for ui-monospace) are listed here. Whether to self-host faces instead is an open owner decision in STYLE.md. Text floors: the core 11px floor inside figures and HTML charts, 12px elsewhere.",
+  "styleSpec": "STYLE.md",
+  "faces": ["Iowan Old Style", "ui-sans-serif", "ui-monospace", ".SF NS", "SF Mono", "Menlo"],
+  "themes": {
+    "light": { "colorScheme": "light" },
+    "dark": { "colorScheme": "dark" }
+  },
+  "ready": { "selector": "main", "settleMs": 400 },
+  "textFloors": [
+    { "selector": "svg", "px": 11, "why": "figure and Vega-Lite chart text floor (uipack tier-1, docs/system/style.md)" },
+    { "selector": ".uipack-span, .uipack-stack", "px": 11, "why": "HTML chart labels (uipack docs/charts.md)" }
+  ]
+}
