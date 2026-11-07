@@ -68,6 +68,9 @@ export async function generateMetadata({ params }) {
 	};
 }
 
+// Closes the contents box on phones as soon as it is parsed (no flash, no shift).
+const TOC_SCRIPT = `if(matchMedia("(max-width: 600px)").matches)document.currentScript.previousElementSibling.open=false`;
+
 function fmt(d) {
 	if (!d || Number.isNaN(Date.parse(`${d}T00:00:00Z`))) return "";
 	return new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", {
@@ -155,14 +158,19 @@ export default async function Article({ params }) {
 				    map (a ```stack with sectionHeads) needs no second contents list. */}
 				{toc.length > 2 && meta.toc !== false ? (
 					<nav className="toc" aria-label="Table of contents">
-						<p>Contents</p>
-						<ul>
-							{toc.map((h) => (
-								<li key={h.id} className={`d${h.depth}`}>
-									<a href={`#${h.id}`}>{h.text}</a>
-								</li>
-							))}
-						</ul>
+						{/* Open on desktop; the script closes it on phones before first
+						    paint, so the article's first paragraph is in the first screen. */}
+						<details open suppressHydrationWarning>
+							<summary>Contents <span className="toc-count">{toc.length}</span></summary>
+							<ul>
+								{toc.map((h) => (
+									<li key={h.id} className={`d${h.depth}`}>
+										<a href={`#${h.id}`}>{h.text}</a>
+									</li>
+								))}
+							</ul>
+						</details>
+						<script dangerouslySetInnerHTML={{ __html: TOC_SCRIPT }} />
 					</nav>
 				) : null}
 

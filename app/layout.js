@@ -1,5 +1,5 @@
 import SiteNavigation from "./site-navigation";
-import SiteTitle from "./site-title";
+import SiteTitle, { SiteTagline } from "./site-title";
 import "./globals.css";
 import { AUTHOR_LD, OPEN_GRAPH, SITE, TITLE_SUFFIX } from "../lib/site.mjs";
 
@@ -55,7 +55,7 @@ export default function RootLayout({ children }) {
 				<div className="wrap">
 					<header className="masthead">
 						<SiteTitle>{SITE.title}</SiteTitle>
-						<p>{SITE.tagline}</p>
+						<SiteTagline>{SITE.tagline}</SiteTagline>
 						<SiteNavigation />
 					</header>
 					{children}
