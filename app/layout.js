@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
 							<a href="/feed.xml">RSS</a>
 							<a href="/llms.txt">llms.txt</a>
 							<a href="/llms-full.txt">llms-full.txt</a>
-							<a href={SITE.github}>GitHub</a>
+							<a href={SITE.github}>GitHub <span aria-hidden="true">↗</span></a>
 						</div>
 						<div>
 							Written by <a href={SITE.authorUrl}>{SITE.author}</a>. Personal notes —
