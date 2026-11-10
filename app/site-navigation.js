@@ -18,6 +18,9 @@ export default function SiteNavigation() {
 			document.documentElement.dataset.theme = isDark ? "dark" : "light";
 		};
 		sync();
+		// Intentional post-hydration flag: the server render cannot know the
+		// stored or OS appearance, so the toggle stays disabled until here.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setReady(true);
 		media.addEventListener("change", sync);
 		return () => media.removeEventListener("change", sync);

@@ -1,17 +1,3 @@
-import fs from "node:fs";
-
-// uipack is pinned to a git commit but keeps version 0.1.0, and webpack's
-// persistent cache (which Vercel restores between deploys) treats node_modules
-// as unchanged while their package versions match. Without this, a re-pin can
-// ship the previous commit's uipack/charts.css. Key the cache on the commit.
-const uipackCommit = (() => {
-	try {
-		return JSON.parse(fs.readFileSync("package-lock.json", "utf8")).packages["node_modules/uipack"].resolved.split("#")[1];
-	} catch {
-		return "unknown";
-	}
-})();
-
 // Every page is static and self-hosted: no analytics, embeds, webfonts or
 // third-party images. 'unsafe-inline' scripts cover Next's inline payload and
 // the theme, TOC and JSON-LD scripts (a static site has no per-request nonce);
@@ -41,12 +27,10 @@ const SECURITY_HEADERS = [
 const nextConfig = {
 	reactStrictMode: true,
 	poweredByHeader: false,
-	webpack(config) {
-		if (config.cache && typeof config.cache === "object") {
-			config.cache.version = `${config.cache.version ?? ""}|uipack@${uipackCommit}`;
-		}
-		return config;
-	},
+	// Builds use Turbopack, whose build cache is keyed on file content, so a
+	// uipack re-pin needs no cache-version hook (webpack's cache did).
+	// AGENTS.md is hand-written; stop `next dev` adding its managed block.
+	agentRules: false,
 	async headers() {
 		return [
 			// First, so the per-path rules below win if they ever set the same key
