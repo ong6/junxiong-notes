@@ -1,7 +1,7 @@
 import SiteNavigation from "./site-navigation";
 import SiteTitle, { SiteTagline } from "./site-title";
 import "./globals.css";
-import { AUTHOR_LD, OPEN_GRAPH, SITE, TITLE_SUFFIX } from "../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE, TITLE_SUFFIX, jsonLdHtml } from "../lib/site.mjs";
 
 export const metadata = {
 	metadataBase: new URL(SITE.url),
@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
 				<link rel="describedby" type="text/markdown" href="/llms.txt" />
 				<script
 					type="application/ld+json"
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+					dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
 				/>
 			</head>
 			<body>

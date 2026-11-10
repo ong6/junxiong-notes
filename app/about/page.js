@@ -1,4 +1,4 @@
-import { AUTHOR_LD, OPEN_GRAPH, SITE } from "../../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE, jsonLdHtml } from "../../lib/site.mjs";
 
 // The page's own wording: the tagline's subjects, "dated" and "revised in place", and the agent section.
 const description =
@@ -29,7 +29,7 @@ const profileLd = {
 export default function About() {
 	return (
 		<main id="main-content" tabIndex={-1}>
-			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(profileLd) }} />
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(profileLd) }} />
 			<article>
 				<header>
 					<h1>About these notes</h1>

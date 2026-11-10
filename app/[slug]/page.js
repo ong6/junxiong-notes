@@ -15,7 +15,7 @@ import {
 	relatedFor,
 } from "../../lib/articles";
 import { OG_SIZE } from "../../lib/og-card";
-import { AUTHOR_LD, OPEN_GRAPH, SITE, pageTitle } from "../../lib/site.mjs";
+import { AUTHOR_LD, OPEN_GRAPH, SITE, pageTitle, jsonLdHtml } from "../../lib/site.mjs";
 
 // Only published articles exist. An unknown slug gets the prerendered 404 page
 // (full layout, lang, links back) instead of an empty client-rendered shell.
@@ -129,7 +129,7 @@ export default async function Article({ params }) {
 		<main id="main-content" tabIndex={-1}>
 			<script
 				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }}
 			/>
 			<article>
 				<header>
