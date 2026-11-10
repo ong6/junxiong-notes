@@ -20,6 +20,7 @@
   "dependencies": {
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
+    "hast-util-from-html-isomorphic": "^2.0.0",
     "next": "^15.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -30,6 +31,7 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
+    "uipack": "github:ong6/uipack#3886f0d",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },
@@ -38,9 +40,7 @@
     "@terrastruct/d2": "^0.1.33",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.4",
-    "hast-util-from-html-isomorphic": "^2.0.0",
     "tsx": "^4.23.13",
-    "uipack": "github:ong6/uipack#3886f0d",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3",
     "yaml": "^2.9.1"
