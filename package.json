@@ -31,7 +31,7 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
-    "uipack": "github:ong6/uipack#3886f0d",
+    "uipack": "https://github.com/ong6/uipack/releases/download/v0.4.0/uipack-0.4.0.tgz",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },

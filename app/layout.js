@@ -39,7 +39,8 @@ export default function RootLayout({ children }) {
 		author: AUTHOR_LD,
 	};
 	return (
-		<html lang="en" suppressHydrationWarning>
+		// uipack 0.3+ fades charts and note cards in on scroll; the site keeps them still.
+		<html lang="en" data-uipack-entrance="off" suppressHydrationWarning>
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
 				<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />

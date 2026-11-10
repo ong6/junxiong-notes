@@ -3,9 +3,12 @@
 // Colours mirror app/globals.css and the chart palette in
 // scripts/render-diagrams.mjs, so diagrams and charts read as one set.
 import type { ReactNode } from "react";
-import type { StaticOptions } from "uipack/static";
+import type { LegacyPalette } from "uipack/static";
 
-export const THEMES: Record<"light" | "dark", NonNullable<StaticOptions["theme"]>> = {
+// uipack/static inlines every var(--uipack-<key>) from this palette and paints
+// an unknown key as currentColor. Chip tints read var(--uipack-chip-tint) since
+// 0.3.0, so it is set here to the 0.55 the chips were drawn with before.
+export const THEMES: Record<"light" | "dark", LegacyPalette & { "chip-tint": string }> = {
   light: {
     base: "light",
     fg: "#14110d",
@@ -21,6 +24,7 @@ export const THEMES: Record<"light" | "dark", NonNullable<StaticOptions["theme"]
     "token-request": "#2a78d6",
     "token-response": "#0f7a55",
     "token-change": "#eb6834",
+    "chip-tint": "0.55",
     sans: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif",
     mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   },
@@ -37,6 +41,7 @@ export const THEMES: Record<"light" | "dark", NonNullable<StaticOptions["theme"]
     "token-request": "#3987e5",
     "token-response": "#199e70",
     "token-change": "#d95926",
+    "chip-tint": "0.55",
     sans: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif",
     mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   },

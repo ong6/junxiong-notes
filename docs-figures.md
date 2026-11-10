@@ -40,7 +40,7 @@ from `./_shared`, drawn with uipack parts on an 8px grid. `npm run diagrams` ren
 `uipack/static` into `content/diagrams/<hash>.{light,dark}.svg` with the site palette from
 `_shared.tsx` inlined, motion on, no frame and no painted canvas, so the article surface shows
 through and the figcaption stays the caption. Start each file with the pragma line
-`/* @jsxRuntime automatic @jsxImportSource react */` (the package is CommonJS, tsx needs it).
+`/* @jsxRuntime automatic @jsxImportSource react */` (tsx compiles the figures without a tsconfig and needs it).
 
 Rules that carry over from the D2 days, now enforced by the render script: **viewBox 900–1150
 wide and under 800 tall**, or the build fails. Labels 14px, subs 11px mono, so nothing shrinks

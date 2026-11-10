@@ -6,7 +6,7 @@ pages: [landing, article]
 layouts: { landing: custom, article: layer-article }
 components: { diagrams: blueprint }
 status: draft
-uipack: 3886f0d
+uipack: 0.4.0
 values: none
 ---
 
@@ -280,4 +280,4 @@ the nav label "Main site ↗" points back to junxiong.dev.
 - Unused roles (raised surface, third ink, soft line, accent-tone and inverted sets, signed data,
   alerts, deck faces, buttons): set when a page first needs one.
 - Registry: add this spec to uipack's `siteRegistry` (`playground/docs-manifest.ts`) as
-  `junxiong-notes:STYLE.md`, looks `diagrams: blueprint`, pin `3886f0d`; not done from this repo.
+  `junxiong-notes:STYLE.md`, looks `diagrams: blueprint`, pin `0.4.0`; not done from this repo.
