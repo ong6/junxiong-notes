@@ -1,6 +1,6 @@
 # junxiong-notes — agent guide
 
-Static Next.js 15 blog (app router, every route prerendered) for notes.junxiong.dev. Markdown in, HTML,
+Static Next.js 16 blog (app router, every route prerendered) for notes.junxiong.dev. Markdown in, HTML,
 `/raw/*.md`, `llms.txt` and RSS out. Pushing `main` deploys to production on Vercel; CI runs on every push.
 
 ## Commands
