@@ -31,7 +31,7 @@ export default function ArticleContent({ html }) {
 		return () => media.removeEventListener("change", sync);
 	}, [html]);
 	useEffect(() => {
-		// On phones a wide figure scrolls sideways inside .fig-scroll. Only then is it
+		// A drawing wider than its slot (a phone, a narrow window) scrolls sideways inside .fig-scroll. Only then is it
 		// a keyboard stop and a named region; on desktop it doesn't scroll, so it isn't.
 		if (typeof ResizeObserver === "undefined") return;
 		const mark = (box) => {

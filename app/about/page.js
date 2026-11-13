@@ -8,8 +8,8 @@ export const metadata = {
 	title: "About",
 	description,
 	alternates: { canonical: "/about" },
-	openGraph: { ...OPEN_GRAPH, type: "website", url: "/about", title: "About these notes", description },
-	twitter: { card: "summary_large_image", title: "About these notes", description },
+	openGraph: { ...OPEN_GRAPH, type: "website", url: "/about", title: "About", description },
+	twitter: { card: "summary_large_image", title: "About", description },
 };
 
 // The page about the author and the notes, as a ProfilePage whose main entity is the same Person
@@ -19,7 +19,7 @@ const profileLd = {
 	"@type": "ProfilePage",
 	"@id": `${SITE.url}/about#profilepage`,
 	url: `${SITE.url}/about`,
-	name: "About these notes",
+	name: "About",
 	description,
 	inLanguage: "en",
 	isPartOf: { "@id": `${SITE.url}#blog` },
@@ -32,7 +32,7 @@ export default function About() {
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(profileLd) }} />
 			<article>
 				<header>
-					<h1>About these notes</h1>
+					<h1>About</h1>
 					<p className="dek">{SITE.tagline}</p>
 				</header>
 				<div className="prose">

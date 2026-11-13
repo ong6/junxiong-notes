@@ -6,7 +6,7 @@ pages: [landing, article]
 layouts: { landing: custom, article: layer-article }
 components: { diagrams: blueprint }
 status: draft
-uipack: 0.5.0
+uipack: 0.6.0
 values: none
 ---
 
@@ -223,6 +223,11 @@ index is prerendered whole (tabs, count, Topics, list), so nothing is added abov
 the script arrives. **Theme:** the reader's last choice (`localStorage`, `notes-appearance`),
 then the system's setting, followed live.
 
+**One name per page.** The nav label, the `<title>`, the `h1` and the links to a page say the same
+words, as on junxiong.dev: "Notes" (the index; its `h1` and title are the site's name, which ends
+in it, and links back say "All notes"), "About", "Page not found". The product is "UiPack"; the
+package and its code are `uipack`.
+
 `npm run test:e2e` (`e2e/shell.spec.mjs`, after a build) holds these and the floors above at 1920,
 1440 and 390, light and dark.
 
@@ -265,8 +270,8 @@ scrolls sideways.
   contents box's card language.
 - **Figures** may not lead the page; they sit where the prose refers to them, with a caption and a
   separate source line. On phones a figure shows its authored narrow drawing, or scrolls inside
-  its frame under a swipe hint; a drawing with no narrow form does the same at any width too
-  narrow for its 11px floor. Every Vega-Lite chart has a phone drawing made by
+  its frame under a swipe hint. Between a phone and the width its 11px floor needs (a tablet, a
+  narrow window) every drawing keeps that width and scrolls inside its frame the same way. Every Vega-Lite chart has a phone drawing made by
   `scripts/render-diagrams.mjs`: category labels above the bars, values at the bar ends, the
   legend one item per line.
 - **End matter:** the dated revision line, Related notes (the index's list, four items), the
@@ -320,4 +325,4 @@ the nav label "Main site ↗" points back to junxiong.dev.
 - Unused roles (raised surface, third ink, soft line, accent-tone and inverted sets, signed data,
   alerts, deck faces, buttons): set when a page first needs one.
 - Registry: add this spec to uipack's `siteRegistry` (`playground/docs-manifest.ts`) as
-  `junxiong-notes:STYLE.md`, looks `diagrams: blueprint`, pin `0.5.0`; not done from this repo.
+  `junxiong-notes:STYLE.md`, looks `diagrams: blueprint`, pin `0.6.0`; not done from this repo.

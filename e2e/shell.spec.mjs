@@ -204,12 +204,36 @@ test.describe("one name per page", () => {
 	test("the index is Notes: its nav label, the site title's link and the way back from a missing page", async ({ page }) => {
 		await page.goto("/no-such-page");
 		await expect(page.locator("main a[href='/']")).toHaveText("All notes");
+		await expect(page.locator("h1")).toHaveText("Page not found");
+		await expect(page).toHaveTitle(/^Page not found — /);
 		await expect(page.locator(".masthead nav a[href='/']")).toHaveText("Notes");
 		await page.goto("/");
 		await expect(page).toHaveTitle("Ong Jun Xiong — Notes");
 		await expect(page.locator("h1")).toHaveText("Ong Jun Xiong — Notes");
 		await expect(page.locator(".category-filters a").first()).toContainText("All notes");
 		await expect(page.locator(".masthead nav a[aria-current='page']")).toHaveText("Notes");
+	});
+
+	test("About is About: the nav label, the title and the h1", async ({ page }) => {
+		await page.goto("/about");
+		await expect(page.locator(".masthead nav a[aria-current='page']")).toHaveText("About");
+		await expect(page.locator("h1")).toHaveText("About");
+		await expect(page).toHaveTitle(/^About — /);
+	});
+
+	test("the product is UiPack wherever an article names it in words", async ({ page }) => {
+		await page.goto("/");
+		const paths = await page.locator(".post-list h2 a").evaluateAll((links) => links.map((a) => a.getAttribute("href")));
+		for (const path of paths) {
+			await page.goto(path);
+			// Words, not code: the package, its imports and its class names stay `uipack`.
+			const words = await page.evaluate(() => {
+				const main = document.querySelector("main").cloneNode(true);
+				main.querySelectorAll("code, pre, svg, script, style, [class*='uipack-']").forEach((el) => el.remove());
+				return main.textContent;
+			});
+			expect(words, path).not.toMatch(/\b(uipack|Uipack|UIPack|UI Pack|Ui Pack)\b/);
+		}
 	});
 
 	test("the shell never misspells UiPack", async ({ page }) => {
@@ -376,6 +400,28 @@ test.describe("phones: 44px targets, no sideways scroll, charts that can be read
 					return out;
 				});
 				expect(small, path).toEqual([]);
+			}
+			await context.close();
+		});
+
+	for (const width of [768, 1024])
+		test(`${width}px: no drawing's labels are under 11px (it scrolls in its frame) and no page scrolls sideways`, async ({ browser }) => {
+			const { context, page } = await open(browser, width);
+			for (const path of await articlePaths(page)) {
+				await page.goto(path);
+				const found = await page.evaluate(() => {
+					const small = [];
+					for (const svg of document.querySelectorAll(".fig svg")) {
+						const drawn = svg.getBoundingClientRect().width;
+						const natural = svg.viewBox.baseVal.width;
+						if (!drawn || !natural) continue;
+						const sizes = [...svg.querySelectorAll("text")].filter((t) => t.textContent.trim() && t.getBoundingClientRect().width).map((t) => (parseFloat(getComputedStyle(t).fontSize) * drawn) / natural);
+						if (sizes.length && Math.min(...sizes) < 10.95) small.push(Math.min(...sizes).toFixed(1));
+					}
+					return { small, page: [document.documentElement.scrollWidth, innerWidth] };
+				});
+				expect(found.small, path).toEqual([]);
+				expect(found.page[0], path).toBeLessThanOrEqual(found.page[1]);
 			}
 			await context.close();
 		});

@@ -246,18 +246,20 @@ footer .links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .5rem;
 @media (max-width: 600px) { .fig-desktop { display: none; } }
 @media not all and (max-width: 600px) { .fig-mobile { display: none; } }
 
-/* A wide drawing without a phone composition never shrinks its labels under
-   11px: where its slot is narrower than the width that needs (--fig-floor-w, set
-   per figure by lib/rehype-figures.js), on a phone or a narrow window, it keeps
-   that width and scrolls sideways inside its own box, under a swipe hint. */
+/* A desktop drawing never shrinks its labels under 11px: where its slot is narrower
+   than the width that needs (--fig-floor-w, set per figure by lib/rehype-figures.js),
+   on a tablet or a narrow window, it keeps that width and scrolls sideways inside its
+   own box, under a swipe hint. On a phone a figure shows its phone composition, which
+   fits; one without a composition scrolls there too. */
 .fig-swipe { display: none; }
 .fig-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
 .fig-scroll svg { min-width: var(--fig-floor-w, 0px); }
+.fig-scroll .fig-mobile svg { min-width: 0; }
 .fig .fig-swipe { margin-top: .5rem; font: 700 12px/var(--leading-label) var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .fig[data-scrolls="true"] .fig-swipe { display: block; }
 @media (max-width: 600px) {
 	/* Shown before the script has measured the box, hidden if there is nothing to swipe to. */
-	.fig .fig-swipe { display: block; }
+	.fig:not(.fig-has-mobile) .fig-swipe { display: block; }
 	.fig[data-scrolls="false"] .fig-swipe { display: none; }
 }
 
