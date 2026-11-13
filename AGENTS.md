@@ -6,6 +6,8 @@ Static Next.js 16 blog (app router, every route prerendered) for notes.junxiong.
 ## Commands
 - `npm run dev` — renders figures, writes agent files, serves :3000
 - `npm run verify` — `npm test` + `npm run links` + `npm run lint`; run before every commit
+- `npm run test:e2e` — Playwright (Chromium) against the production build, so build first; the shell and
+  article-template floors in `e2e/shell.spec.mjs` (first run: `npx playwright install chromium`)
 - `npm run build` — prebuild (link check, `render-diagrams`, `generate-agent-files`) then `next build`
 - `npm run diagrams` — re-render figures only; `npm run logos` — fetch logos for new companies (network)
 
@@ -15,7 +17,7 @@ Static Next.js 16 blog (app router, every route prerendered) for notes.junxiong.
 - `content/figures/<name>.tsx` — uipack figure sources; palette in `_shared.tsx`
 - `content/diagrams/` — GENERATED, committed render output (SVG/HTML keyed by fence hash)
 - `content/data/` — YAML for the ```` ```span ```` / ```` ```stack ```` figures; `scripts/` build-time renderers
-- `public/logos/` — committed company logos; `test/` — `node --test` suites; `next.config.mjs` — headers incl. CSP
+- `public/logos/` — committed company logos; `test/` — `node --test` suites; `e2e/` — browser tests; `next.config.mjs` — headers incl. CSP
 
 ## Recipes (files to touch)
 - Publish an article: `content/articles/<slug>.md` (frontmatter in README.md "Writing", body starts at `##`) → verify, build
@@ -41,4 +43,4 @@ Static Next.js 16 blog (app router, every route prerendered) for notes.junxiong.
 
 ## Verify loop
 `npm run verify` → `npm run build` → `git status` shows only intended changes (no stray `content/diagrams` churn)
-→ for visual or header changes, `npx next start` and check the touched pages in light and dark with no console errors.
+→ for visual or header changes, `npm run test:e2e`, then `npx next start` and check the touched pages in light and dark with no console errors.

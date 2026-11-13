@@ -5,12 +5,16 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { PostList, filterUrl } from "./post-list";
 
+/** The browser with the address's filters. Reading them suspends on the prerendered page. */
 export default function ArticleBrowser({ posts }) {
+	const params = useSearchParams();
+	return <ArticleBrowserView posts={posts} category={params.get("category") ?? ""} tag={params.get("tag") ?? ""} />;
+}
+
+/** The tabs, the count, Topics and the list for one category and topic (none: every note). */
+export function ArticleBrowserView({ posts, category = "", tag = "" }) {
 	const topicPicker = useRef(null);
 	const categoryNav = useRef(null);
-	const params = useSearchParams();
-	const category = params.get("category") ?? "";
-	const tag = params.get("tag") ?? "";
 	const categories = [...new Set(posts.map((post) => post.category))].sort();
 	const categoryPosts = posts.filter((post) => !category || post.category === category);
 	const tags = [...new Set(categoryPosts.flatMap((post) => post.tags))].sort();

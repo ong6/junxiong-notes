@@ -9,7 +9,7 @@ export default function NotFound() {
 				<header>
 					<h1>Not found</h1>
 					<p className="dek">
-						That page does not exist. <Link href="/">All articles</Link>.
+						That page does not exist. <Link href="/">All notes</Link>.
 					</p>
 				</header>
 			</article>

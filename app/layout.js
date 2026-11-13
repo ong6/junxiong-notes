@@ -22,6 +22,12 @@ export const metadata = {
 	robots: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
 };
 
+// The page's ground and colour scheme, inline in the document so they arrive with its
+// first bytes, before globals.css: no frame is white on a dark page while the
+// stylesheet loads. Same selectors and values as the --bg tokens in globals.css
+// (e2e/shell.spec.mjs fails if they drift).
+const GROUND_STYLE = `html{background:#fffdf9;color-scheme:light}@media (prefers-color-scheme:dark){html:not([data-theme="light"]){background:#12110f;color-scheme:dark}}html[data-theme="dark"]{background:#12110f;color-scheme:dark}`;
+
 // Runs before first paint: apply a saved appearance choice (written by the
 // toggle in site-navigation.js) so a stored dark choice never flashes light.
 // With no saved choice, CSS follows the OS until the toggle syncs.
@@ -42,6 +48,7 @@ export default function RootLayout({ children }) {
 		// uipack 0.3+ fades charts and note cards in on scroll; the site keeps them still.
 		<html lang="en" data-uipack-entrance="off" suppressHydrationWarning>
 			<head>
+				<style dangerouslySetInnerHTML={{ __html: GROUND_STYLE }} />
 				<script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
 				<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
 				{/* The agent index that covers every page here (llmstxt.org link relations). */}

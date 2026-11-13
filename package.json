@@ -15,7 +15,8 @@
     "diagrams": "node scripts/render-diagrams.mjs",
     "logos": "node scripts/fetch-logos.mjs",
     "test": "node --test test/*.test.mjs",
-    "verify": "npm test && npm run links && npm run lint"
+    "verify": "npm test && npm run links && npm run lint",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "github-slugger": "^2.0.0",
@@ -36,6 +37,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@terrastruct/d2": "^0.1.33",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.6",

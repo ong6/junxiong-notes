@@ -95,9 +95,9 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-display-tracking` | `-0.02em` (article `h1`; `h2` and index titles `-0.01em`) | `-0.02em` |
 | `--ui-display-case` | `none` | `none` |
 | `--ui-label-tracking` | `0.02em` (`.meta`) | `0.02em` |
-| `--ui-radius` | `6px` (contents box, code blocks, tables, project link, note clusters) | `6px` |
-| `--ui-radius-sm` | `4px` (topic links) | `4px` |
-| `--ui-radius-xs` | `3px` (inline code) | `3px` |
+| `--ui-radius` | `6px` (`--radius`: every frame: contents box, code blocks, tables, project link, note clusters, panels, chips) | `6px` |
+| `--ui-radius-sm` | `4px` (`--radius-sm`: a mark inside a line or a panel: inline code, topic links, the focus ring) | `4px` |
+| `--ui-radius-xs` | TODO: unused since inline code took the small radius; set if a part ever needs a third | TODO: as light |
 | `--ui-radius-pill` | `50%` (the appearance toggle) | `50%` |
 | `--ui-stroke` | TODO: figures inherit uipack's stroke; the site sets none | TODO: as light |
 | `--ui-rule-width` | `1px` | `1px` |
@@ -156,7 +156,18 @@ on the code ground; they are not contract roles and live only in `app/globals.cs
   the system stacks and accept that the serif differs by platform.
 - **Steps.** A 1.2 ratio over the body: `h3` 1.425rem, `h2` 1.71rem, article `h1` 2.1rem (under
   600px, over the 18px body: 1.35 / 1.62 / 1.95rem). Dek 1.12rem, index title 1.45rem (1.35rem
-  under 600px). Meta and captions .8–.86rem sans, table text .875rem.
+  under 600px).
+- **Sans sizes.** Four, as variables in `app/globals.css`: micro .75rem (caps kickers, tab
+  counts), small .8rem (meta, credits, counts, notes), label .875rem (navigation, controls,
+  captions, tables, the contents box, the footer) and the tagline's .95rem.
+- **Leading.** Four line heights, as variables: display 1.25 (`--leading-display`: titles and
+  headings), label 1.4 (`--leading-label`: navigation, meta, controls, the contents box), text 1.6
+  (`--leading-text`: the dek, captions, tables, code, notes, the footer) and prose 1.7
+  (`--leading-prose`: the article body). uipack's charts and article parts keep their own.
+- **Tracking.** −0.02em on the article `h1`, −0.01em on every other heading and title.
+- **One spec per role.** A role (page title, dek, meta, caption, table cell, contents link…) is
+  set one way on every page; `e2e/shell.spec.mjs` holds the roles, the four line heights and the
+  radii.
 - **Preload.** None (no web fonts).
 
 ## Density and rhythm
@@ -166,6 +177,9 @@ A loose, bookish rhythm on uipack's 8px base unit: 19px body at 1.7 line height,
 2rem on phones), figures 2.5rem above and below, index items 1.25–1.5rem of padding with a rule
 between, panels 1rem by 1.5rem of padding. Every margin and padding is a multiple of 8px; 4px
 (.25rem) and 12px (.75rem) appear only inside a part (a cell, a caption rule, a label gap).
+
+Corners follow one rule: a frame takes 6px (`--radius`), a mark inside a line or a panel 4px
+(`--radius-sm`), and the appearance toggle's hover disc is a circle.
 
 The measure is a 44rem column with 1.25rem gutters; figures break out to a 60rem (960px) slot
 (`min(60rem, 100vw − 2.5rem)`), so prose keeps a short line while a drawing gets room.
@@ -179,7 +193,7 @@ Almost none, on purpose. Painted today:
 | Backdrop, canvas pattern, grain, glow | None |
 | Eyebrow marker, section index | None (no eyebrows) |
 | Section rule | None; the masthead and footer carry a 1px `--faint` rule |
-| Frames | 1px `--faint` border, 6px radius, no shadow: the contents box, code blocks, tables, the project link and note clusters |
+| Frames | 1px `--faint` border, the 6px frame radius, no shadow: the contents box, code blocks, tables, the project link and note clusters |
 | Nav | Not sticky, no fill; current page underlined in ink |
 | Primary button, closing band, stamp | None |
 
@@ -193,6 +207,24 @@ TODO: the `--ui-perf`, `--ui-card-*`, `--ui-num-*`, `--ui-quote-*`, `--ui-cell-*
 Both layouts keep the floors: one column at 390px, no page overflow (wide tables and figures
 scroll in their own box), 44px touch targets on standalone controls, a skip link and a visible
 2px accent focus ring.
+
+**One header.** The masthead, the content and the footer share one column on every page
+([layout floor 8](https://github.com/ong6/uipack/blob/main/docs/system/layout/README.md#floors-what-holds-on-every-site)):
+the site title, the tagline and the first nav word start on the column's start edge, and the
+appearance toggle's icon ends on its end edge (its 44px target reaches into the gutter by the space
+around the icon, as a nav link's padding does). The scrollbar's gutter is kept on a page that does
+not scroll, so the column is at the same x on every page. The toggle shows "on" in the accent,
+read from the theme, not from the script.
+
+**Page changes.** The document carries its ground and colour scheme in an inline `<style>` ahead
+of the stylesheet (`GROUND_STYLE` in `app/layout.js`, the `--bg` values), and the inline theme
+script sets a stored choice before the first paint, so no frame is white on a dark page. The
+index is prerendered whole (tabs, count, Topics, list), so nothing is added above the list when
+the script arrives. **Theme:** the reader's last choice (`localStorage`, `notes-appearance`),
+then the system's setting, followed live.
+
+`npm run test:e2e` (`e2e/shell.spec.mjs`, after a build) holds these and the floors above at 1920,
+1440 and 390, light and dark.
 
 ### Landing
 
@@ -214,6 +246,13 @@ scrolls sideways.
 `layer-article`, extended. Kept: one text column at the measure, figures breaking out to the
 60rem slot, the title and one-sentence dek as the only hero. Changed:
 
+- **Wider than the measure.** The prose is one width on every article (664px from a 704px
+  window). Three things may take more, each centred on the column and never past the window less
+  the gutters: a figure (the 60rem slot, or the width that brings its smallest label to 11px if
+  that is more, `--fig-floor-w`), an HTML chart (the slot) and a table whose columns need more
+  than the column (it grows to the width its words need, 60rem at most, then scrolls inside its
+  box). Code blocks stay on the column and scroll inside their frame.
+
 - **Header order:** date and reading time, `h1`, dek, category and tags, then the project link
   when the article names one (`project:` frontmatter).
 - **Contents box** under the header when an article has three or more headings (`toc: false`
@@ -226,7 +265,8 @@ scrolls sideways.
   contents box's card language.
 - **Figures** may not lead the page; they sit where the prose refers to them, with a caption and a
   separate source line. On phones a figure shows its authored narrow drawing, or scrolls inside
-  its frame under a swipe hint. Every Vega-Lite chart has a phone drawing made by
+  its frame under a swipe hint; a drawing with no narrow form does the same at any width too
+  narrow for its 11px floor. Every Vega-Lite chart has a phone drawing made by
   `scripts/render-diagrams.mjs`: category labels above the bars, values at the bar ends, the
   legend one item per line.
 - **End matter:** the dated revision line, Related notes (the index's list, four items), the

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import ArticleBrowser from "./article-browser";
-import { PostList } from "./post-list";
+import ArticleBrowser, { ArticleBrowserView } from "./article-browser";
 import { allArticles } from "../lib/articles";
 import { OPEN_GRAPH, SITE } from "../lib/site.mjs";
 
@@ -25,9 +24,12 @@ export default function Home() {
 	return (
 		<main id="main-content" tabIndex={-1}>
 			{posts.length === 0 ? (
-				<p className="meta">No articles published yet.</p>
+				<p className="meta">No notes published yet.</p>
 			) : (
-				<Suspense fallback={<PostList posts={posts} />}>
+				// The prerendered page is the unfiltered browser (tabs, count, Topics and the
+				// list), so nothing is added above the list when the script arrives; the
+				// address's filters apply then.
+				<Suspense fallback={<ArticleBrowserView posts={posts} />}>
 					<ArticleBrowser posts={posts} />
 				</Suspense>
 			)}
