@@ -5,6 +5,10 @@ date: 2026-10-21
 updated: 2026-10-21
 category: AI systems
 tags: [skills, agents, evals, decision-making, claude-code]
+project:
+  name: Agent skills case study
+  href: https://junxiong.dev/skills
+  detail: The public repo this skill lives in and how its skills are shared across repos, on my main site.
 draft: false
 ---
 
