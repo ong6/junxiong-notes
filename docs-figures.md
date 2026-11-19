@@ -54,10 +54,11 @@ titles and free text take `T.label` (13). Phone drawings take `{...TP.node}` (16
 `<Text>` from `_shared.tsx`, which is floored like the parts; never a raw `<text>`. A step that
 repeats over a node (decode, a forward pass, tool calls) is `<LoopAbove>`.
 
-**Parts: use uipack's, never a local copy.** A person who starts a flow is an `Actor` (not a node
-with the user icon); a question is a `Decision` with neutral branches; where a flow lands for good
-is an `Outcome`; a sequence is `Node` participants with `Lifeline`, `Message`, `SelfLoop` and
-`Activation`; a filter is a `Wall`, and a stop is a `Cross`. A node's `strip` (`window`,
+**Parts: use uipack's, never a local copy.** A sequence is `Node` participants with `Lifeline`,
+`Message`, `SelfLoop` and `Activation`; a filter is a `Wall`, and a stop is a `Cross`. Questions,
+gates, end states and the people who start a flow are `Node`s (a person with the `user` icon), not
+uipack's `Decision`, `Outcome` or `Actor`: those label at 11px with no size option, which reads
+weak beside this blog's 17px node labels (owner, 2026-11-19). A node's `strip` (`window`,
 `terminal`, `file`, `store`) goes only where the box's type adds meaning, the same kind for the same
 type across a figure. Icons come from uipack's set (`db`, `doc`, `model`, `tool`, `gateway`, `lock`,
 `clock`, `browser`, `terminal`, `user`…); a name outside it draws nothing. The `user` icon is for
@@ -65,14 +66,15 @@ people only.
 
 **Colour means something.** `kind` on a connector and its packet is `request` (blue, the main
 flow), `change` (orange, async or a defect), `response` (green, a real return path) or `accent`
-(the path that carries the figure's claim, in the theme's accent); `accent` on a node or an
+(the path that carries the figure's claim, in the theme's accent). A route the post recommends
+keeps its colour (quant-decision's vLLM path); branches it does not recommend stay neutral; `accent` on a node or an
 `Outcome` is the claim's end; `dashed` is a loss, an option or a note. Never two arrowheads on one
 line; a return is a `Packet reverse`. One `Defs id` per figure, unique across the page. Write the
 `alt` as the sentence a screen reader gets; it is the whole figure in words.
 
-The page sets every figure label in the site sans (`.fig-diagram text` in `app/globals.css`), so
-lay boxes out for the sans; the full-size file opens in the theme's own faces (mono subs), where a
-tight box overflows. Whether figures keep the sans rule is an open owner decision (STYLE.md).
+The page sets every figure label in the site sans (`.fig-diagram text` in `app/globals.css`), and
+the `notes` theme's label face is the same sans, so the full-size files match the page; lay boxes
+out for the sans.
 
 On phones (600px and below) a figure keeps its desktop layout and scrolls sideways inside its own
 box, under a "Swipe to see the whole diagram →" hint. `lib/rehype-figures.js` sets the scroll width

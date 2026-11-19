@@ -130,7 +130,7 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-em-color` | TODO: as em-style | TODO: as light |
 | `--ui-star-fill` | `0` | `0` |
 | `--ui-accent-stroke` | `#9a3412` (the blockquote and project-link rule) | `#f0854f` |
-| `--ui-flow-error` | `#b8352a` (`notes`; the agent's proposal, 2026-11-19, unused by any figure yet: 4.9:1 or more on every figure fill; the owner may change it) | `#e8735f` (the agent's proposal; 5.5:1 or more) |
+| `--ui-flow-error` | `#b8352a` (`notes`, accepted 2026-11-19; 4.9:1 or more on every figure fill) | `#e8735f` (5.5:1 or more) |
 | `--ui-font-heading` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` |
 | `--ui-canvas-pattern` | `none` (figures sit on the page with no canvas) | `none` |
 | `--ui-cta-fill` | TODO: no primary button | TODO: as light |
@@ -153,8 +153,8 @@ on the code ground; they are not contract roles and live only in `app/globals.cs
   Sans `ui-sans-serif, system-ui, …`. Mono `ui-monospace, SFMono-Regular, "SF Mono", Menlo,
   Consolas, monospace`. Figures name the same sans and mono stacks (`_shared.tsx`).
 - **Self-hosting.** None. The core rule asks for self-hosted faces with metric-matched fallbacks;
-  TODO: the owner decides whether to self-host a serif (which one, and its weight files) or keep
-  the system stacks and accept that the serif differs by platform.
+  the owner keeps the system stacks (2026-11-19) and accepts that the serif differs by platform
+  (Iowan on Apple devices, Palatino Linotype on Windows, the platform serif elsewhere).
 - **Steps.** A 1.2 ratio over the body: `h3` 1.425rem, `h2` 1.71rem, article `h1` 2.1rem (under
   600px, over the 18px body: 1.35 / 1.62 / 1.95rem). Dek 1.12rem, index title 1.45rem (1.35rem
   under 600px).
@@ -310,16 +310,17 @@ has been a `flex` look since uipack 0.3.0: one grammar, coloured per site, which
 | `line` / `line-soft` | `#d9d2c5` / `#d9d2c5` | `#3a352f` / `#3a352f` |
 | `accent` (the claim's path, the outcome) | `#0f7a55` | `#199e70` |
 | `flow-request` / `flow-response` / `flow-change` / `flow-error` | `#2a78d6` / `#0f7a55` / `#eb6834` / `#b8352a` | `#3987e5` / `#199e70` / `#d95926` / `#e8735f` |
-| `fonts` | text: the sans stack; label: the mono stack | as light |
+| `fonts` | text and label: the sans stack (the page sets every figure label in it) | as light |
 | `canvas` | `plain` (figures sit on the article with no ground) | `plain` |
 
-`flow-error` is the agent's proposal: the theme API requires one and no figure draws a declined branch yet.
+`flow-error` was proposed by the agent and accepted (2026-11-19); no figure draws a declined branch yet.
 
 The figure accent is green while the site's accent is terracotta (`#9a3412`); the theme keeps the
 figure colours the blog already had. The HTML charts and article parts still take their colours from
 the `--uipack-*` mapping on `.fig-html, .prose` in `app/globals.css` (the theme reaches the static
-figures only), and `.fig-diagram text` there sets every figure's text in the site sans, the mono
-labels included: whether figures keep uipack's mono labels is an open owner decision (Open TODOs).
+figures only). `.fig-diagram text` there sets every figure's text in the site sans, and the theme's
+label face matches it (owner, 2026-11-19: keep the sans, and keep the full-size files the same).
+uipack's `Decision`, `Outcome` and `Actor` are not used: they label at 11px with no size option.
 
 ## Reuse
 
@@ -329,14 +330,8 @@ the nav label "Main site ↗" points back to junxiong.dev.
 
 ## Open TODOs
 
-- `--ui-flow-error`: confirm or replace the agent's proposed `#b8352a` / `#e8735f`.
-- Figure labels: keep `.fig-diagram text` (every figure label in the site sans; the layouts are
-  tuned to it, and uipack's 11px mono `Decision` and `Actor` labels read small beside 19px node
-  labels) or let uipack's mono labels through (about thirty subs would need wider boxes).
 - HTML charts and article parts: move the `--uipack-*` mapping in `app/globals.css` onto the
   `notes` theme (`diagramThemeCss`) if uipack's charts start reading diagram themes.
-- Faces: self-host a serif (and which) or keep system stacks; decides the font rows' first family
-  and a preload.
 - Density: express the 8px rhythm as a `--ui-density` scalar if uipack ever renders this look.
 - Unused roles (raised surface, third ink, soft line, accent-tone and inverted sets, signed data,
   alerts, deck faces, buttons): set when a page first needs one.
