@@ -5,6 +5,7 @@ extends: core
 pages: [landing, article]
 layouts: { landing: custom, article: layer-article }
 components: { diagrams: blueprint }
+diagram-themes: { default: notes }
 status: draft
 uipack: 1.0.0
 values: none
@@ -55,9 +56,9 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-accent-surface` | TODO: no accent-tone slide or band (the site has no deck); `--accent-soft` `#f0e5dc` is the selected-chip tint | TODO: `--accent-soft` dark is `#2a1d16` |
 | `--ui-accent-ink-2` | TODO: no accent-tone surface | TODO: as light |
 | `--ui-accent-line` | TODO: no accent-tone surface | TODO: as light |
-| `--ui-flow-request` | TODO: owner decision, see Component looks (A: Blueprint `#0b77a3`; B: site palette `#2a78d6`) | TODO: owner decision (A: `#8fd6ff`; B: `#3987e5`) |
-| `--ui-flow-response` | TODO: owner decision (A: Blueprint `#2b7a4b`; B: site palette `#0f7a55`) | TODO: owner decision (A: `#8be6ae`; B: `#199e70`) |
-| `--ui-flow-change` | TODO: owner decision (A: Blueprint `#7048c0`; B: site palette `#eb6834`) | TODO: owner decision (A: `#d2b4ff`; B: `#d95926`) |
+| `--ui-flow-request` | `#2a78d6` (the `notes` diagram theme, see Component looks) | `#3987e5` |
+| `--ui-flow-response` | `#0f7a55` (`notes`) | `#199e70` |
+| `--ui-flow-change` | `#eb6834` (`notes`) | `#d95926` |
 | `--ui-data-pos` | TODO: no signed values on the site yet | TODO: as light |
 | `--ui-data-neg` | TODO: no signed values on the site yet | TODO: as light |
 | `--ui-data-context` | TODO: Vega-Lite charts draw context in `--muted` `#6b6459`; confirm it as the context grey | TODO: `#9d9488` in the charts |
@@ -76,7 +77,7 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-inv-line` | TODO: no inverted ground | TODO: as light |
 | `--ui-inv-accent` | TODO: no inverted ground | TODO: as light |
 | `--ui-inv-node` | TODO: no inverted ground | TODO: as light |
-| `--ui-node` | TODO: follows the diagram decision (today `#f6f2ea`, the figure node fill in `_shared.tsx`) | TODO: today `#1b1917` |
+| `--ui-node` | `#f6f2ea` (`notes` surface-raised, the figure node fill) | `#1b1917` |
 | `--ui-line-solid` | TODO: a solid twin of the rule is unchosen; the rule `#d9d2c5` is already solid | TODO: `#423d35` |
 | `--ui-accent-ink` | `#9a3412` | `#f0854f` |
 | `--ui-data-neg-ink` | TODO: no signed values | TODO: as light |
@@ -129,7 +130,7 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-em-color` | TODO: as em-style | TODO: as light |
 | `--ui-star-fill` | `0` | `0` |
 | `--ui-accent-stroke` | `#9a3412` (the blockquote and project-link rule) | `#f0854f` |
-| `--ui-flow-error` | TODO: owner decision (A: Blueprint `#c2392b`; B: no site value yet) | TODO: owner decision (A: `#ff8c7a`) |
+| `--ui-flow-error` | `#b8352a` (`notes`; 4.9:1 or more on every figure fill) | `#e8735f` (5.5:1 or more) |
 | `--ui-font-heading` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` |
 | `--ui-canvas-pattern` | `none` (figures sit on the page with no canvas) | `none` |
 | `--ui-cta-fill` | TODO: no primary button | TODO: as light |
@@ -294,20 +295,29 @@ From the published posts and the owner's house voice (the private `write-a-blog`
 
 | Component | Picks | Why |
 | --- | --- | --- |
-| Diagrams | `blueprint` | Structural figures are drawn with uipack (```` ```uipack ```` fences, `content/figures/*.tsx`), the same parts as junxiong.dev; the HTML charts (```` ```span ````, ```` ```stack ````) are members too. Vega-Lite charts are not uipack parts and take the site's data colours |
+| Diagrams | `blueprint`, theme `notes` | Structural figures are drawn with uipack (```` ```uipack ```` fences, `content/figures/*.tsx`), the same parts and grammar as junxiong.dev, coloured by this site's one diagram theme; the HTML charts (```` ```span ````, ```` ```stack ````) are members too. Vega-Lite charts are not uipack parts and take the site's data colours |
 
-**Open owner decision: do diagrams look the same on every site, or follow this site's palette?**
-uipack's Blueprint look is `fixed` (only light and dark follow the host), but its role contract also
-says each style keeps the flow colours in its own palette, and the code does not enforce the fixed
-values yet. Today this site follows option B.
+**`notes` diagram theme** (`content/figures/_shared.tsx`, `defineDiagramTheme`; every figure on the
+blog draws in it, and `scripts/render-figures.tsx` passes it to `renderStatic` per mode). Blueprint
+has been a `flex` look since uipack 0.3.0: one grammar, coloured per site, which settles the old
+"Blueprint fixed or the site's palette" question in favour of the site's palette (the owner's brief,
+2026-11-07: one diagram grammar, themed per site, the blog's figures in one theme).
 
-| Option | What it means here | Cost |
+| Role | Light | Dark |
 | --- | --- | --- |
-| A. Blueprint fixed | Figures, HTML charts and article parts render in Blueprint's values (Prussian ink, cool white card, request `#0b77a3`, response `#2b7a4b`, change `#7048c0`), identical to junxiong.dev and the uipack docs | A cool blue drawing on warm paper; drop the site's `--uipack-*` mapping and `_shared.tsx` palette once uipack ships figures that own their values |
-| B. Site palette (today) | Figures take the warm-paper roles: `app/globals.css` maps `--uipack-fg/muted/bg/surface/border` to the site's ink, paper and rules (the `.fig-html, .prose` block) and the accent and change tokens to `--fig-accent` `#0f7a55` and `--fig-change` `#eb6834`; `_shared.tsx` bakes the same palette into the static SVGs | Figures differ between this blog and junxiong.dev; needs uipack to offer a `flex` diagram look, since a fixed look may not be recoloured locally |
+| `ink` / `ink-2` | `#14110d` / `#6b6459` | `#ece7de` / `#9d9488` |
+| `surface` (page) / `surface-raised` (node) / `surface-2` | `#fffdf9` / `#f6f2ea` / `#efe9df` | `#12110f` / `#1b1917` / `#232019` |
+| `line` / `line-soft` | `#d9d2c5` / `#d9d2c5` | `#3a352f` / `#3a352f` |
+| `accent` (the claim's path, the outcome) | `#0f7a55` | `#199e70` |
+| `flow-request` / `flow-response` / `flow-change` / `flow-error` | `#2a78d6` / `#0f7a55` / `#eb6834` / `#b8352a` | `#3987e5` / `#199e70` / `#d95926` / `#e8735f` |
+| `fonts` | text: the sans stack; label: the mono stack | as light |
+| `canvas` | `plain` (figures sit on the article with no ground) | `plain` |
 
-The overrides stay in place until the owner chooses. The flow-colour rows above stay `TODO:` for
-the same reason.
+The figure accent is green while the site's accent is terracotta (`#9a3412`); the theme keeps the
+figure colours the blog already had. The HTML charts and article parts still take their colours from
+the `--uipack-*` mapping on `.fig-html, .prose` in `app/globals.css` (the theme reaches the static
+figures only), and `.fig-diagram text` there sets every figure's text in the site sans, the mono
+labels included: whether figures keep uipack's mono labels is an open owner decision (Open TODOs).
 
 ## Reuse
 
@@ -317,8 +327,11 @@ the nav label "Main site ↗" points back to junxiong.dev.
 
 ## Open TODOs
 
-- Diagrams: Blueprint fixed (A) or this site's palette (B); decides the four `--ui-flow-*` rows,
-  `--ui-node` and whether the `--uipack-*` mapping stays.
+- Figure labels: keep `.fig-diagram text` (every figure label in the site sans; the layouts are
+  tuned to it, and uipack's 11px mono `Decision` and `Actor` labels read small beside 19px node
+  labels) or let uipack's mono labels through (about thirty subs would need wider boxes).
+- HTML charts and article parts: move the `--uipack-*` mapping in `app/globals.css` onto the
+  `notes` theme (`diagramThemeCss`) if uipack's charts start reading diagram themes.
 - Faces: self-host a serif (and which) or keep system stacks; decides the font rows' first family
   and a preload.
 - Density: express the 8px rhythm as a `--ui-density` scalar if uipack ever renders this look.

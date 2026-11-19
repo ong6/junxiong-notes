@@ -37,18 +37,42 @@ cache-hit-miss
 
 `content/figures/cache-hit-miss.tsx` exports a figure with `define({ alt, viewBox, children })`
 from `./_shared`, drawn with uipack parts on an 8px grid. `npm run diagrams` renders it through
-`uipack/static` into `content/diagrams/<hash>.{light,dark}.svg` with the site palette from
-`_shared.tsx` inlined, motion on, no frame and no painted canvas, so the article surface shows
-through and the figcaption stays the caption. Start each file with the pragma line
+`uipack/static` into `content/diagrams/<hash>.{light,dark}.svg` in the blog's one diagram theme,
+`notes` (`_shared.tsx`, `defineDiagramTheme`; its values are in STYLE.md, Component looks), motion
+on, no frame and no painted canvas, so the article surface shows through and the figcaption stays
+the caption. Change a colour once in `notes` and every figure follows; never set a colour in a figure. Start each file with the pragma line
 `/* @jsxRuntime automatic @jsxImportSource react */` (tsx compiles the figures without a tsconfig and needs it).
 
 Rules that carry over from the D2 days, now enforced by the render script: **viewBox 900–1150
-wide and under 800 tall**, or the build fails. Labels 14px, subs 11px mono, so nothing shrinks
-below the chart type once the figure scales into the 960px slot. Colour means something: `kind`
-on a connector and its packet is `request` (blue), `change` (orange), `response` (green); `accent`
-on a node is the green emphasis; `dashed` is a loss or a note. Never two arrowheads on one line;
-a return is a `Packet reverse`. One `Defs id` per figure, unique across the page. Write the `alt`
-as the sentence a screen reader gets; it is the whole figure in words.
+wide and under 800 tall**, or the build fails. Desktop files are rendered for the 960px slot and
+phone files for the 350px column, so uipack's parts never draw text under 11px there.
+
+**Type: one scale, from `_shared.tsx`.** Desktop nodes take `{...T.node}` (19 / 13) or, in a dense
+row or for a secondary box, `{...T.compact}` (16 / 13); connector labels, lane headers, group
+titles and free text take `T.label` (13). Phone drawings take `{...TP.node}` (16 / 14) and
+`TP.label` (14). Free text that is not a uipack part (a wall's name, a to-scale bar's caption) is
+`<Text>` from `_shared.tsx`, which is floored like the parts; never a raw `<text>`. A step that
+repeats over a node (decode, a forward pass, tool calls) is `<LoopAbove>`.
+
+**Parts: use uipack's, never a local copy.** A person who starts a flow is an `Actor` (not a node
+with the user icon); a question is a `Decision` with neutral branches; where a flow lands for good
+is an `Outcome`; a sequence is `Node` participants with `Lifeline`, `Message`, `SelfLoop` and
+`Activation`; a filter is a `Wall`, and a stop is a `Cross`. A node's `strip` (`window`,
+`terminal`, `file`, `store`) goes only where the box's type adds meaning, the same kind for the same
+type across a figure. Icons come from uipack's set (`db`, `doc`, `model`, `tool`, `gateway`, `lock`,
+`clock`, `browser`, `terminal`, `user`…); a name outside it draws nothing. The `user` icon is for
+people only.
+
+**Colour means something.** `kind` on a connector and its packet is `request` (blue, the main
+flow), `change` (orange, async or a defect), `response` (green, a real return path) or `accent`
+(the path that carries the figure's claim, in the theme's accent); `accent` on a node or an
+`Outcome` is the claim's end; `dashed` is a loss, an option or a note. Never two arrowheads on one
+line; a return is a `Packet reverse`. One `Defs id` per figure, unique across the page. Write the
+`alt` as the sentence a screen reader gets; it is the whole figure in words.
+
+The page sets every figure label in the site sans (`.fig-diagram text` in `app/globals.css`), so
+lay boxes out for the sans; the full-size file opens in the theme's own faces (mono subs), where a
+tight box overflows. Whether figures keep the sans rule is an open owner decision (STYLE.md).
 
 On phones (600px and below) a figure keeps its desktop layout and scrolls sideways inside its own
 box, under a "Swipe to see the whole diagram →" hint. `lib/rehype-figures.js` sets the scroll width
@@ -58,7 +82,7 @@ than a 13px one. Charts behave the same way.
 When a figure reads better stacked than swiped, add `mobile: { alt, viewBox, children }` to the same
 module. Use a 320–600px-wide viewBox and stack the mechanism; the renderer writes a separate mobile
 SVG and the site switches at 600px. It is shown unscrolled in a 350px column, so every label must
-render at 11px or more there (14px in a 440 viewBox); the build fails otherwise. Do not solve phone
+render at 11px or more there (14px in a 440 viewBox, which `TP` gives); the build fails otherwise. Do not solve phone
 layouts by shrinking 1080px of labels.
 
 Motion: every packet is SMIL, so the figure animates inline with no JavaScript. Keep two to four
