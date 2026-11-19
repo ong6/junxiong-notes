@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
 // Desktop: three parts are text read into the model's window, each at a different
 // time; tools are the one part the model calls out to, and a result comes back.
@@ -12,30 +12,30 @@ const toTools: [number, number][] = [[752, 192], [856, 192]];
 const desktop = (
   <>
     <Defs id="fp" />
-    <Node size={19} subSize={13} x={32} y={32} w={264} h={80} label="Prompt" sub="system prompt · request" icon="user" />
-    <Node size={19} subSize={13} x={32} y={152} w={264} h={80} label="Context" sub="wiki pages · docs" icon="doc" />
-    <Node size={19} subSize={13} x={32} y={272} w={264} h={80} label="Skills" sub="SKILL.md · scripts" icon="git" />
+    <Node {...T.node} x={32} y={32} w={264} h={80} label="Prompt" sub="system prompt · request" icon="user" />
+    <Node {...T.node} x={32} y={152} w={264} h={80} label="Context" sub="wiki pages · docs" icon="doc" />
+    <Node {...T.node} x={32} y={272} w={264} h={80} label="Skills" sub="SKILL.md · scripts" icon="git" />
 
     <Connector points={fromPrompt} defs="fp" kind="request" />
-    <Label size={14} x={408} y={62} text="every request" anchor="middle" />
+    <Label size={T.label} x={408} y={62} text="every request" anchor="middle" />
     <Packet points={fromPrompt} kind="request" dur={2} r={4} />
 
     <Connector points={fromContext} defs="fp" kind="request" />
-    <Label size={14} x={408} y={182} text="read when relevant" anchor="middle" />
+    <Label size={T.label} x={408} y={182} text="read when relevant" anchor="middle" />
     <Packet points={fromContext} kind="request" dur={1.8} delay={-0.6} r={4} />
 
     <Connector points={fromSkills} defs="fp" kind="request" />
-    <Label size={14} x={408} y={302} text="body loads on match" anchor="middle" />
+    <Label size={T.label} x={408} y={302} text="body loads on match" anchor="middle" />
     <Packet points={fromSkills} kind="request" dur={2} delay={-1.2} r={4} />
 
-    <Node size={19} subSize={13} x={560} y={152} w={192} h={80} label="Model" sub="one window" icon="model" accent />
+    <Node {...T.node} x={560} y={152} w={192} h={80} label="Model" sub="one window" icon="model" accent />
 
     <Connector points={toTools} defs="fp" kind="change" />
-    <Label size={14} x={804} y={182} text="call" anchor="middle" />
-    <Label size={14} x={804} y={216} text="result" anchor="middle" />
+    <Label size={T.label} x={804} y={182} text="call" anchor="middle" />
+    <Label size={T.label} x={804} y={216} text="result" anchor="middle" />
     <Packet points={toTools} kind="change" dur={1.4} r={4} />
     <Packet points={toTools} kind="response" dur={1.4} delay={-0.7} r={4} reverse />
-    <Node size={19} subSize={13} x={856} y={152} w={192} h={80} label="Tools" sub="APIs · shell · MCP" icon="tool" />
+    <Node {...T.node} x={856} y={152} w={192} h={80} label="Tools" sub="APIs · shell · MCP" icon="tool" />
   </>
 );
 
@@ -47,19 +47,19 @@ const down: [number, number][] = [[160, 312], [160, 368]];
 const mobile = (
   <>
     <Defs id="fpm" />
-    <Node size={16} subSize={14} x={24} y={16} w={272} h={56} label="Prompt" sub="every request" align="center" />
-    <Node size={16} subSize={14} x={24} y={96} w={272} h={56} label="Context" sub="read when relevant" align="center" />
-    <Node size={16} subSize={14} x={24} y={176} w={272} h={56} label="Skills" sub="body loads on match" align="center" />
+    <Node {...TP.node} x={24} y={16} w={272} h={56} label="Prompt" sub="every request" align="center" />
+    <Node {...TP.node} x={24} y={96} w={272} h={56} label="Context" sub="read when relevant" align="center" />
+    <Node {...TP.node} x={24} y={176} w={272} h={56} label="Skills" sub="body loads on match" align="center" />
     <Connector points={rail(44)} defs="fpm" kind="request" />
     <Connector points={rail(124)} defs="fpm" kind="request" />
     <Connector points={rail(204)} defs="fpm" kind="request" />
     <Packet points={rail(44)} kind="request" dur={2.2} r={4} />
-    <Node size={16} subSize={14} x={24} y={256} w={272} h={56} label="Model" sub="one window" align="center" accent />
+    <Node {...TP.node} x={24} y={256} w={272} h={56} label="Model" sub="one window" align="center" accent />
     <Connector points={down} defs="fpm" kind="change" />
-    <Label size={14} x={172} y={346} text="call · result" anchor="start" />
+    <Label size={TP.label} x={172} y={346} text="call · result" anchor="start" />
     <Packet points={down} kind="change" dur={1.2} r={4} />
     <Packet points={down} kind="response" dur={1.2} delay={-0.6} r={4} reverse />
-    <Node size={16} subSize={14} x={24} y={368} w={272} h={56} label="Tools" sub="APIs · shell · MCP" align="center" />
+    <Node {...TP.node} x={24} y={368} w={272} h={56} label="Tools" sub="APIs · shell · MCP" align="center" />
   </>
 );
 

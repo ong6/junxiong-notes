@@ -1,7 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Chip, Connector, Defs, Label, Lane, Node, Packet } from "uipack";
-import type { ReactNode } from "react";
-import { define } from "./_shared";
+import { define, T, TP, Text } from "./_shared";
 
 // The decide skill as a funnel that widens before it narrows. A question is
 // sized first; a cheap, reversible one exits early with a quick pick. The
@@ -23,24 +22,6 @@ const walls: [string, string][] = [
   ["Numbers", "EV · cost"],
   ["Downside", "survive?"],
 ];
-
-const Txt = ({ x, y, size, children, mono, bold, anchor = "middle", muted }: {
-  x: number; y: number; size: number; children: ReactNode; mono?: boolean; bold?: boolean;
-  anchor?: "start" | "middle" | "end"; muted?: boolean;
-}) => (
-  <text
-    x={x}
-    y={y}
-    fontSize={size}
-    fontFamily={mono ? "var(--uipack-mono)" : "var(--uipack-sans)"}
-    fontWeight={bold ? 600 : 400}
-    textAnchor={anchor}
-    fill="currentColor"
-    fillOpacity={muted ? 0.72 : 1}
-  >
-    {children}
-  </text>
-);
 
 /** A wall as slabs with a gap wherever a surviving lane passes. "v" desktop, "h" phone. */
 const Wall = ({ at, from, to, holes, axis, t = 14, gap = 9 }: {
@@ -86,23 +67,23 @@ const TRUNK_X = 456;
 const desktop = (
   <>
     <Defs id="dp" />
-    <Lane x={160} w={120} y={64} title="Size" size={13} />
-    <Lane x={312} w={280} y={64} title="Widen" size={13} />
-    <Lane x={616} w={376} y={64} title="Narrow" size={13} />
-    <Lane x={1024} w={104} y={64} title="Commit" size={13} />
+    <Lane x={160} w={120} y={64} title="Size" size={T.label} />
+    <Lane x={312} w={280} y={64} title="Widen" size={T.label} />
+    <Lane x={616} w={376} y={64} title="Narrow" size={T.label} />
+    <Lane x={1024} w={104} y={64} title="Commit" size={T.label} />
 
-    <Node x={24} y={208} w={104} h={64} label="Question" sub="X or Y?" size={16} subSize={13} align="center" />
+    <Node x={24} y={208} w={104} h={64} label="Question" sub="X or Y?" {...T.compact} align="center" />
     <Connector points={[[128, CY], [160, CY]]} defs="dp" kind="request" />
 
-    <Node x={160} y={208} w={120} h={64} label="Size it" sub="stakes · undo" size={16} subSize={13} align="center" />
+    <Node x={160} y={208} w={120} h={64} label="Size it" sub="stakes · undo" {...T.compact} align="center" />
     <Connector points={[[220, 272], [220, 344]]} defs="dp" kind="request" />
-    <Label x={220} y={312} text="cheap to undo" anchor="middle" size={12} />
-    <Node x={156} y={344} w={128} h={64} label="Quick pick" sub="+ cheap test" size={16} subSize={13} align="center" dashed />
+    <Label x={220} y={312} text="cheap to undo" anchor="middle" size={T.label} />
+    <Node x={156} y={344} w={128} h={64} label="Quick pick" sub="+ cheap test" {...T.compact} align="center" dashed />
 
     <Connector points={[[280, CY], [312, CY]]} defs="dp" kind="request" />
     <Packet points={[[280, CY], [312, CY]]} kind="request" dur={0.9} r={4} trim={[4, 10]} />
 
-    <Node x={312} y={208} w={120} h={64} label="Frame" sub="real question" size={16} subSize={13} align="center" />
+    <Node x={312} y={208} w={120} h={64} label="Frame" sub="real question" {...T.compact} align="center" />
 
     {/* fan-out: one trunk, four stubs into the options */}
     <Connector points={[[432, CY], [TRUNK_X, CY]]} arrow={false} inset={[2, 0]} />
@@ -113,12 +94,12 @@ const desktop = (
     {opts.map((o, i) => (
       <Chip key={o.label} x={CHIP_X} y={lanes[i] - 16} w={CHIP_W} h={32} label={o.label} kind={o.added ? "change" : undefined} size={13} flow={o.stop === 0 ? F : undefined} />
     ))}
-    <Label x={CHIP_X + CHIP_W / 2} y={360} text="+2 you didn't list" anchor="middle" size={12} />
+    <Label x={CHIP_X + CHIP_W / 2} y={360} text="+2 you didn't list" anchor="middle" size={T.label} />
 
     {walls.map(([name, sub], k) => (
       <g key={name}>
-        <Txt x={wx[k]} y={112} size={15} bold>{name}</Txt>
-        <Txt x={wx[k]} y={130} size={13} mono muted>{sub}</Txt>
+        <Text x={wx[k]} y={112} size={T.compact.size} bold>{name}</Text>
+        <Text x={wx[k]} y={130} size={T.label} mono muted>{sub}</Text>
       </g>
     ))}
 
@@ -145,16 +126,16 @@ const desktop = (
       <Wall key={x} at={x} from={W_TOP} to={W_BOT} axis="v" holes={lanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
     ))}
 
-    <Node x={872} y={280} w={120} h={64} label="Pre-mortem" sub="fix top cause" size={16} subSize={13} align="center" flow={F} />
+    <Node x={872} y={280} w={120} h={64} label="Pre-mortem" sub="fix top cause" {...T.compact} align="center" flow={F} />
     <Connector points={[[992, 312], [1024, 312]]} defs="dp" kind="response" flow={F} />
-    <Node x={1024} y={280} w={104} h={64} label="One pick" sub="+ flip fact" size={16} subSize={13} align="center" accent flow={F} />
+    <Node x={1024} y={280} w={104} h={64} label="One pick" sub="+ flip fact" {...T.compact} align="center" accent flow={F} />
     <Connector points={[[1076, 344], [1076, 376]]} defs="dp" kind="response" flow={F} />
-    <Node x={1024} y={376} w={104} h={64} label="Tripwire" sub="X by date Y" size={16} subSize={13} align="center" flow={F} />
+    <Node x={1024} y={376} w={104} h={64} label="Tripwire" sub="X by date Y" {...T.compact} align="center" flow={F} />
 
     {/* the tripwire, if it trips, reopens the decision at the frame step */}
     <Connector points={[[1024, 408], [372, 408], [372, 272]]} defs="dp" kind="change" dashed />
     <Packet points={[[1024, 408], [372, 408], [372, 272]]} kind="change" dur={4} r={4} />
-    <Label x={700} y={412} text="tripped → re-decide" anchor="middle" size={13} />
+    <Label x={700} y={412} text="tripped → re-decide" anchor="middle" size={T.label} />
   </>
 );
 
@@ -168,15 +149,15 @@ const M_TRUNK_Y = 296;
 const mobile = (
   <>
     <Defs id="dpm" />
-    <Node x={40} y={24} w={224} h={56} label="Question" sub="X or Y?" size={16} subSize={14} align="center" />
+    <Node x={40} y={24} w={224} h={56} label="Question" sub="X or Y?" {...TP.node} align="center" />
     <Connector points={[[152, 80], [152, 112]]} defs="dpm" kind="request" />
-    <Node x={40} y={112} w={224} h={64} label="Size it" sub="stakes · undo" size={16} subSize={14} align="center" />
+    <Node x={40} y={112} w={224} h={64} label="Size it" sub="stakes · undo" {...TP.node} align="center" />
     <Connector points={[[264, 144], [296, 144]]} defs="dpm" kind="request" />
-    <Node x={296} y={112} w={128} h={64} label="Quick pick" sub="+ cheap test" size={16} subSize={14} align="center" dashed />
+    <Node x={296} y={112} w={128} h={64} label="Quick pick" sub="+ cheap test" {...TP.node} align="center" dashed />
     <Connector points={[[152, 176], [152, 208]]} defs="dpm" kind="request" />
     <Packet points={[[152, 176], [152, 208]]} kind="request" dur={0.9} r={4} trim={[4, 10]} />
-    <Node x={40} y={208} w={224} h={64} label="Frame" sub="real question" size={16} subSize={14} align="center" />
-    <Txt x={296} y={248} size={14} mono bold anchor="start">WIDEN ↓</Txt>
+    <Node x={40} y={208} w={224} h={64} label="Frame" sub="real question" {...TP.node} align="center" />
+    <Text x={296} y={248} size={TP.label} mono bold anchor="start">WIDEN ↓</Text>
 
     <Connector points={[[152, 272], [152, M_TRUNK_Y]]} arrow={false} inset={[2, 0]} />
     <Connector points={[[mLanes[0], M_TRUNK_Y], [mLanes[3], M_TRUNK_Y]]} arrow={false} inset={0} />
@@ -184,14 +165,14 @@ const mobile = (
       <Connector key={o.label} points={[[mLanes[i], M_TRUNK_Y], [mLanes[i], M_CHIP_Y]]} defs="dpm" kind={o.added ? "change" : undefined} inset={[0, 2]} />
     ))}
     {opts.map((o, i) => (
-      <Chip key={o.label} x={mLanes[i] - mChipW[i] / 2} y={M_CHIP_Y} w={mChipW[i]} h={32} label={o.mobile} kind={o.added ? "change" : undefined} size={14} />
+      <Chip key={o.label} x={mLanes[i] - mChipW[i] / 2} y={M_CHIP_Y} w={mChipW[i]} h={32} label={o.mobile} kind={o.added ? "change" : undefined} size={TP.label} />
     ))}
 
-    <Txt x={352} y={384} size={14} mono bold anchor="start">NARROW ↓</Txt>
+    <Text x={352} y={384} size={TP.label} mono bold anchor="start">NARROW ↓</Text>
     {walls.map(([name, sub], k) => (
       <g key={name}>
-        <Txt x={352} y={mWalls[k] + 2} size={15} bold anchor="start">{name}</Txt>
-        <Txt x={352} y={mWalls[k] + 20} size={14} mono muted anchor="start">{sub}</Txt>
+        <Text x={352} y={mWalls[k] + 2} size={TP.node.size} bold anchor="start">{name}</Text>
+        <Text x={352} y={mWalls[k] + 20} size={TP.label} mono muted anchor="start">{sub}</Text>
       </g>
     ))}
     {opts.map((o, i) => {
@@ -218,15 +199,15 @@ const mobile = (
       <Wall key={y} at={y} from={20} to={340} axis="h" holes={mLanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
     ))}
 
-    <Node x={208} y={584} w={192} h={56} label="Pre-mortem" sub="fix top cause" size={16} subSize={14} align="center" />
+    <Node x={208} y={584} w={192} h={56} label="Pre-mortem" sub="fix top cause" {...TP.node} align="center" />
     <Connector points={[[304, 640], [304, 672]]} defs="dpm" kind="response" />
-    <Node x={208} y={672} w={192} h={56} label="One pick" sub="+ flip fact" size={16} subSize={14} align="center" accent />
+    <Node x={208} y={672} w={192} h={56} label="One pick" sub="+ flip fact" {...TP.node} align="center" accent />
     <Connector points={[[304, 728], [304, 760]]} defs="dpm" kind="response" />
-    <Node x={208} y={760} w={192} h={56} label="Tripwire" sub="X by date Y" size={16} subSize={14} align="center" />
+    <Node x={208} y={760} w={192} h={56} label="Tripwire" sub="X by date Y" {...TP.node} align="center" />
 
     <Connector points={[[208, 788], [12, 788], [12, 240], [40, 240]]} defs="dpm" kind="change" dashed />
     <Packet points={[[208, 788], [12, 788], [12, 240], [40, 240]]} kind="change" dur={4.5} r={4} />
-    <Label x={100} y={792} text="re-decide" anchor="middle" size={14} />
+    <Label x={100} y={792} text="re-decide" anchor="middle" size={TP.label} />
   </>
 );
 

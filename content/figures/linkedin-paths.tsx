@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Group, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
 // 200px nodes so "Matched shortlist" fits inside its box.
 const xs = [64, 320, 576, 832];
@@ -32,8 +32,7 @@ const path = (
           </>
         ) : null}
         <Node
-          size={18}
-          subSize={12}
+          {...T.node}
           x={xs[i]}
           y={y}
           w={NODE_W}
@@ -66,8 +65,7 @@ const mobilePath = (
             </>
           ) : null}
           <Node
-            size={16}
-            subSize={14}
+            {...TP.node}
             x={48}
             y={y}
             w={344}
@@ -89,12 +87,12 @@ export default define({
   children: (
     <>
       <Defs id="lip" />
-      <Group titleSize={13} x={24} y={24} w={1032} h={152} title="Cold application · asks the queue to notice you" variant="dashed">
+      <Group titleSize={T.label} x={24} y={24} w={1032} h={152} title="Cold application · asks the queue to notice you" variant="dashed">
         {path(88, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false)}
       </Group>
-      <Group titleSize={13} x={24} y={216} w={1032} h={152} title="LinkedIn inbound · the match happens before the message" variant="dashed" accent>
+      <Group titleSize={T.label} x={24} y={216} w={1032} h={152} title="LinkedIn inbound · the match happens before the message" variant="dashed" accent>
         {path(280, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "response", true)}
-        <Label x={484} y={272} text="matched before contact" anchor="middle" size={12} />
+        <Label x={484} y={272} text="matched before contact" anchor="middle" size={T.label} />
       </Group>
     </>
   ),
@@ -104,10 +102,10 @@ export default define({
     children: (
       <>
         <Defs id="lipm" />
-        <Group titleSize={14} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
+        <Group titleSize={TP.label} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
           {mobilePath(64, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false)}
         </Group>
-        <Group titleSize={14} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
+        <Group titleSize={TP.label} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
           {mobilePath(432, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "response", true)}
         </Group>
       </>

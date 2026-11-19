@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T } from "./_shared";
 
 type P = [number, number][];
 const toGguf: P = [[540, 80], [540, 116], [188, 116], [188, 152]];
@@ -14,21 +14,21 @@ export default define({
   children: (
     <>
       <Defs id="qd" />
-      <Node size={19} subSize={13} x={440} y={24} w={200} h={56} label="Which runtime?" icon="tool" />
+      <Node {...T.node} x={440} y={24} w={200} h={56} label="Which runtime?" icon="tool" />
 
       <Connector points={toGguf} defs="qd" />
-      <Label x={360} y={110} text="llama.cpp · Ollama" anchor="middle" size={13} />
+      <Label x={360} y={110} text="llama.cpp · Ollama" anchor="middle" size={T.label} />
       <Packet points={toGguf} kind="neutral" dur={2} r={4} />
       <Connector points={toQ2} defs="qd" kind="change" />
-      <Label x={556} y={126} text="vLLM / TGI" size={13} />
+      <Label x={556} y={126} text="vLLM / TGI" size={T.label} />
       <Packet points={toQ2} kind="change" dur={1.4} delay={-0.4} r={4} />
       <Connector points={toMlx} defs="qd" />
-      <Label x={720} y={110} text="Apple Silicon" anchor="middle" size={13} />
+      <Label x={720} y={110} text="Apple Silicon" anchor="middle" size={T.label} />
       <Packet points={toMlx} kind="neutral" dur={2} delay={-1} r={4} />
 
-      <Node size={19} subSize={13} x={40} y={152} w={296} h={88} label="GGUF" sub="UD-Q4_K_XL or Q4_K_M · dynamic bits" icon="doc" accent />
-      <Node size={19} subSize={13} x={404} y={152} w={272} h={88} label="Which GPU generation?" icon="service" />
-      <Node size={19} subSize={13} x={744} y={152} w={296} h={88} label="MLX" sub="4-bit or 6-bit · unified memory" icon="doc" accent />
+      <Node {...T.node} x={40} y={152} w={296} h={88} label="GGUF" sub="UD-Q4_K_XL or Q4_K_M · dynamic bits" icon="doc" accent />
+      <Node {...T.node} x={404} y={152} w={272} h={88} label="Which GPU generation?" icon="service" />
+      <Node {...T.node} x={744} y={152} w={296} h={88} label="MLX" sub="4-bit or 6-bit · unified memory" icon="doc" accent />
 
       {[260, 540, 820].map((x, i) => (
         <g key={x}>
@@ -36,9 +36,9 @@ export default define({
           <Packet points={q2(x)} kind="change" dur={1.8} delay={-i * 0.6} r={4} />
         </g>
       ))}
-      <Node size={19} subSize={13} x={136} y={344} w={248} h={88} label="Turing" sub="GPTQ only · no AWQ kernels" icon="model" />
-      <Node size={19} subSize={13} x={416} y={344} w={248} h={88} label="Ampere" sub="AWQ / W4A16 · common default" icon="model" />
-      <Node size={19} subSize={13} x={696} y={344} w={248} h={88} label="Ada+" sub="FP8 W8A8 · native tensor cores" icon="model" />
+      <Node {...T.node} x={136} y={344} w={248} h={88} label="Turing" sub="GPTQ only · no AWQ kernels" icon="model" />
+      <Node {...T.node} x={416} y={344} w={248} h={88} label="Ampere" sub="AWQ / W4A16 · common default" icon="model" />
+      <Node {...T.node} x={696} y={344} w={248} h={88} label="Ada+" sub="FP8 W8A8 · native tensor cores" icon="model" />
     </>
   ),
 });

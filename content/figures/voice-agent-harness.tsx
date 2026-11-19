@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Bus, Connector, Defs, Group, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T } from "./_shared";
 
 // A production voice agent as a half-cascade. Blue (request) is the caller's
 // turn moving in; green (response) is the reply going back out. The speech layer
@@ -25,29 +25,29 @@ const desktop = (
   <>
     <Defs id="vh" />
 
-    <Node size={17} subSize={12} x={16} y={cy - 32} w={136} h={64} label="Caller" sub="phone · app" icon="user" />
+    <Node {...T.compact} x={16} y={cy - 32} w={136} h={64} label="Caller" sub="phone · app" icon="user" />
     <Connector points={[[152, cy], [184, cy]]} defs="vh" kind="request" />
     <Packet points={[[152, cy], [184, cy]]} kind="request" dur={1.4} r={4} />
 
-    <Node size={17} subSize={12} x={184} y={cy - 32} w={168} h={64} label="Telephony" sub="SIP · Twilio" icon="gateway" />
+    <Node {...T.compact} x={184} y={cy - 32} w={168} h={64} label="Telephony" sub="SIP · Twilio" icon="gateway" />
     <Connector points={[[352, cy], [384, cy]]} defs="vh" kind="request" />
 
-    <Group titleSize={13} x={384} y={96} w={232} h={304} title="Speech layer · swappable" variant="dashed">
-      <Node size={16} subSize={12} x={400} y={136} w={200} h={56} label="Turn detection" sub="VAD · barge-in" icon="clock" />
-      <Node size={16} subSize={12} x={400} y={208} w={200} h={56} label="Speech to text" sub="Deepgram · Scribe" icon="doc" />
-      <Node size={16} subSize={12} x={400} y={280} w={200} h={56} label="Voice" sub="ElevenLabs · Cartesia" icon="model" />
-      <Label x={500} y={368} text="or one duplex model" anchor="middle" size={12} />
-      <Label x={500} y={386} text="(GPT-Live-1)" anchor="middle" size={12} />
+    <Group titleSize={T.label} x={384} y={96} w={232} h={304} title="Speech layer · swappable" variant="dashed">
+      <Node {...T.compact} x={400} y={136} w={200} h={56} label="Turn detection" sub="VAD · barge-in" icon="clock" />
+      <Node {...T.compact} x={400} y={208} w={200} h={56} label="Speech to text" sub="Deepgram · Scribe" icon="doc" />
+      <Node {...T.compact} x={400} y={280} w={200} h={56} label="Voice" sub="ElevenLabs · Cartesia" icon="model" />
+      <Label x={500} y={368} text="or one duplex model" anchor="middle" size={T.label} />
+      <Label x={500} y={386} text="(GPT-Live-1)" anchor="middle" size={T.label} />
     </Group>
 
     <Connector points={[[616, cy - 16], [672, cy - 16]]} defs="vh" kind="request" />
     <Packet points={[[616, cy - 16], [672, cy - 16]]} kind="request" dur={1.4} delay={-0.7} r={4} />
     <Connector points={[[672, cy + 16], [616, cy + 16]]} defs="vh" kind="response" />
     <Packet points={[[672, cy + 16], [616, cy + 16]]} kind="response" dur={1.4} delay={-0.3} r={4} />
-    <Label x={644} y={cy + 4} text="text" anchor="middle" size={12} />
+    <Label x={644} y={cy + 4} text="text" anchor="middle" size={T.label} />
 
-    <Group titleSize={13} x={656} y={40} w={408} h={456} title="Harness · where the call resolves" variant="dashed" accent>
-      <Node size={16} subSize={12} x={672} y={cy - 40} w={160} h={80} label="Reasoning model" sub="text · tool calls" icon="agent" accent />
+    <Group titleSize={T.label} x={656} y={40} w={408} h={456} title="Harness · where the call resolves" variant="dashed" accent>
+      <Node {...T.compact} x={672} y={cy - 40} w={160} h={80} label="Reasoning model" sub="text · tool calls" icon="agent" accent />
       <Connector points={[[832, cy], [852, cy]]} defs="vh" arrow={false} />
       <Bus
         axis="v"
@@ -60,8 +60,7 @@ const desktop = (
       {parts.map((p, i) => (
         <Node
           key={p.label}
-          size={16}
-          subSize={12}
+          {...T.compact}
           x={872}
           y={top + i * step}
           w={176}

@@ -3,7 +3,7 @@
 // content/figures/. Colours mirror app/globals.css and the chart palette in
 // scripts/render-diagrams.mjs, so diagrams and charts read as one set.
 import type { ReactNode } from "react";
-import { defineDiagramTheme } from "uipack";
+import { Connector, Label, Packet, defineDiagramTheme, useFontFloor, type ConnectorKind } from "uipack";
 
 const SANS = "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
 const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
@@ -64,3 +64,84 @@ export interface NotesFigure {
 }
 
 export const define = (f: NotesFigure) => f;
+
+/**
+ * One type scale for every figure. Desktop drawings are 1080-1150 units wide in a
+ * 960px slot; phone drawings 320-440 wide in a 350px column.
+ * - `node`: the default box. `compact`: a box in a dense row or a secondary box.
+ * - `label`: connector labels, lane headers, group titles and free text.
+ */
+export const T = {
+  node: { size: 19, subSize: 13 },
+  compact: { size: 16, subSize: 13 },
+  label: 13,
+} as const;
+
+/** The phone scale: every size lands at 11px or more in the 350px column of a 440 viewBox. */
+export const TP = {
+  node: { size: 16, subSize: 14 },
+  label: 14,
+} as const;
+
+/**
+ * Free text in a figure (a wall's name, a to-scale bar's caption). Floored like
+ * uipack's own parts, so it never renders under 11px at the slot width.
+ */
+export function Text({ x, y, size = T.label, children, mono, bold, anchor = "middle", muted, accent }: {
+  x: number;
+  y: number;
+  size?: number;
+  children: ReactNode;
+  mono?: boolean;
+  bold?: boolean;
+  anchor?: "start" | "middle" | "end";
+  muted?: boolean;
+  accent?: boolean;
+}) {
+  const fontSize = useFontFloor(size);
+  return (
+    <text
+      x={x}
+      y={y}
+      fontSize={fontSize}
+      fontFamily={mono ? "var(--uipack-mono)" : "var(--uipack-sans)"}
+      fontWeight={bold ? 600 : 400}
+      textAnchor={anchor}
+      fill={accent ? "var(--uipack-accent-ink)" : "currentColor"}
+      fillOpacity={muted ? 0.72 : 1}
+    >
+      {children}
+    </text>
+  );
+}
+
+/**
+ * A step that repeats, drawn as a loop over a node's top edge with its label above:
+ * decode's per-token pass, the engine's forward pass, an agent's tool calls.
+ * `cx` is the loop's centre, `top` the node's top edge.
+ */
+export function LoopAbove({ defs, cx, top, w = 100, rise = 44, kind = "change", label, size = T.label, dur = 1.8, delay = -0.4 }: {
+  defs: string;
+  cx: number;
+  top: number;
+  w?: number;
+  rise?: number;
+  kind?: ConnectorKind;
+  label: string | string[];
+  size?: number;
+  dur?: number;
+  delay?: number;
+}) {
+  const points: [number, number][] = [[cx + w / 2, top], [cx + w / 2, top - rise], [cx - w / 2, top - rise], [cx - w / 2, top]];
+  const lines = Array.isArray(label) ? label : [label];
+  const step = size + 5;
+  return (
+    <>
+      <Connector points={points} defs={defs} kind={kind} />
+      {lines.map((text, i) => (
+        <Label key={text} x={cx} y={top - rise - 12 - (lines.length - 1 - i) * step} text={text} anchor="middle" size={size} />
+      ))}
+      <Packet points={points} kind={kind} dur={dur} delay={delay} r={4} />
+    </>
+  );
+}

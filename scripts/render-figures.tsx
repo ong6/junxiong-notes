@@ -16,6 +16,8 @@ const jobs: { id: string; name: string }[] = JSON.parse(process.argv[2] ?? "[]")
 // A phone composition is shown, unscrolled, in the 350px column of a 390px
 // phone. Every label in it must land at 11px or more there.
 const PHONE_COLUMN = 350;
+// Desktop drawings fill the article's 960px figure slot (app/globals.css, .fig).
+const DESKTOP_SLOT = 960;
 const PHONE_FLOOR = 11;
 // uipack 1.0.0 gap: a diagram theme has no chip-tint role, and uipack/static inlines
 // an unknown var(--uipack-…) as currentColor even when it has a fallback, so a filled
@@ -34,14 +36,14 @@ for (const { id, name } of jobs) {
   const [, , w, h] = fig.viewBox.split(/\s+/).map(Number);
   if (w < 900 || w > 1150 || h > 800) throw new Error(`${name}: viewBox ${w}x${h} is outside the 900–1150 wide, under 800 tall target (docs-figures.md)`);
   for (const mode of ["light", "dark"] as const) {
-    const svg = chipTint(renderStatic(fig, { theme: notes, mode, motion: true, frame: false, background: false }));
+    const svg = chipTint(renderStatic(fig, { theme: notes, mode, width: DESKTOP_SLOT, motion: true, frame: false, background: false }));
     writeFileSync(path.join(OUT, `${id}.${mode}.svg`), svg);
     rendered++;
     const mobileFile = path.join(OUT, `${id}.mobile.${mode}.svg`);
     if (fig.mobile) {
       const [, , mw, mh] = fig.mobile.viewBox.split(/\s+/).map(Number);
       if (mw < 320 || mw > 600 || mh > 900) throw new Error(`${name}: mobile viewBox ${mw}x${mh} is outside the 320–600 wide, under 900 tall target`);
-      const mobileSvg = chipTint(renderStatic(fig.mobile, { theme: notes, mode, motion: true, frame: false, background: false }));
+      const mobileSvg = chipTint(renderStatic(fig.mobile, { theme: notes, mode, width: PHONE_COLUMN, motion: true, frame: false, background: false }));
       const smallest = minFontSize(mobileSvg);
       if (smallest * PHONE_COLUMN / mw < PHONE_FLOOR) throw new Error(`${name}: mobile label at ${smallest}px renders at ${(smallest * PHONE_COLUMN / mw).toFixed(1)}px on a 390px phone; raise it to at least ${Math.ceil(PHONE_FLOOR * mw / PHONE_COLUMN)}px (floor ${PHONE_FLOOR}px)`);
       writeFileSync(mobileFile, mobileSvg);
