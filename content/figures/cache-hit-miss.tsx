@@ -13,7 +13,7 @@ const row = (y: number, labels: [string, string][], kind: "request" | "change", 
             <Packet points={[[xs[i - 1] + 200, y + 28], [xs[i], y + 28]]} kind={hot[i] ? kind : "neutral"} dur={1.4} delay={-i * 0.4} r={4} />
           </>
         ) : null}
-        <Node {...T.node} x={xs[i]} y={y} w={200} h={56} label={label} sub={sub} icon={i === 0 ? "doc" : i === 1 ? "db" : i === 2 ? "clock" : "user"} dashed={hot[i] && kind === "change"} />
+        <Node {...T.node} x={xs[i]} y={y} w={200} h={56} label={label} sub={sub} icon={i === 0 ? "doc" : i === 1 ? "db" : i === 2 ? "clock" : "terminal"} dashed={hot[i] && kind === "change"} />
       </g>
     ))}
   </>

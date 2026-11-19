@@ -23,9 +23,9 @@ export default define({
 
       <Node {...T.node} x={472} y={152} w={232} h={80} label="Total resident" sub="1.5–2× weights" icon="db" accent />
 
-      <Connector points={[[704, 192], [744, 192], [744, 120], [800, 120]]} defs="ms" kind="response" />
+      <Connector points={[[704, 192], [744, 192], [744, 120], [800, 120]]} defs="ms" kind="accent" />
       <Label size={T.label} x={744} y={108} text="fits RAM" anchor="middle" />
-      <Packet points={[[704, 192], [744, 192], [744, 120], [800, 120]]} kind="response" dur={1.8} r={4} />
+      <Packet points={[[704, 192], [744, 192], [744, 120], [800, 120]]} kind="accent" dur={1.8} r={4} />
       <Node {...T.node} x={800} y={88} w={240} h={64} label="Context is usable" icon="chart" />
 
       <Connector points={[[704, 192], [744, 192], [744, 264], [800, 264]]} defs="ms" kind="change" />

@@ -12,7 +12,7 @@ const toTools: [number, number][] = [[752, 192], [856, 192]];
 const desktop = (
   <>
     <Defs id="fp" />
-    <Node {...T.node} x={32} y={32} w={264} h={80} label="Prompt" sub="system prompt · request" icon="user" />
+    <Node {...T.node} x={32} y={32} w={264} h={80} label="Prompt" sub="system prompt · request" icon="terminal" />
     <Node {...T.node} x={32} y={152} w={264} h={80} label="Context" sub="wiki pages · docs" icon="doc" />
     <Node {...T.node} x={32} y={272} w={264} h={80} label="Skills" sub="SKILL.md · scripts" icon="git" />
 

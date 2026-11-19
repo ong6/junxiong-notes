@@ -48,7 +48,7 @@ const desktop = (
     </Group>
 
     <Group titleSize={T.label} x={16} y={264} w={1048} h={240} title="Plugin kernel · DeepSeek Harness" variant="dashed" accent>
-      <Node {...T.node} x={48} y={r2 - 40} w={200} h={80} label="Preset" sub="Minimal · Standard · PTC" icon="doc" />
+      <Node {...T.node} x={48} y={r2 - 40} w={200} h={80} label="Preset" sub="Minimal · Standard · PTC" icon="doc" strip="file" />
       <Connector points={[[248, r2], [320, r2]]} defs="ha" />
       <Label x={284} y={r2 - 12} text="YAML" anchor="middle" size={T.label} />
       {/* the kernel is a bar that everything plugs into; nothing sits above it */}
@@ -68,7 +68,7 @@ const desktop = (
     </Group>
 
     <Group titleSize={T.label} x={16} y={520} w={1048} h={208} title="Gateway daemon · Hermes Agent" variant="dashed">
-      <Node {...T.node} x={48} y={r3 - 32} w={200} h={64} label="Chat platforms" sub="Telegram · Slack · CLI" icon="user" />
+      <Node {...T.node} x={48} y={r3 - 32} w={200} h={64} label="Chat platforms" sub="Telegram · Slack · CLI" icon="client" />
       <Connector points={[[248, r3], [312, r3]]} defs="ha" kind="request" />
       <Packet points={[[248, r3], [312, r3]]} kind="request" dur={1.6} delay={-0.2} r={4} />
       <Group titleSize={T.label} x={288} y={560} w={552} h={152} title="Always on" variant="solid">
@@ -122,7 +122,7 @@ const mobile = (
     </Group>
 
     <Group titleSize={TP.label} x={8} y={p3} w={424} h={288} title="Gateway daemon · Hermes Agent" variant="dashed">
-      <Node {...M} x={32} y={p3 + 36} w={376} h={44} label="Chat platforms" sub="Telegram · Slack · CLI" icon="user" />
+      <Node {...M} x={32} y={p3 + 36} w={376} h={44} label="Chat platforms" sub="Telegram · Slack · CLI" icon="client" />
       <Connector points={[[220, p3 + 80], [220, p3 + 96]]} defs="ham" kind="request" />
       <Group titleSize={TP.label} x={24} y={p3 + 96} w={392} h={112} title="Always on" variant="solid">
         <Node {...M} x={40} y={p3 + 128} w={160} h={56} label="Gateway" sub="sessions · cron" icon="gateway" accent />

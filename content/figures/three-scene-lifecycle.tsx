@@ -13,15 +13,15 @@ export default define({
   children: (
     <>
       <Defs id="tsl" />
-      <Node {...T.node} x={40} y={88} w={220} h={88} label="Six HTML sections" sub="native document scroll" icon="doc" />
+      <Node {...T.node} x={40} y={88} w={220} h={88} label="Six HTML sections" sub="native document scroll" icon="doc" strip="window" />
       <Connector points={[[260, 132], [316, 132]]} defs="tsl" kind="request" />
       <Packet points={[[260, 132], [316, 132]]} kind="request" dur={1.6} r={4} />
 
-      <Node {...T.node} x={316} y={88} w={240} h={88} label="Viewport centre" sub="observer callback + rects" icon="search" />
+      <Node {...T.node} x={316} y={88} w={240} h={88} label="Viewport centre" sub="observer callback + rects" />
       <Connector points={[[556, 132], [612, 132]]} defs="tsl" kind="change" />
       <Packet points={[[556, 132], [612, 132]]} kind="change" dur={1.6} delay={-0.6} r={4} />
 
-      <Node {...T.node} x={612} y={88} w={220} h={88} label="Active chapter" sub="one canvas · one renderer" icon="route" />
+      <Node {...T.node} x={612} y={88} w={220} h={88} label="Active chapter" sub="one canvas · one renderer" />
       <Connector points={[[832, 132], [888, 132]]} defs="tsl" kind="response" />
       <Packet points={[[832, 132], [888, 132]]} kind="response" dur={1.6} delay={-1.1} r={4} />
       <Node {...T.node} x={888} y={88} w={152} h={88} label="3D object" sub="route-loaded" accent icon="model" />
@@ -29,12 +29,12 @@ export default define({
       <Connector points={replacePath} defs="tsl" kind="change" dashed />
       <Label size={T.label} x={684} y={250} text="chapter leaves centre" anchor="middle" />
       <Packet points={replacePath} kind="change" dur={2.4} delay={-0.7} r={4} />
-      <Node {...T.node} x={456} y={304} w={256} h={88} label="Tear down old canvas" sub="cancel rAF · dispose renderer" icon="pause" />
+      <Node {...T.node} x={456} y={304} w={256} h={88} label="Tear down old canvas" sub="cancel rAF · dispose renderer" />
 
       <Connector points={fallbackPath} defs="tsl" kind="change" dashed />
       <Label size={T.label} x={284} y={250} text="WebGL unavailable" anchor="middle" />
       <Packet points={fallbackPath} kind="change" dur={2.2} delay={-1.2} r={4} />
-      <Node {...T.node} x={116} y={304} w={256} h={88} label="Labelled CSS fallback" sub="mounted for every chapter" icon="diagram" />
+      <Node {...T.node} x={116} y={304} w={256} h={88} label="Labelled CSS fallback" sub="mounted for every chapter" />
     </>
   ),
 });

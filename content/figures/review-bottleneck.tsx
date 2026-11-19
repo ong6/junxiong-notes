@@ -34,7 +34,7 @@ const desktop = (
       </g>
     ))}
 
-    <Node {...T.node} x={280} y={104} w={152} h={112} label="Check" sub="tests · CI" icon="terminal" />
+    <Node {...T.node} x={280} y={104} w={152} h={112} label="Check" sub="tests · CI" icon="terminal" strip="terminal" />
     <Connector points={[[432, cy], [680, cy]]} defs="rb" kind="request" flow={F} />
     <Packet points={[[432, cy], [568, cy]]} kind="request" dur={0.9} r={4} trim={[6, 4]} flow={F} />
     <Packet points={[[432, cy], [568, cy]]} kind="request" dur={0.9} delay={-0.45} r={4} trim={[6, 4]} flow={F} />
@@ -48,9 +48,9 @@ const desktop = (
 
     <Group x={16} y={280} w={1048} h={128} variant="dashed" accent>
       <Label x={1032} y={356} text="what widens each step" anchor="end" size={T.label} accent />
-      <Node {...T.compact} x={48} y={320} w={176} h={64} label="Team harness" sub="definition of done" icon="doc" dashed />
+      <Node {...T.compact} x={48} y={320} w={176} h={64} label="Team harness" sub="definition of done" icon="doc" dashed strip="file" />
       <Connector points={[[128, 320], [128, 248]]} defs="rb" dashed />
-      <Node {...T.compact} x={264} y={320} w={184} h={64} label="Fast tests + CI" sub="agents run them" icon="terminal" dashed />
+      <Node {...T.compact} x={264} y={320} w={184} h={64} label="Fast tests + CI" sub="agents run them" icon="terminal" dashed strip="terminal" />
       <Connector points={[[356, 320], [356, 216]]} defs="rb" dashed />
       <Node {...T.compact} x={616} y={320} w={216} h={64} label="Risk tiers" sub="review evidence first" icon="lock" dashed />
       <Connector points={[[756, 320], [756, 188]]} defs="rb" dashed />
@@ -75,7 +75,7 @@ const mobile = (
         <Packet points={[[x, 104], [x, 152]]} kind="request" dur={0.9} delay={-i * 0.3} r={4} />
       </g>
     ))}
-    <Node {...M} x={56} y={152} w={192} h={56} label="Check" sub="tests · CI" icon="terminal" />
+    <Node {...M} x={56} y={152} w={192} h={56} label="Check" sub="tests · CI" icon="terminal" strip="terminal" />
 
     <Connector points={[[mx, 208], [mx, 392]]} defs="rbm" kind="request" flow={F} />
     <Packet points={[[mx, 208], [mx, 280]]} kind="request" dur={0.9} r={4} trim={[6, 4]} flow={F} />
@@ -88,9 +88,9 @@ const mobile = (
     <Packet points={[[mx, 448], [mx, 496]]} kind="request" dur={3.2} r={4} flow={F} />
     <Node {...M} x={56} y={496} w={192} h={56} label="Ship" sub="reviewer speed" icon="git" flow={F} />
 
-    <Node size={TP.node.size} x={304} y={52} w={120} h={48} label="Team harness" align="center" dashed />
+    <Node size={TP.node.size} x={304} y={52} w={120} h={48} label="Team harness" align="center" dashed strip="file" />
     <Connector points={[[304, 76], [280, 76]]} defs="rbm" dashed />
-    <Node size={TP.node.size} x={304} y={156} w={120} h={48} label="Tests + CI" align="center" dashed />
+    <Node size={TP.node.size} x={304} y={156} w={120} h={48} label="Tests + CI" align="center" dashed strip="terminal" />
     <Connector points={[[304, 180], [248, 180]]} defs="rbm" dashed />
     <Node size={TP.node.size} x={304} y={396} w={120} h={48} label="Risk tiers" align="center" dashed />
     <Connector points={[[304, 420], [224, 420]]} defs="rbm" dashed />

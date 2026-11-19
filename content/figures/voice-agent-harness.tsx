@@ -1,5 +1,5 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Bus, Connector, Defs, Group, Label, Node, Packet } from "uipack";
+import { Actor, Bus, Connector, Defs, Group, Label, Node, Packet } from "uipack";
 import { define, T } from "./_shared";
 
 // A production voice agent as a half-cascade. Blue (request) is the caller's
@@ -11,7 +11,7 @@ const alt =
 
 const parts = [
   { label: "Tools and APIs", sub: "refund · booking", icon: "tool" as const },
-  { label: "Caller context", sub: "CRM · past calls", icon: "db" as const },
+  { label: "Caller context", sub: "CRM · past calls", icon: "db" as const, strip: "store" as const },
   { label: "Guardrails", sub: "policy · identity", icon: "lock" as const },
   { label: "Human handoff", sub: "warm transfer", icon: "user" as const },
   { label: "Evals", sub: "simulated calls", icon: "chart" as const, dashed: true },
@@ -25,9 +25,9 @@ const desktop = (
   <>
     <Defs id="vh" />
 
-    <Node {...T.compact} x={16} y={cy - 32} w={136} h={64} label="Caller" sub="phone · app" icon="user" />
-    <Connector points={[[152, cy], [184, cy]]} defs="vh" kind="request" />
-    <Packet points={[[152, cy], [184, cy]]} kind="request" dur={1.4} r={4} />
+    <Actor cx={64} cy={cy} role="Caller" sub="phone · app" />
+    <Connector points={[[92, cy], [184, cy]]} defs="vh" kind="request" />
+    <Packet points={[[92, cy], [184, cy]]} kind="request" dur={1.4} r={4} />
 
     <Node {...T.compact} x={184} y={cy - 32} w={168} h={64} label="Telephony" sub="SIP · Twilio" icon="gateway" />
     <Connector points={[[352, cy], [384, cy]]} defs="vh" kind="request" />
@@ -40,15 +40,15 @@ const desktop = (
       <Label x={500} y={386} text="(GPT-Live-1)" anchor="middle" size={T.label} />
     </Group>
 
-    <Connector points={[[616, cy - 16], [672, cy - 16]]} defs="vh" kind="request" />
-    <Packet points={[[616, cy - 16], [672, cy - 16]]} kind="request" dur={1.4} delay={-0.7} r={4} />
-    <Connector points={[[672, cy + 16], [616, cy + 16]]} defs="vh" kind="response" />
-    <Packet points={[[672, cy + 16], [616, cy + 16]]} kind="response" dur={1.4} delay={-0.3} r={4} />
-    <Label x={644} y={cy + 4} text="text" anchor="middle" size={T.label} />
+    <Connector points={[[616, cy - 16], [664, cy - 16]]} defs="vh" kind="request" />
+    <Packet points={[[616, cy - 16], [664, cy - 16]]} kind="request" dur={1.4} delay={-0.7} r={4} />
+    <Connector points={[[664, cy + 16], [616, cy + 16]]} defs="vh" kind="response" />
+    <Packet points={[[664, cy + 16], [616, cy + 16]]} kind="response" dur={1.4} delay={-0.3} r={4} />
+    <Label x={640} y={cy + 4} text="text" anchor="middle" size={T.label} />
 
     <Group titleSize={T.label} x={656} y={40} w={408} h={456} title="Harness · where the call resolves" variant="dashed" accent>
-      <Node {...T.compact} x={672} y={cy - 40} w={160} h={80} label="Reasoning model" sub="text · tool calls" icon="agent" accent />
-      <Connector points={[[832, cy], [852, cy]]} defs="vh" arrow={false} />
+      <Node {...T.compact} x={664} y={cy - 40} w={176} h={80} label="Reasoning model" sub="text · tool calls" icon="agent" accent />
+      <Connector points={[[840, cy], [852, cy]]} defs="vh" arrow={false} inset={[0, 0]} />
       <Bus
         axis="v"
         at={852}
@@ -69,6 +69,7 @@ const desktop = (
           sub={p.sub}
           icon={p.icon}
           dashed={p.dashed}
+          strip={p.strip}
         />
       ))}
     </Group>

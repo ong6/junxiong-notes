@@ -209,7 +209,7 @@ function sankey(s: Spec, heads: string[]): ReactNode {
   return (
     <>
       {heads.map((t, c) => t && (
-        <text key={`h${c}`} x={c === s.fromCol && c > 0 ? 12 : s.xs[c]} y={s.narrow ? 28 : 24} fontSize={s.narrow ? 14 : 12} fontFamily="var(--uipack-mono)" letterSpacing=".08em" fill="var(--uipack-muted)">
+        <text key={`h${c}`} x={c === s.fromCol && c > 0 ? 12 : s.xs[c]} y={s.narrow ? 28 : 24} fontSize={s.narrow ? 14 : 13} fontFamily="var(--uipack-mono)" letterSpacing=".08em" fill="var(--uipack-muted)">
           {t}
         </text>
       ))}

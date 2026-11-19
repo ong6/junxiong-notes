@@ -2,9 +2,9 @@
 import { Connector, Defs, Group, Node, Packet } from "uipack";
 import { define, T, TP } from "./_shared";
 
-const gates: [string, string, "key" | "user" | "doc" | "clock"][] = [
+const gates: [string, string, "key" | "browser" | "doc" | "clock"][] = [
   ["Target role", "one loop to train for", "key"],
-  ["LinkedIn", "recruiters find you", "user"],
+  ["LinkedIn", "recruiters find you", "browser"],
   ["Resume", "gets you the call", "doc"],
   ["First & last 5 min", "frames the round", "clock"],
 ];
@@ -34,8 +34,8 @@ export default define({
           <g key={label}>
             {i > 0 ? (
               <>
-                <Connector points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} defs="jpo" kind="response" />
-                <Packet points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} kind="response" dur={1.8} delay={-i * 0.45} r={4} />
+                <Connector points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} defs="jpo" kind="accent" />
+                <Packet points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} kind="accent" dur={1.8} delay={-i * 0.45} r={4} />
               </>
             ) : null}
             <Node {...T.compact} x={GX[i]} y={88} w={GW} h={64} label={label} sub={sub} icon={icon} accent />
@@ -62,8 +62,8 @@ export default define({
               <g key={label}>
                 {i > 0 ? (
                   <>
-                    <Connector points={[[220, y - 16], [220, y]]} defs="jpom" kind="response" />
-                    <Packet points={[[220, y - 16], [220, y]]} kind="response" dur={1.4} delay={-i * 0.35} r={4} />
+                    <Connector points={[[220, y - 16], [220, y]]} defs="jpom" kind="accent" />
+                    <Packet points={[[220, y - 16], [220, y]]} kind="accent" dur={1.4} delay={-i * 0.35} r={4} />
                   </>
                 ) : null}
                 <Node {...TP.node} x={48} y={y} w={344} h={52} label={label} sub={sub} icon={icon} accent />

@@ -20,17 +20,17 @@ export default define({
       <Node {...T.node} x={40} y={64} w={224} h={96} label="Review the year" sub="work · resume · direction" icon="doc" />
       <Connector points={top} defs="lal" kind="request" />
       <Packet points={top} kind="request" dur={1.4} r={4} />
-      <Node {...T.node} x={304} y={64} w={224} h={96} label="Read 10 roles" sub="repeated titles · skills" icon="search" />
+      <Node {...T.node} x={304} y={64} w={224} h={96} label="Read 10 roles" sub="repeated titles · skills" icon="table" />
       <Connector points={second} defs="lal" kind="request" />
       <Packet points={second} kind="request" dur={1.4} delay={-0.4} r={4} />
-      <Node {...T.node} x={568} y={64} w={224} h={96} label="Refresh profile" sub="one coherent story" icon="user" accent />
-      <Connector points={third} defs="lal" kind="response" />
-      <Packet points={third} kind="response" dur={1.4} delay={-0.8} r={4} />
+      <Node {...T.node} x={568} y={64} w={224} h={96} label="Refresh profile" sub="one coherent story" icon="browser" accent />
+      <Connector points={third} defs="lal" kind="accent" />
+      <Packet points={third} kind="accent" dur={1.4} delay={-0.8} r={4} />
       <Node {...T.node} x={832} y={64} w={224} h={96} label="Measure 4 weeks" sub="qualified inbound" icon="chart" accent />
 
-      <Connector points={down} defs="lal" kind="response" />
-      <Packet points={down} kind="response" dur={1.8} delay={-1.1} r={4} />
-      <Node {...T.node} x={632} y={240} w={192} h={96} label="Leave it alone" sub="until reality changes" icon="pause" />
+      <Connector points={down} defs="lal" kind="accent" />
+      <Packet points={down} kind="accent" dur={1.8} delay={-1.1} r={4} />
+      <Node {...T.node} x={632} y={240} w={192} h={96} label="Leave it alone" sub="until reality changes" icon="calendar" />
       <Connector points={back} defs="lal" kind="request" dashed />
       <Packet points={back} kind="request" dur={3.2} delay={-1.4} r={4} />
       <Label x={152} y={280} text="next year" anchor="middle" size={T.label} />
@@ -49,18 +49,18 @@ export default define({
         <Defs id="lalm" />
         {[
           ["Review the year", "work · resume · direction", "doc", false],
-          ["Read 10 roles", "repeated titles · skills", "search", false],
-          ["Refresh profile", "one coherent story", "user", true],
+          ["Read 10 roles", "repeated titles · skills", "table", false],
+          ["Refresh profile", "one coherent story", "browser", true],
           ["Measure 4 weeks", "qualified inbound", "chart", true],
-          ["Leave it alone", "until reality changes", "pause", false],
+          ["Leave it alone", "until reality changes", "calendar", false],
         ].map(([label, sub, icon, accent], i) => {
           const y = 24 + i * 104;
           return (
             <g key={String(label)}>
               {i > 0 ? (
                 <>
-                  <Connector points={[[220, y - 24], [220, y]]} defs="lalm" kind={i >= 3 ? "response" : "request"} />
-                  <Packet points={[[220, y - 24], [220, y]]} kind={i >= 3 ? "response" : "request"} dur={1.5} delay={-i * 0.35} r={4} />
+                  <Connector points={[[220, y - 24], [220, y]]} defs="lalm" kind={i >= 3 ? "accent" : "request"} />
+                  <Packet points={[[220, y - 24], [220, y]]} kind={i >= 3 ? "accent" : "request"} dur={1.5} delay={-i * 0.35} r={4} />
                 </>
               ) : null}
               <Node {...TP.node} x={72} y={y} w={296} h={80} label={String(label)} sub={String(sub)} icon={String(icon)} accent={Boolean(accent)} />
