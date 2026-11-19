@@ -130,7 +130,7 @@ Faces are the site's system stacks; nothing is self-hosted.
 | `--ui-em-color` | TODO: as em-style | TODO: as light |
 | `--ui-star-fill` | `0` | `0` |
 | `--ui-accent-stroke` | `#9a3412` (the blockquote and project-link rule) | `#f0854f` |
-| `--ui-flow-error` | `#b8352a` (`notes`; 4.9:1 or more on every figure fill) | `#e8735f` (5.5:1 or more) |
+| `--ui-flow-error` | `#b8352a` (`notes`; the agent's proposal, 2026-11-19, unused by any figure yet: 4.9:1 or more on every figure fill; the owner may change it) | `#e8735f` (the agent's proposal; 5.5:1 or more) |
 | `--ui-font-heading` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` | `"Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif` |
 | `--ui-canvas-pattern` | `none` (figures sit on the page with no canvas) | `none` |
 | `--ui-cta-fill` | TODO: no primary button | TODO: as light |
@@ -313,6 +313,8 @@ has been a `flex` look since uipack 0.3.0: one grammar, coloured per site, which
 | `fonts` | text: the sans stack; label: the mono stack | as light |
 | `canvas` | `plain` (figures sit on the article with no ground) | `plain` |
 
+`flow-error` is the agent's proposal: the theme API requires one and no figure draws a declined branch yet.
+
 The figure accent is green while the site's accent is terracotta (`#9a3412`); the theme keeps the
 figure colours the blog already had. The HTML charts and article parts still take their colours from
 the `--uipack-*` mapping on `.fig-html, .prose` in `app/globals.css` (the theme reaches the static
@@ -327,6 +329,7 @@ the nav label "Main site ↗" points back to junxiong.dev.
 
 ## Open TODOs
 
+- `--ui-flow-error`: confirm or replace the agent's proposed `#b8352a` / `#e8735f`.
 - Figure labels: keep `.fig-diagram text` (every figure label in the site sans; the layouts are
   tuned to it, and uipack's 11px mono `Decision` and `Actor` labels read small beside 19px node
   labels) or let uipack's mono labels through (about thirty subs would need wider boxes).
