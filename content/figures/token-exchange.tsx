@@ -1,12 +1,15 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Connector, Defs, Label, Lane, Node, Packet } from "uipack";
+import { Activation, Defs, Label, Lifeline, Message, Node, SelfLoop } from "uipack";
 import { define, T } from "./_shared";
 
-const AGENT = 180;
-const BROKER = 540;
-const SVC = 900;
-const TOP = 88;
-const BOTTOM = 500;
+// A sequence built from uipack's sequence parts: participants are Nodes, time runs
+// down their lifelines, each message is numbered on its sender's lifeline, and the
+// two steps a participant does on its own are self-loops over an activation bar.
+const AGENT = 140;
+const BROKER = 580;
+const SVC = 920;
+const TOP = 80;
+const BOTTOM = 504;
 
 export default define({
   alt: "Sequence: the agent sends its own credential plus the user's subject token to the auth broker. The broker downscopes to one audience with a TTL in minutes and returns a short-lived token carrying an act claim. The agent presents only that token to the internal service, which checks audience, scope and expiry.",
@@ -14,37 +17,28 @@ export default define({
   children: (
     <>
       <Defs id="te" />
-      <Lane size={T.label} x={0} w={360} y={20} title="Agent" />
-      <Lane size={T.label} x={360} w={360} y={20} title="Auth broker" />
-      <Lane size={T.label} x={720} w={360} y={20} title="Internal service" />
-      <Node {...T.node} x={AGENT - 104} y={32} w={208} h={48} label="Agent" icon="agent" />
-      <Node {...T.node} x={BROKER - 104} y={32} w={208} h={48} label="Auth broker" icon="lock" accent />
-      <Node {...T.node} x={SVC - 104} y={32} w={208} h={48} label="Internal service" icon="service" />
+      <Node {...T.node} x={AGENT - 104} y={24} w={208} h={56} label="Agent" icon="agent" />
+      <Node {...T.node} x={BROKER - 104} y={24} w={208} h={56} label="Auth broker" icon="lock" accent />
+      <Node {...T.node} x={SVC - 104} y={24} w={208} h={56} label="Internal service" icon="service" />
       {[AGENT, BROKER, SVC].map((x) => (
-        <Connector key={x} points={[[x, TOP], [x, BOTTOM]]} arrow={false} dashed inset={0} />
+        <Lifeline key={x} x={x} y1={TOP} y2={BOTTOM} />
       ))}
 
-      <Connector points={[[AGENT, 144], [BROKER, 144]]} defs="te" kind="request" inset={0} />
-      <Label size={T.label} x={(AGENT + BROKER) / 2} y={134} text="own credential + user's subject token" anchor="middle" />
-      <Packet points={[[AGENT, 144], [BROKER, 144]]} kind="request" dur={2} r={4} trim={[0, 10]} />
+      <Message id="te" from={AGENT} to={BROKER} y={144} n={1} kind="request" label="own credential + user's subject token" labelSize={T.label} packet={{ dur: 2 }} />
 
-      <Connector points={[[BROKER, 192], [BROKER + 64, 192], [BROKER + 64, 240], [BROKER, 240]]} defs="te" kind="change" inset={0} />
-      <Label size={T.label} x={BROKER + 76} y={210} text="downscope: audience = one service" />
-      <Label size={T.label} x={BROKER + 76} y={228} text="TTL in minutes" />
-      <Packet points={[[BROKER, 192], [BROKER + 64, 192], [BROKER + 64, 240], [BROKER, 240]]} kind="change" dur={2} delay={-0.5} r={4} trim={[0, 10]} />
+      <Activation x={BROKER} y1={180} y2={252} accent />
+      <SelfLoop id="te" x={BROKER} y={192} h={48} w={64} side="right" n={2} kind="change" packet={{ dur: 2, delay: -0.5 }} />
+      <Label size={T.label} x={BROKER - 20} y={210} text="downscope: audience = one service" anchor="end" />
+      <Label size={T.label} x={BROKER - 20} y={228} text="TTL in minutes" anchor="end" />
 
-      <Connector points={[[BROKER, 296], [AGENT, 296]]} defs="te" kind="response" inset={0} />
-      <Label size={T.label} x={(AGENT + BROKER) / 2} y={286} text="short-lived token · act claim: agent for user" anchor="middle" />
-      <Packet points={[[BROKER, 296], [AGENT, 296]]} kind="response" dur={2} delay={-1} r={4} trim={[0, 10]} />
+      <Message id="te" from={BROKER} to={AGENT} y={296} n={3} kind="response" dashed label="short-lived token · act claim: agent for user" labelX={330} labelSize={T.label} packet={{ dur: 2, delay: -1 }} />
 
-      <Connector points={[[AGENT, 360], [SVC, 360]]} defs="te" kind="request" inset={0} />
-      <Label size={T.label} x={(BROKER + SVC) / 2} y={350} text="that token, nothing else" anchor="middle" />
-      <Packet points={[[AGENT, 360], [SVC, 360]]} kind="request" dur={2.4} delay={-1.5} r={4} trim={[0, 10]} />
+      <Message id="te" from={AGENT} to={SVC} y={360} n={4} kind="request" label="that token, nothing else" labelX={(BROKER + SVC) / 2} labelSize={T.label} packet={{ dur: 2.4, delay: -1.5 }} />
 
-      <Connector points={[[SVC, 416], [SVC + 64, 416], [SVC + 64, 464], [SVC, 464]]} defs="te" kind="response" inset={0} />
-      <Label size={T.label} x={SVC - 12} y={434} text="audience is me? scope?" anchor="end" />
-      <Label size={T.label} x={SVC - 12} y={452} text="not expired?" anchor="end" />
-      <Packet points={[[SVC, 416], [SVC + 64, 416], [SVC + 64, 464], [SVC, 464]]} kind="response" dur={2} delay={-0.3} r={4} trim={[0, 10]} />
+      <Activation x={SVC} y1={404} y2={476} />
+      <SelfLoop id="te" x={SVC} y={416} h={48} w={64} side="right" n={5} kind="response" packet={{ dur: 2, delay: -0.3 }} />
+      <Label size={T.label} x={SVC - 20} y={434} text="audience is me? scope?" anchor="end" />
+      <Label size={T.label} x={SVC - 20} y={452} text="not expired?" anchor="end" />
     </>
   ),
 });
