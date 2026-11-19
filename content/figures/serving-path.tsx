@@ -1,19 +1,18 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Actor, Connector, Defs, Label, Node, Packet } from "uipack";
+import { Connector, Defs, Label, Node, Packet } from "uipack";
 import { define, LoopAbove, T, TP } from "./_shared";
 
 // Desktop: request path left to right, the decode loop over the engine, and the
 // token stream returning along the bottom. Each label sits in a gap wider than
 // itself so no node covers it.
-// The token stream returns into the Users actor from the left, clear of its label.
-const back: [number, number][] = [[916, 208], [916, 256], [16, 256], [16, 140], [44, 140]];
+const back: [number, number][] = [[916, 208], [916, 256], [96, 256], [96, 176]];
 
 const desktop = (
   <>
     <Defs id="sp" />
-    <Actor cx={72} cy={140} role="Users" sub="N requests" />
-    <Connector points={[[100, 140], [240, 140]]} defs="sp" kind="request" />
-    <Packet points={[[100, 140], [240, 140]]} kind="request" dur={1.4} r={4} />
+    <Node {...T.node} x={24} y={104} w={144} h={72} label="Users" sub="N requests" icon="user" />
+    <Connector points={[[168, 140], [240, 140]]} defs="sp" kind="request" />
+    <Packet points={[[168, 140], [240, 140]]} kind="request" dur={1.4} r={4} />
 
     <Node {...T.node} x={240} y={96} w={192} h={88} label="Router" sub="picks a replica" icon="gateway" />
     <Connector points={[[432, 140], [512, 140]]} defs="sp" kind="request" />
@@ -35,9 +34,9 @@ const desktop = (
 const mobile = (
   <>
     <Defs id="spm" />
-    <Actor cx={148} cy={52} role="Users" sub="N requests" labelSide="right" />
-    <Connector points={[[148, 80], [148, 120]]} defs="spm" kind="request" />
-    <Packet points={[[148, 80], [148, 120]]} kind="request" dur={0.9} r={4} />
+    <Node {...TP.node} x={24} y={24} w={248} h={64} label="Users" sub="N requests" icon="user" />
+    <Connector points={[[148, 88], [148, 120]]} defs="spm" kind="request" />
+    <Packet points={[[148, 88], [148, 120]]} kind="request" dur={0.9} r={4} />
     <Node {...TP.node} x={24} y={120} w={248} h={64} label="Router" sub="picks a replica" icon="gateway" />
     <Connector points={[[148, 184], [148, 216]]} defs="spm" kind="request" />
     <Node {...TP.node} x={24} y={216} w={248} h={64} label="Scheduler" sub="queue · token budget" icon="clock" />

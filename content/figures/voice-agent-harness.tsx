@@ -1,5 +1,5 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Actor, Bus, Connector, Defs, Group, Label, Node, Packet } from "uipack";
+import { Bus, Connector, Defs, Group, Label, Node, Packet } from "uipack";
 import { define, T } from "./_shared";
 
 // A production voice agent as a half-cascade. Blue (request) is the caller's
@@ -25,9 +25,9 @@ const desktop = (
   <>
     <Defs id="vh" />
 
-    <Actor cx={64} cy={cy} role="Caller" sub="phone · app" />
-    <Connector points={[[92, cy], [184, cy]]} defs="vh" kind="request" />
-    <Packet points={[[92, cy], [184, cy]]} kind="request" dur={1.4} r={4} />
+    <Node {...T.compact} x={16} y={cy - 32} w={136} h={64} label="Caller" sub="phone · app" icon="user" />
+    <Connector points={[[152, cy], [184, cy]]} defs="vh" kind="request" />
+    <Packet points={[[152, cy], [184, cy]]} kind="request" dur={1.4} r={4} />
 
     <Node {...T.compact} x={184} y={cy - 32} w={168} h={64} label="Telephony" sub="SIP · Twilio" icon="gateway" />
     <Connector points={[[352, cy], [384, cy]]} defs="vh" kind="request" />

@@ -6,15 +6,16 @@ import type { ReactNode } from "react";
 import { Connector, Label, Packet, defineDiagramTheme, useFontFloor, type ConnectorKind } from "uipack";
 
 const SANS = "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
-const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
 // The blog's one diagram theme (STYLE.md, diagram-themes: { default: notes }).
 // uipack/static inlines it into each file; the article surface shows through
-// (canvas "plain", and the renderer paints no background).
+// (canvas "plain", and the renderer paints no background). Labels are the site
+// sans too: the page sets every figure label in it (.fig-diagram text in
+// app/globals.css), so the full-size files match what readers see in the article.
 export const notes = defineDiagramTheme({
   name: "notes",
   canvas: "plain",
-  fonts: { text: SANS, label: MONO },
+  fonts: { text: SANS, label: SANS },
   light: {
     ink: "#14110d",
     "ink-2": "#6b6459",

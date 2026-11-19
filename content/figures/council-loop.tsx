@@ -1,17 +1,16 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Connector, Decision, Defs, Label, Node, Outcome, Packet } from "uipack";
+import { Connector, Defs, Label, Node, Packet } from "uipack";
 import { define, T, TP } from "./_shared";
 
-// Desktop: version → three fresh reviewers → gate (a Decision) → keep (the Outcome),
-// with the fix loop underneath.
+// Desktop: version → three fresh reviewers → gate → keep, with the fix loop underneath.
 const toR1: [number, number][] = [[256, 196], [288, 196], [288, 112], [320, 112]];
 const toR2: [number, number][] = [[256, 196], [320, 196]];
 const toR3: [number, number][] = [[256, 196], [288, 196], [288, 280], [320, 280]];
-const fromR1: [number, number][] = [[552, 112], [592, 112], [592, 196], [684, 196]];
-const fromR2: [number, number][] = [[552, 196], [684, 196]];
-const fromR3: [number, number][] = [[552, 280], [592, 280], [592, 196], [684, 196]];
-const pass: [number, number][] = [[780, 196], [872, 196]];
-const toFix: [number, number][] = [[732, 244], [732, 336]];
+const fromR1: [number, number][] = [[552, 112], [592, 112], [592, 196], [624, 196]];
+const fromR2: [number, number][] = [[552, 196], [624, 196]];
+const fromR3: [number, number][] = [[552, 280], [592, 280], [592, 196], [624, 196]];
+const pass: [number, number][] = [[840, 196], [888, 196]];
+const toFix: [number, number][] = [[732, 240], [732, 336]];
 const back: [number, number][] = [[632, 368], [148, 368], [148, 240]];
 
 const desktop = (
@@ -31,11 +30,10 @@ const desktop = (
     <Connector points={fromR2} defs="cn" kind="request" />
     <Connector points={fromR3} defs="cn" kind="request" />
 
-    <Decision cx={732} cy={196} r={48} label="Gate" />
-    <Label size={T.label} x={732} y={136} text="constraints · all ≥ target" anchor="middle" />
+    <Node {...T.node} x={624} y={152} w={216} h={88} label="Gate" sub="constraints · all ≥ target" icon="lock" />
     <Connector points={pass} defs="cn" kind="accent" />
     <Packet points={pass} kind="accent" dur={1.2} delay={-0.5} r={4} />
-    <Outcome x={872} y={168} w={176} label="Keep" sub="best compliant" />
+    <Node {...T.node} x={888} y={152} w={160} h={88} label="Keep" sub="best compliant" accent />
 
     <Connector points={toFix} defs="cn" kind="change" />
     <Label size={T.label} x={744} y={292} text="fail" anchor="start" />
@@ -47,9 +45,6 @@ const desktop = (
 );
 
 // Phone: the same loop stacked; keep and fix sit side by side under the gate.
-const mPass: [number, number][] = [[120, 244], [100, 244], [100, 332]];
-const mFail: [number, number][] = [[164, 288], [164, 308], [260, 308], [260, 332]];
-const mBack: [number, number][] = [[336, 364], [348, 364], [348, 52], [288, 52]];
 const mobile = (
   <>
     <Defs id="cnm" />
@@ -57,18 +52,16 @@ const mobile = (
     <Connector points={[[164, 80], [164, 112]]} defs="cnm" kind="request" />
     <Packet points={[[164, 80], [164, 112]]} kind="request" dur={0.9} r={4} />
     <Node {...TP.node} x={40} y={112} w={248} h={72} label="3 fresh reviewers" sub="own metrics · target hidden" align="center" />
-    <Connector points={[[164, 184], [164, 200]]} defs="cnm" kind="request" />
-    <Decision cx={164} cy={244} r={44} label="Gate" />
-    <Label size={TP.label} x={216} y={240} text="constraints" anchor="start" />
-    <Label size={TP.label} x={216} y={258} text="all ≥ target" anchor="start" />
-    <Connector points={mPass} defs="cnm" kind="accent" />
-    <Label size={TP.label} x={92} y={300} text="pass" anchor="end" />
-    <Outcome x={24} y={332} w={152} label="Keep" sub="best compliant" />
-    <Connector points={mFail} defs="cnm" kind="change" />
-    <Label size={TP.label} x={268} y={326} text="fail" anchor="start" />
-    <Node {...TP.node} x={184} y={332} w={152} h={64} label="Fix" sub="≤ 3 rounds" align="center" />
-    <Connector points={mBack} defs="cnm" kind="change" />
-    <Packet points={mBack} kind="change" dur={2.2} delay={-0.8} r={4} />
+    <Connector points={[[164, 184], [164, 216]]} defs="cnm" kind="request" />
+    <Node {...TP.node} x={40} y={216} w={248} h={64} label="Gate" sub="constraints · all ≥ target" align="center" />
+    <Connector points={[[112, 280], [112, 320]]} defs="cnm" kind="accent" />
+    <Label size={TP.label} x={104} y={306} text="pass" anchor="end" />
+    <Node {...TP.node} x={24} y={320} w={152} h={64} label="Keep" sub="best compliant" align="center" accent />
+    <Connector points={[[216, 280], [216, 320]]} defs="cnm" kind="change" />
+    <Label size={TP.label} x={224} y={306} text="fail" anchor="start" />
+    <Node {...TP.node} x={184} y={320} w={152} h={64} label="Fix" sub="≤ 3 rounds" align="center" />
+    <Connector points={[[336, 352], [348, 352], [348, 52], [288, 52]]} defs="cnm" kind="change" />
+    <Packet points={[[336, 352], [348, 352], [348, 52], [288, 52]]} kind="change" dur={2.2} delay={-0.8} r={4} />
   </>
 );
 
@@ -78,7 +71,7 @@ export default define({
   children: desktop,
   mobile: {
     alt: "The council loop stacked: a version with references goes to three fresh reviewers who pick their own metrics and never see the target, then to a gate. A pass keeps the best compliant version; a fail goes to a fix step that loops back to the version, at most three rounds.",
-    viewBox: "0 0 360 416",
+    viewBox: "0 0 360 408",
     children: mobile,
   },
 });
