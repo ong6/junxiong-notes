@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
 // Desktop: version → three fresh reviewers → gate → keep, with the fix loop underneath.
 const toR1: [number, number][] = [[256, 196], [288, 196], [288, 112], [320, 112]];
@@ -16,12 +16,12 @@ const back: [number, number][] = [[632, 368], [148, 368], [148, 240]];
 const desktop = (
   <>
     <Defs id="cn" />
-    <Node size={19} subSize={13} x={40} y={152} w={216} h={88} label="Version vN" sub="+ before · references" icon="doc" />
+    <Node {...T.node} x={40} y={152} w={216} h={88} label="Version vN" sub="+ before · references" icon="doc" />
 
-    <Label size={14} x={436} y={60} text="fresh each round · target hidden" anchor="middle" />
-    <Node size={17} subSize={13} x={320} y={84} w={232} h={56} label="Reviewer" sub="lens: first-time user" />
-    <Node size={17} subSize={13} x={320} y={168} w={232} h={56} label="Reviewer" sub="lens: power user" />
-    <Node size={17} subSize={13} x={320} y={252} w={232} h={56} label="Reviewer" sub="lens: designer" />
+    <Label size={T.label} x={436} y={60} text="fresh each round · target hidden" anchor="middle" />
+    <Node {...T.compact} x={320} y={84} w={232} h={56} label="Reviewer" sub="lens: first-time user" />
+    <Node {...T.compact} x={320} y={168} w={232} h={56} label="Reviewer" sub="lens: power user" />
+    <Node {...T.compact} x={320} y={252} w={232} h={56} label="Reviewer" sub="lens: designer" />
     <Connector points={toR1} defs="cn" kind="request" />
     <Connector points={toR2} defs="cn" kind="request" />
     <Connector points={toR3} defs="cn" kind="request" />
@@ -30,17 +30,17 @@ const desktop = (
     <Connector points={fromR2} defs="cn" kind="request" />
     <Connector points={fromR3} defs="cn" kind="request" />
 
-    <Node size={19} subSize={13} x={624} y={152} w={216} h={88} label="Gate" sub="constraints · all ≥ target" icon="lock" />
-    <Connector points={pass} defs="cn" kind="response" />
-    <Packet points={pass} kind="response" dur={1.2} delay={-0.5} r={4} />
-    <Node size={19} subSize={13} x={888} y={152} w={160} h={88} label="Keep" sub="best compliant" accent />
+    <Node {...T.node} x={624} y={152} w={216} h={88} label="Gate" sub="constraints · all ≥ target" icon="lock" />
+    <Connector points={pass} defs="cn" kind="accent" />
+    <Packet points={pass} kind="accent" dur={1.2} delay={-0.5} r={4} />
+    <Node {...T.node} x={888} y={152} w={160} h={88} label="Keep" sub="best compliant" accent />
 
     <Connector points={toFix} defs="cn" kind="change" />
-    <Label size={14} x={744} y={292} text="fail" anchor="start" />
-    <Node size={17} subSize={13} x={632} y={336} w={200} h={64} label="Main agent fixes" sub="snapshot · new evidence" />
+    <Label size={T.label} x={744} y={292} text="fail" anchor="start" />
+    <Node {...T.compact} x={632} y={336} w={200} h={64} label="Main agent fixes" sub="snapshot · new evidence" />
     <Connector points={back} defs="cn" kind="change" />
     <Packet points={back} kind="change" dur={2.4} delay={-1} r={4} />
-    <Label size={14} x={390} y={392} text="next round · at most 3 by default" anchor="middle" />
+    <Label size={T.label} x={390} y={392} text="next round · at most 3 by default" anchor="middle" />
   </>
 );
 
@@ -48,18 +48,18 @@ const desktop = (
 const mobile = (
   <>
     <Defs id="cnm" />
-    <Node size={16} subSize={14} x={40} y={24} w={248} h={56} label="Version vN" sub="+ before · references" align="center" />
+    <Node {...TP.node} x={40} y={24} w={248} h={56} label="Version vN" sub="+ before · references" align="center" />
     <Connector points={[[164, 80], [164, 112]]} defs="cnm" kind="request" />
     <Packet points={[[164, 80], [164, 112]]} kind="request" dur={0.9} r={4} />
-    <Node size={16} subSize={14} x={40} y={112} w={248} h={72} label="3 fresh reviewers" sub="own metrics · target hidden" align="center" />
+    <Node {...TP.node} x={40} y={112} w={248} h={72} label="3 fresh reviewers" sub="own metrics · target hidden" align="center" />
     <Connector points={[[164, 184], [164, 216]]} defs="cnm" kind="request" />
-    <Node size={16} subSize={14} x={40} y={216} w={248} h={64} label="Gate" sub="constraints · all ≥ target" align="center" />
-    <Connector points={[[112, 280], [112, 320]]} defs="cnm" kind="response" />
-    <Label size={14} x={104} y={306} text="pass" anchor="end" />
-    <Node size={16} subSize={14} x={24} y={320} w={152} h={64} label="Keep" sub="best compliant" align="center" accent />
+    <Node {...TP.node} x={40} y={216} w={248} h={64} label="Gate" sub="constraints · all ≥ target" align="center" />
+    <Connector points={[[112, 280], [112, 320]]} defs="cnm" kind="accent" />
+    <Label size={TP.label} x={104} y={306} text="pass" anchor="end" />
+    <Node {...TP.node} x={24} y={320} w={152} h={64} label="Keep" sub="best compliant" align="center" accent />
     <Connector points={[[216, 280], [216, 320]]} defs="cnm" kind="change" />
-    <Label size={14} x={224} y={306} text="fail" anchor="start" />
-    <Node size={16} subSize={14} x={184} y={320} w={152} h={64} label="Fix" sub="≤ 3 rounds" align="center" />
+    <Label size={TP.label} x={224} y={306} text="fail" anchor="start" />
+    <Node {...TP.node} x={184} y={320} w={152} h={64} label="Fix" sub="≤ 3 rounds" align="center" />
     <Connector points={[[336, 352], [348, 352], [348, 52], [288, 52]]} defs="cnm" kind="change" />
     <Packet points={[[336, 352], [348, 352], [348, 52], [288, 52]]} kind="change" dur={2.2} delay={-0.8} r={4} />
   </>

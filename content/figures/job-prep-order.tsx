@@ -1,10 +1,10 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Group, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
-const gates: [string, string, "key" | "user" | "doc" | "clock"][] = [
+const gates: [string, string, "key" | "browser" | "doc" | "clock"][] = [
   ["Target role", "one loop to train for", "key"],
-  ["LinkedIn", "recruiters find you", "user"],
+  ["LinkedIn", "recruiters find you", "browser"],
   ["Resume", "gets you the call", "doc"],
   ["First & last 5 min", "frames the round", "clock"],
 ];
@@ -29,22 +29,22 @@ export default define({
   children: (
     <>
       <Defs id="jpo" />
-      <Group titleSize={13} x={24} y={24} w={1032} h={152} title="The cheap 20% · each step gates the next" variant="dashed" accent>
+      <Group titleSize={T.label} x={24} y={24} w={1032} h={152} title="The cheap 20% · each step gates the next" variant="dashed" accent>
         {gates.map(([label, sub, icon], i) => (
           <g key={label}>
             {i > 0 ? (
               <>
-                <Connector points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} defs="jpo" kind="response" />
-                <Packet points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} kind="response" dur={1.8} delay={-i * 0.45} r={4} />
+                <Connector points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} defs="jpo" kind="accent" />
+                <Packet points={[[GX[i - 1] + GW, 120], [GX[i], 120]]} kind="accent" dur={1.8} delay={-i * 0.45} r={4} />
               </>
             ) : null}
-            <Node size={16} subSize={12} x={GX[i]} y={88} w={GW} h={64} label={label} sub={sub} icon={icon} accent />
+            <Node {...T.compact} x={GX[i]} y={88} w={GW} h={64} label={label} sub={sub} icon={icon} accent />
           </g>
         ))}
       </Group>
-      <Group titleSize={13} x={24} y={216} w={1032} h={152} title="Technical rounds · in order of impact, each trained differently" variant="dashed">
+      <Group titleSize={T.label} x={24} y={216} w={1032} h={152} title="Technical rounds · in order of impact, each trained differently" variant="dashed">
         {rounds.map(([label, sub], i) => (
-          <Node key={label} size={15} subSize={11} x={rx(i)} y={280} w={RW} h={64} label={label} sub={sub} />
+          <Node key={label} {...T.compact} x={rx(i)} y={280} w={RW} h={64} label={label} sub={sub} />
         ))}
       </Group>
     </>
@@ -55,25 +55,25 @@ export default define({
     children: (
       <>
         <Defs id="jpom" />
-        <Group titleSize={14} x={16} y={16} w={408} h={328} title="The cheap 20% · in order" variant="dashed" accent>
+        <Group titleSize={TP.label} x={16} y={16} w={408} h={328} title="The cheap 20% · in order" variant="dashed" accent>
           {gates.map(([label, sub, icon], i) => {
             const y = 64 + i * 68;
             return (
               <g key={label}>
                 {i > 0 ? (
                   <>
-                    <Connector points={[[220, y - 16], [220, y]]} defs="jpom" kind="response" />
-                    <Packet points={[[220, y - 16], [220, y]]} kind="response" dur={1.4} delay={-i * 0.35} r={4} />
+                    <Connector points={[[220, y - 16], [220, y]]} defs="jpom" kind="accent" />
+                    <Packet points={[[220, y - 16], [220, y]]} kind="accent" dur={1.4} delay={-i * 0.35} r={4} />
                   </>
                 ) : null}
-                <Node size={16} subSize={14} x={48} y={y} w={344} h={52} label={label} sub={sub} icon={icon} accent />
+                <Node {...TP.node} x={48} y={y} w={344} h={52} label={label} sub={sub} icon={icon} accent />
               </g>
             );
           })}
         </Group>
-        <Group titleSize={14} x={16} y={368} w={408} h={464} title="Technical rounds · by impact" variant="dashed">
+        <Group titleSize={TP.label} x={16} y={368} w={408} h={464} title="Technical rounds · by impact" variant="dashed">
           {rounds.map(([label, sub], i) => (
-            <Node key={label} size={16} subSize={14} x={48} y={416 + i * 68} w={344} h={52} label={label} sub={sub} />
+            <Node key={label} {...TP.node} x={48} y={416 + i * 68} w={344} h={52} label={label} sub={sub} />
           ))}
         </Group>
       </>

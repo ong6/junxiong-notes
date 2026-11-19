@@ -1,16 +1,18 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Group, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
-// 200px nodes so "Matched shortlist" fits inside its box.
+// 200px nodes so "Matched shortlist" fits inside its box. The inbound path is the
+// claim, so it takes the accent path.
 const xs = [64, 320, 576, 832];
 const NODE_W = 200;
 
 const path = (
   y: number,
   labels: [string, string][],
-  kind: "request" | "response",
+  kind: "request" | "accent",
   accent: boolean,
+  first: "user" | "browser",
 ) => (
   <>
     {labels.map(([label, sub], i) => (
@@ -32,15 +34,14 @@ const path = (
           </>
         ) : null}
         <Node
-          size={18}
-          subSize={12}
+          {...T.node}
           x={xs[i]}
           y={y}
           w={NODE_W}
           h={64}
           label={label}
           sub={sub}
-          icon={i === 0 ? "user" : i === 1 ? "search" : i === 2 ? "doc" : "agent"}
+          icon={i === 0 ? first : i === 1 ? undefined : i === 2 ? "doc" : "agent"}
           accent={accent && i >= 1}
         />
       </g>
@@ -51,8 +52,9 @@ const path = (
 const mobilePath = (
   startY: number,
   labels: [string, string][],
-  kind: "request" | "response",
+  kind: "request" | "accent",
   accent: boolean,
+  first: "user" | "browser",
 ) => (
   <>
     {labels.map(([label, sub], i) => {
@@ -66,15 +68,14 @@ const mobilePath = (
             </>
           ) : null}
           <Node
-            size={16}
-            subSize={14}
+            {...TP.node}
             x={48}
             y={y}
             w={344}
             h={56}
             label={label}
             sub={sub}
-            icon={i === 0 ? "user" : i === 1 ? "search" : i === 2 ? "doc" : "agent"}
+            icon={i === 0 ? first : i === 1 ? undefined : i === 2 ? "doc" : "agent"}
             accent={accent && i >= 1}
           />
         </g>
@@ -89,12 +90,12 @@ export default define({
   children: (
     <>
       <Defs id="lip" />
-      <Group titleSize={13} x={24} y={24} w={1032} h={152} title="Cold application · asks the queue to notice you" variant="dashed">
-        {path(88, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false)}
+      <Group titleSize={T.label} x={24} y={24} w={1032} h={152} title="Cold application · asks the queue to notice you" variant="dashed">
+        {path(88, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false, "user")}
       </Group>
-      <Group titleSize={13} x={24} y={216} w={1032} h={152} title="LinkedIn inbound · the match happens before the message" variant="dashed" accent>
-        {path(280, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "response", true)}
-        <Label x={484} y={272} text="matched before contact" anchor="middle" size={12} />
+      <Group titleSize={T.label} x={24} y={216} w={1032} h={152} title="LinkedIn inbound · the match happens before the message" variant="dashed" accent>
+        {path(280, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "accent", true, "browser")}
+        <Label x={484} y={272} text="matched before contact" anchor="middle" size={T.label} />
       </Group>
     </>
   ),
@@ -104,11 +105,11 @@ export default define({
     children: (
       <>
         <Defs id="lipm" />
-        <Group titleSize={14} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
-          {mobilePath(64, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false)}
+        <Group titleSize={TP.label} x={16} y={16} w={408} h={344} title="Cold application · queue first" variant="dashed">
+          {mobilePath(64, [["Candidate", "chooses one role"], ["Application queue", "starts from zero"], ["Resume review", "first relevance check"], ["Conversation", "if selected"]], "request", false, "user")}
         </Group>
-        <Group titleSize={14} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
-          {mobilePath(432, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "response", true)}
+        <Group titleSize={TP.label} x={16} y={384} w={408} h={344} title="LinkedIn inbound · match first" variant="dashed" accent>
+          {mobilePath(432, [["Profile", "always available"], ["Recruiter search", "title · skills · place"], ["Matched shortlist", "relevance checked"], ["Conversation", "role arrives first"]], "accent", true, "browser")}
         </Group>
       </>
     ),

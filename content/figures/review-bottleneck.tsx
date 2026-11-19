@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic @jsxImportSource react */
 import { Connector, Defs, Group, Label, Node, Packet } from "uipack";
-import { define } from "./_shared";
+import { define, T, TP } from "./_shared";
 
 // One pipeline that narrows. Blue packets are changes: they leave the agent
 // fast, queue as static chips in front of Review (the narrow step, accented),
@@ -26,7 +26,7 @@ const desktop = (
   <>
     <Defs id="rb" />
 
-    <Node size={19} subSize={13} x={48} y={72} w={160} h={176} label="Write" sub="agent speed" icon="robot" />
+    <Node {...T.node} x={48} y={72} w={160} h={176} label="Write" sub="agent speed" icon="robot" />
     {lanes.map((y, i) => (
       <g key={y}>
         <Connector points={[[208, y], [280, y]]} defs="rb" kind="request" />
@@ -34,39 +34,39 @@ const desktop = (
       </g>
     ))}
 
-    <Node size={19} subSize={13} x={280} y={104} w={152} h={112} label="Check" sub="tests · CI" icon="terminal" />
+    <Node {...T.node} x={280} y={104} w={152} h={112} label="Check" sub="tests · CI" icon="terminal" strip="terminal" />
     <Connector points={[[432, cy], [680, cy]]} defs="rb" kind="request" flow={F} />
     <Packet points={[[432, cy], [568, cy]]} kind="request" dur={0.9} r={4} trim={[6, 4]} flow={F} />
     <Packet points={[[432, cy], [568, cy]]} kind="request" dur={0.9} delay={-0.45} r={4} trim={[6, 4]} flow={F} />
     {queue.map(([x, y], i) => held(x, y, i))}
-    <Label x={616} y={cy - 36} text="waiting for review" anchor="middle" size={14} />
+    <Label x={616} y={cy - 36} text="waiting for review" anchor="middle" size={T.label} />
 
-    <Node size={19} subSize={13} x={680} y={cy - 28} w={152} h={56} label="Review" sub="human speed" icon="user" accent flow={F} />
+    <Node {...T.node} x={680} y={cy - 28} w={152} h={56} label="Review" sub="human speed" icon="user" accent flow={F} />
     <Connector points={[[832, cy], [880, cy]]} defs="rb" kind="request" flow={F} />
     <Packet points={[[832, cy], [880, cy]]} kind="request" dur={3.2} r={4} flow={F} />
-    <Node size={19} subSize={13} x={880} y={cy - 28} w={160} h={56} label="Ship" sub="reviewer speed" icon="git" flow={F} />
+    <Node {...T.node} x={880} y={cy - 28} w={160} h={56} label="Ship" sub="reviewer speed" icon="git" flow={F} />
 
     <Group x={16} y={280} w={1048} h={128} variant="dashed" accent>
-      <Label x={1032} y={356} text="what widens each step" anchor="end" size={14} accent />
-      <Node size={17} subSize={13} x={48} y={320} w={176} h={64} label="Team harness" sub="definition of done" icon="doc" dashed />
+      <Label x={1032} y={356} text="what widens each step" anchor="end" size={T.label} accent />
+      <Node {...T.compact} x={48} y={320} w={176} h={64} label="Team harness" sub="definition of done" icon="doc" dashed strip="file" />
       <Connector points={[[128, 320], [128, 248]]} defs="rb" dashed />
-      <Node size={17} subSize={13} x={264} y={320} w={184} h={64} label="Fast tests + CI" sub="agents run them" icon="terminal" dashed />
+      <Node {...T.compact} x={264} y={320} w={184} h={64} label="Fast tests + CI" sub="agents run them" icon="terminal" dashed strip="terminal" />
       <Connector points={[[356, 320], [356, 216]]} defs="rb" dashed />
-      <Node size={17} subSize={13} x={616} y={320} w={216} h={64} label="Risk tiers" sub="review evidence first" icon="lock" dashed />
+      <Node {...T.compact} x={616} y={320} w={216} h={64} label="Risk tiers" sub="review evidence first" icon="lock" dashed />
       <Connector points={[[756, 320], [756, 188]]} defs="rb" dashed />
     </Group>
   </>
 );
 
 /* ---------- phone: 440 wide, stacked top to bottom ---------- */
-const M = { size: 17, subSize: 14 };
+const M = TP.node;
 const mx = 152; // spine x
 const mq = [0, 1, 2, 3, 4].flatMap((r) => [-16, 0, 16].map((d) => [mx + d, 296 + r * 16] as const));
 
 const mobile = (
   <>
     <Defs id="rbm" />
-    <Label x={360} y={28} text="what widens it" anchor="middle" size={14} accent />
+    <Label x={360} y={28} text="what widens it" anchor="middle" size={TP.label} accent />
 
     <Node {...M} x={24} y={48} w={256} h={56} label="Write" sub="agent speed" icon="robot" />
     {[88, 152, 216].map((x, i) => (
@@ -75,24 +75,24 @@ const mobile = (
         <Packet points={[[x, 104], [x, 152]]} kind="request" dur={0.9} delay={-i * 0.3} r={4} />
       </g>
     ))}
-    <Node {...M} x={56} y={152} w={192} h={56} label="Check" sub="tests · CI" icon="terminal" />
+    <Node {...M} x={56} y={152} w={192} h={56} label="Check" sub="tests · CI" icon="terminal" strip="terminal" />
 
     <Connector points={[[mx, 208], [mx, 392]]} defs="rbm" kind="request" flow={F} />
     <Packet points={[[mx, 208], [mx, 280]]} kind="request" dur={0.9} r={4} trim={[6, 4]} flow={F} />
     <Packet points={[[mx, 208], [mx, 280]]} kind="request" dur={0.9} delay={-0.45} r={4} trim={[6, 4]} flow={F} />
     {mq.map(([x, y], i) => held(x, y, i))}
-    <Label x={184} y={332} text="waiting for review" anchor="start" size={14} />
+    <Label x={184} y={332} text="waiting for review" anchor="start" size={TP.label} />
 
     <Node {...M} x={80} y={392} w={144} h={56} label="Review" sub="human speed" icon="user" accent flow={F} />
     <Connector points={[[mx, 448], [mx, 496]]} defs="rbm" kind="request" flow={F} />
     <Packet points={[[mx, 448], [mx, 496]]} kind="request" dur={3.2} r={4} flow={F} />
     <Node {...M} x={56} y={496} w={192} h={56} label="Ship" sub="reviewer speed" icon="git" flow={F} />
 
-    <Node size={15} x={304} y={52} w={120} h={48} label="Team harness" align="center" dashed />
+    <Node size={TP.node.size} x={304} y={52} w={120} h={48} label="Team harness" align="center" dashed strip="file" />
     <Connector points={[[304, 76], [280, 76]]} defs="rbm" dashed />
-    <Node size={15} x={304} y={156} w={120} h={48} label="Tests + CI" align="center" dashed />
+    <Node size={TP.node.size} x={304} y={156} w={120} h={48} label="Tests + CI" align="center" dashed strip="terminal" />
     <Connector points={[[304, 180], [248, 180]]} defs="rbm" dashed />
-    <Node size={15} x={304} y={396} w={120} h={48} label="Risk tiers" align="center" dashed />
+    <Node size={TP.node.size} x={304} y={396} w={120} h={48} label="Risk tiers" align="center" dashed />
     <Connector points={[[304, 420], [224, 420]]} defs="rbm" dashed />
   </>
 );
