@@ -1,5 +1,5 @@
 /* @jsxRuntime automatic @jsxImportSource react */
-import { Chip, Connector, Defs, Label, Lane, Node, Packet } from "uipack";
+import { Chip, Connector, Cross, Defs, Label, Lane, Node, Packet, Wall } from "uipack";
 import { define, T, TP, Text } from "./_shared";
 
 // The decide skill as a funnel that widens before it narrows. A question is
@@ -7,7 +7,7 @@ import { define, T, TP, Text } from "./_shared";
 // frame step fans the two offered options out to four (orange = the two the
 // user did not list). Three walls (inputs, numbers, downside) each stop one
 // option; which option dies where is illustrative, not measured. The survivor
-// is pre-mortemed and becomes the one pick (green), and the tripwire set with
+// is pre-mortemed and becomes the one pick (the accent path), and the tripwire set with
 // it loops back to the frame step if it trips.
 
 type Opt = { label: string; mobile: string; added: boolean; stop: number }; // stop: wall index 1-3, 0 survives
@@ -22,35 +22,6 @@ const walls: [string, string][] = [
   ["Numbers", "EV · cost"],
   ["Downside", "survive?"],
 ];
-
-/** A wall as slabs with a gap wherever a surviving lane passes. "v" desktop, "h" phone. */
-const Wall = ({ at, from, to, holes, axis, t = 14, gap = 9 }: {
-  at: number; from: number; to: number; holes: number[]; axis: "v" | "h"; t?: number; gap?: number;
-}) => {
-  const segs: [number, number][] = [];
-  let s = from;
-  for (const c of [...holes].sort((a, b) => a - b)) {
-    segs.push([s, c - gap]);
-    s = c + gap;
-  }
-  segs.push([s, to]);
-  return (
-    <g>
-      {segs.map(([a, b]) =>
-        axis === "v" ? (
-          <rect key={a} x={at - t / 2} y={a} width={t} height={b - a} rx={2} fill="var(--uipack-surface-raised)" stroke="currentColor" strokeOpacity={0.55} strokeWidth={1.25} />
-        ) : (
-          <rect key={a} x={a} y={at - t / 2} width={b - a} height={t} rx={2} fill="var(--uipack-surface-raised)" stroke="currentColor" strokeOpacity={0.55} strokeWidth={1.25} />
-        ),
-      )}
-    </g>
-  );
-};
-
-/** An option stopped against a wall. */
-const Stopped = ({ x, y, r = 5 }: { x: number; y: number; r?: number }) => (
-  <path d={`M${x},${y - r} L${x + r},${y} L${x},${y + r} L${x - r},${y} z`} fill="currentColor" fillOpacity={0.45} />
-);
 
 const F = "pick";
 
@@ -109,27 +80,27 @@ const desktop = (
         const pts: [number, number][] = [[CHIP_X + CHIP_W, y], [872, y]];
         return (
           <g key={o.label}>
-            <Connector points={pts} defs="dp" kind="response" flow={F} />
-            <Packet points={pts} kind="response" dur={2} r={5} flow={F} />
+            <Connector points={pts} defs="dp" kind="accent" flow={F} />
+            <Packet points={pts} kind="accent" dur={2} r={5} flow={F} />
           </g>
         );
       }
-      const end = wx[o.stop - 1] - 8;
+      const cx = wx[o.stop - 1] - 16; // the cross sits clear of the wall's face
       return (
         <g key={o.label}>
-          <Connector points={[[CHIP_X + CHIP_W, y], [end, y]]} arrow={false} />
-          <Stopped x={end - 6} y={y} />
+          <Connector points={[[CHIP_X + CHIP_W, y], [cx - 8, y]]} arrow={false} />
+          <Cross x={cx} y={y} />
         </g>
       );
     })}
     {wx.map((x, k) => (
-      <Wall key={x} at={x} from={W_TOP} to={W_BOT} axis="v" holes={lanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
+      <Wall key={x} at={x} from={W_TOP} to={W_BOT} axis="v" thickness={14} holes={lanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
     ))}
 
     <Node x={872} y={280} w={120} h={64} label="Pre-mortem" sub="fix top cause" {...T.compact} align="center" flow={F} />
-    <Connector points={[[992, 312], [1024, 312]]} defs="dp" kind="response" flow={F} />
+    <Connector points={[[992, 312], [1024, 312]]} defs="dp" kind="accent" flow={F} />
     <Node x={1024} y={280} w={104} h={64} label="One pick" sub="+ flip fact" {...T.compact} align="center" accent flow={F} />
-    <Connector points={[[1076, 344], [1076, 376]]} defs="dp" kind="response" flow={F} />
+    <Connector points={[[1076, 344], [1076, 376]]} defs="dp" kind="accent" flow={F} />
     <Node x={1024} y={376} w={104} h={64} label="Tripwire" sub="X by date Y" {...T.compact} align="center" flow={F} />
 
     {/* the tripwire, if it trips, reopens the decision at the frame step */}
@@ -182,27 +153,27 @@ const mobile = (
         const pts: [number, number][] = [[x, top], [x, 584]];
         return (
           <g key={o.label}>
-            <Connector points={pts} defs="dpm" kind="response" />
-            <Packet points={pts} kind="response" dur={1.8} r={5} />
+            <Connector points={pts} defs="dpm" kind="accent" />
+            <Packet points={pts} kind="accent" dur={1.8} r={5} />
           </g>
         );
       }
-      const end = mWalls[o.stop - 1] - 8;
+      const cy = mWalls[o.stop - 1] - 16;
       return (
         <g key={o.label}>
-          <Connector points={[[x, top], [x, end]]} arrow={false} />
-          <Stopped x={x} y={end - 6} />
+          <Connector points={[[x, top], [x, cy - 8]]} arrow={false} />
+          <Cross x={x} y={cy} />
         </g>
       );
     })}
     {mWalls.map((y, k) => (
-      <Wall key={y} at={y} from={20} to={340} axis="h" holes={mLanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
+      <Wall key={y} at={y} from={20} to={340} axis="h" thickness={14} holes={mLanes.filter((_, i) => opts[i].stop === 0 || opts[i].stop > k + 1)} />
     ))}
 
     <Node x={208} y={584} w={192} h={56} label="Pre-mortem" sub="fix top cause" {...TP.node} align="center" />
-    <Connector points={[[304, 640], [304, 672]]} defs="dpm" kind="response" />
+    <Connector points={[[304, 640], [304, 672]]} defs="dpm" kind="accent" />
     <Node x={208} y={672} w={192} h={56} label="One pick" sub="+ flip fact" {...TP.node} align="center" accent />
-    <Connector points={[[304, 728], [304, 760]]} defs="dpm" kind="response" />
+    <Connector points={[[304, 728], [304, 760]]} defs="dpm" kind="accent" />
     <Node x={208} y={760} w={192} h={56} label="Tripwire" sub="X by date Y" {...TP.node} align="center" />
 
     <Connector points={[[208, 788], [12, 788], [12, 240], [40, 240]]} defs="dpm" kind="change" dashed />
